@@ -1,0 +1,20 @@
+# HSQL DB CONFIG
+spring:
+    datasource:
+        driver-class-name: org.hsqldb.jdbc.JDBCDriver
+        url: jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1
+        username: sa
+        password:
+    jpa:
+        hibernate:
+            ddl-auto: create
+
+security:
+    basic:
+        enable: false
+    jwt:
+        uri: /auth/**
+        header: Authorization
+        prefix: Bearer
+        expiration: 86400
+        secret: JwtSecretKey
