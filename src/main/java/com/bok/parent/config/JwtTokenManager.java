@@ -1,6 +1,5 @@
-package com.bok.parent;
+package com.bok.parent.config;
 
-import com.bok.parent.config.JwtConfig;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;

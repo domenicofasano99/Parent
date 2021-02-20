@@ -1,12 +1,11 @@
 package com.bok.parent.controller;
 
-import com.bok.parent.TotpManager;
-import com.bok.parent.UserService;
+import com.bok.parent.config.TotpManager;
+import com.bok.parent.service.UserService;
 import com.bok.parent.dto.*;
 import com.bok.parent.exception.BadRequestException;
 import com.bok.parent.exception.EmailAlreadyExistsException;
 import com.bok.parent.exception.UsernameAlreadyExistsException;
-import com.bok.parent.model.Profile;
 import com.bok.parent.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,7 @@
-package com.bok.parent;
+package com.bok.parent.service;
 
 import com.bok.parent.model.AccountUserDetails;
+import com.bok.parent.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

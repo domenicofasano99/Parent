@@ -1,8 +1,7 @@
 package com.bok.parent.config;
 
 
-import com.bok.parent.JwtTokenManager;
-import com.bok.parent.UserService;
+import com.bok.parent.service.UserService;
 import com.bok.parent.model.AccountUserDetails;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

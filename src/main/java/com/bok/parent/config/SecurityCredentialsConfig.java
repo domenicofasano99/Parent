@@ -1,7 +1,6 @@
 package com.bok.parent.config;
 
-import com.bok.parent.JwtTokenManager;
-import com.bok.parent.UserService;
+import com.bok.parent.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;

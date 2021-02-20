@@ -1,4 +1,4 @@
-package com.bok.parent;
+package com.bok.parent.config;
 
 import dev.samstevens.totp.code.*;
 import dev.samstevens.totp.exceptions.QrGenerationException;
@@ -24,9 +24,9 @@ public class TotpManager {
 
     public String getUriForImage(String secret) {
         QrData data = new QrData.Builder()
-                .label("Two-factor-auth-test")
+                .label("BOK access token")
                 .secret(secret)
-                .issuer("exampleTwoFactor")
+                .issuer("BOK")
                 .algorithm(HashingAlgorithm.SHA1)
                 .digits(6)
                 .period(30)
