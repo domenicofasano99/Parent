@@ -43,7 +43,7 @@ public class AuthController {
         return new JwtAuthenticationResponse(token, StringUtils.isEmpty(token));
     }
 
-    @PostMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createUser(@RequestBody SignUpRequest payload) {
         log.info("creating user {}", payload.username);
 
