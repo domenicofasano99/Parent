@@ -33,6 +33,7 @@ public class AuthController {
 
     @PostMapping("/signin")
     public JwtAuthenticationResponse authenticateUser(@RequestBody LoginRequest loginRequest) {
+        log.debug("user {} attempting login", loginRequest.username);
         String token = userService.loginUser(loginRequest.username, loginRequest.password);
         return new JwtAuthenticationResponse(token, StringUtils.isEmpty(token));
     }
