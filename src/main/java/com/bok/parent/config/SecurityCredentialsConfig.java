@@ -52,7 +52,8 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/signin").permitAll()
                 .antMatchers(HttpMethod.POST, "/verify").anonymous()
                 .antMatchers(HttpMethod.POST, "/register").anonymous()
-                .anyRequest().authenticated();
+                .antMatchers(HttpMethod.GET, "/v2/api-docs").permitAll()
+                .anyRequest().permitAll();
     }
 
     @Override
