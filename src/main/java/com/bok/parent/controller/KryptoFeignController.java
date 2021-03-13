@@ -1,7 +1,7 @@
 package com.bok.parent.controller;
 
+import com.bok.integration.krypto.dto.PriceResponseDTO;
 import com.bok.parent.aggregator.KryptoClient;
-import com.bok.parent.aggregator.dto.PriceResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

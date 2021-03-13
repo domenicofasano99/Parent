@@ -1,6 +1,6 @@
 package com.bok.parent.aggregator;
 
-import com.bok.parent.aggregator.dto.PriceResponseDTO;
+import com.bok.integration.krypto.dto.PriceResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
