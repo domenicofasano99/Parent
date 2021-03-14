@@ -1,13 +1,19 @@
 # HSQL DB CONFIG
 spring:
+  activemq:
+    packages:
+      trusted: com.bok.krypto.model
   datasource:
-    driver-class-name: org.hsqldb.jdbc.JDBCDriver
-    url: jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1
-    username: sa
-    password:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mysql://parent-db:3306/parentdb
+    username: parent
+    password: parent
+  jooq:
+    sql-dialect: org.hibernate.dialect.MariaDBDialect
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
+    open-in-view: false
 
 security:
   basic:

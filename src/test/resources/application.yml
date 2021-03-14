@@ -1,0 +1,30 @@
+# ACTIVE-MQ CONFIG
+active-mq:
+  transfers-queue: transfers
+  orders-queue: orders
+  broker-url: tcp://active-mq:61616
+
+spring:
+  activemq:
+    packages:
+      trusted: com.bok.krypto.model
+  datasource:
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    url: jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jooq:
+    sql-dialect: org.hibernate.dialect.H2Dialect
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+
+coinmarket:
+  enable: false
+  endpoint: https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest
+  api-key: 2381b575-4d98-414d-aca3-b52be8aa66e3
+  start: 1
+  limit: 10
+  base-currency: USD
+
