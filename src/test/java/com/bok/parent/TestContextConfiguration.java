@@ -1,26 +1,19 @@
-package com.bok.parent.messaging;
+package com.bok.parent;
 
+import com.bok.parent.messaging.UserCreationMessageProducer;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 
 import javax.jms.ConnectionFactory;
 
-@Configuration
-public class ActiveMQConfig {
-
-    @Value("${active-mq.users-queue}")
-    private String brokerUrl;
-
+@TestConfiguration
+public class TestContextConfiguration {
     @Bean
-    public ConnectionFactory connectionFactory() {
-        ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
-        activeMQConnectionFactory.setBrokerURL(brokerUrl);
-        activeMQConnectionFactory.setTrustAllPackages(true);
-        return activeMQConnectionFactory;
+    public UserCreationMessageProducer messageProducer() {
+        return new UserCreationMessageProducer();
     }
 
     @Bean
@@ -39,5 +32,9 @@ public class ActiveMQConfig {
         return factory;
     }
 
+    @Bean
+    public ConnectionFactory connectionFactory() {
+        return new ActiveMQConnectionFactory("vm://localhost");
+    }
 
 }

@@ -14,14 +14,14 @@ public class UserCreationMessageProducer {
     @Autowired
     JmsTemplate jmsTemplate;
 
-    @Value("${active-mq.transfers-queue}")
-    private String transfersTopic;
+    @Value("${active-mq.users-queue}")
+    private String usersQueue;
 
 
     public void send(UserCreationDTO userCreationDTO) {
         try {
-            log.info("Attempting Send transfer to Topic: " + transfersTopic);
-            jmsTemplate.convertAndSend(transfersTopic, userCreationDTO);
+            log.info("Attempting Send transfer to Topic: " + usersQueue);
+            jmsTemplate.convertAndSend(usersQueue, userCreationDTO);
         } catch (Exception e) {
             log.error("Received Exception during send Message: ", e);
         }

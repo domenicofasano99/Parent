@@ -1,13 +1,11 @@
-# ACTIVE-MQ CONFIG
 active-mq:
-  transfers-queue: transfers
-  orders-queue: orders
-  broker-url: tcp://active-mq:61616
+  users-queue: users
 
 spring:
   activemq:
     packages:
-      trusted: com.bok.krypto.model
+      trusted: com.bok.integration
+    in-memory: true
   datasource:
     driver-class-name: org.hsqldb.jdbc.JDBCDriver
     url: jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1
