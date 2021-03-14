@@ -1,6 +1,6 @@
 package com.bok.parent;
 
-import com.bok.parent.messaging.UserCreationMessageProducer;
+import com.bok.parent.messaging.MessageProducer;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -12,8 +12,8 @@ import javax.jms.ConnectionFactory;
 @TestConfiguration
 public class TestContextConfiguration {
     @Bean
-    public UserCreationMessageProducer messageProducer() {
-        return new UserCreationMessageProducer();
+    public MessageProducer messageProducer() {
+        return new MessageProducer();
     }
 
     @Bean

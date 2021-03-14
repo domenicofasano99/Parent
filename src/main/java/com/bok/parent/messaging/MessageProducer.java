@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class UserCreationMessageProducer {
+public class MessageProducer {
 
     @Autowired
     JmsTemplate jmsTemplate;
