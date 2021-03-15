@@ -1,6 +1,5 @@
 package com.bok.parent;
 
-import com.bok.integration.UserCreationDTO;
 import com.bok.parent.messaging.MessageProducer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +15,8 @@ class ParentApplicationTests {
 
     @Test
     void contextLoads() {
-        UserCreationDTO dto = new UserCreationDTO();
-        messageProducer.send(dto);
+//        UserCreationDTO dto = new UserCreationDTO();
+//        messageProducer.send(dto);
     }
 
 }
