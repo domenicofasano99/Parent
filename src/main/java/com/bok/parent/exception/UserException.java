@@ -6,7 +6,9 @@ public class UserException extends RuntimeException {
         EMAIL_ALREADY_EXISTS,
         USER_NOT_FOUND,
         USER_NOT_ENABLED,
-        INVALID_CREDENTIALS
+        INVALID_CREDENTIALS,
+        USER_NOT_EXISTS,
+        USERNAME_CAN_NOT_BE_CHANGED
     }
 
     public UserException(UserExceptionCode userExceptionCode) {

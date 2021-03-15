@@ -17,7 +17,7 @@ public class MessageProducer {
     @Value("${active-mq.users-queue}")
     private String usersQueue;
 
-    public void sendUserCreation(UserCreationDTO userCreationDTO) {
+    public void sendUserModify(UserCreationDTO userCreationDTO) {
         try {
             log.info("Attempting Send transfer to Topic: " + usersQueue);
             queueJmsTemplate.convertAndSend(usersQueue, userCreationDTO);

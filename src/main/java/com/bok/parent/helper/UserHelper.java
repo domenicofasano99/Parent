@@ -70,7 +70,7 @@ public class UserHelper implements UserDetailsService {
                     .enabled(true)
                     .email(userDTO.role)
                     .build());
-            messageProducer.sendUserCreation(UserCreationDTO.builder()
+            messageProducer.sendUserModify(UserCreationDTO.builder()
                     .id(u.getId())
                     .email(u.getEmail())
                     .build());
@@ -78,6 +78,22 @@ public class UserHelper implements UserDetailsService {
         }
     }
 
+    public User updateUser(UserDTO userDTO) {
+        if (userRepository.existsByUsername(userDTO.username)) {
+            User u = userRepository.save(User.builder()
+                    .email(userDTO.email)
+                    .username(userDTO.username)
+                    .password(userDTO.password)
+                    .role(userDTO.role)
+                    .build());
+            messageProducer.sendUserModify(UserCreationDTO.builder()
+                    .id(u.getId())
+                    .email(u.getEmail())
+                    .build());
+            return u;
+        }
+        throw new UserException(USER_NOT_EXISTS);
+    }
 
     public AuthenticationResponseDTO authenticate(UserDTO userDTO) {
         try {
