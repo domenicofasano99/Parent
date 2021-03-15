@@ -1,8 +1,10 @@
 package com.bok.parent.helper;
 
+import com.bok.integration.UserCreationDTO;
 import com.bok.integration.parent.dto.AuthenticationResponseDTO;
 import com.bok.parent.dto.UserDTO;
 import com.bok.parent.exception.UserException;
+import com.bok.parent.messaging.MessageProducer;
 import com.bok.parent.model.User;
 import com.bok.parent.repository.UserRepository;
 import com.bok.parent.security.JwtUtil;
@@ -15,7 +17,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -30,13 +31,16 @@ import static com.bok.parent.exception.UserException.UserExceptionCode.*;
 public class UserHelper implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
     private PasswordEncoder bcryptEncoder;
+
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private MessageProducer messageProducer;
 
     @Override
     public UserDetails loadUserByUsername(String s) {
@@ -59,13 +63,18 @@ public class UserHelper implements UserDetailsService {
         } else if (userRepository.existsByUsername(userDTO.username)) {
             throw new UserException(USERNAME_ALREADY_EXISTS);
         } else {
-            return userRepository.save(User.builder()
+            User u = userRepository.save(User.builder()
                     .username(userDTO.username)
                     .password(bcryptEncoder.encode(userDTO.password))
                     .role(userDTO.role.toUpperCase())
                     .enabled(true)
                     .email(userDTO.role)
                     .build());
+            messageProducer.sendUserCreation(UserCreationDTO.builder()
+                    .id(u.getId())
+                    .email(u.getEmail())
+                    .build());
+            return u;
         }
     }
 

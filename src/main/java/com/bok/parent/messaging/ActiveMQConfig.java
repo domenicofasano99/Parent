@@ -23,8 +23,10 @@ public class ActiveMQConfig {
         return activeMQConnectionFactory;
     }
 
+    //Queue Settings
+
     @Bean
-    public JmsTemplate jmsTemplate() {
+    public JmsTemplate queueJmsTemplate() {
         JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setConnectionFactory(connectionFactory());
         //jmsTemplate.setPubSubDomain(true);  // enable for Pub Sub to topic. Not Required for Queue.
@@ -32,10 +34,28 @@ public class ActiveMQConfig {
     }
 
     @Bean
-    public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
+    public DefaultJmsListenerContainerFactory queueJmsListenerContainerFactory() {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory());
         //factory.setPubSubDomain(true);
+        return factory;
+    }
+
+    //Topic Settings
+
+    @Bean
+    public JmsTemplate topicJmsTemplate() {
+        JmsTemplate jmsTemplate = new JmsTemplate();
+        jmsTemplate.setConnectionFactory(connectionFactory());
+        jmsTemplate.setPubSubDomain(true);  // enable for Pub Sub to topic. Not Required for Queue.
+        return jmsTemplate;
+    }
+
+    @Bean
+    public DefaultJmsListenerContainerFactory topicJmsListenerContainerFactory() {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory());
+        factory.setPubSubDomain(true);
         return factory;
     }
 
