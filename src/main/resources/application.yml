@@ -18,17 +18,21 @@ spring:
       ddl-auto: update
     open-in-view: false
 
+#security:
+#  basic:
+#    enable: false
+#  jwt:
+#    uri: /auth/**
+#    header: Authorization
+#    prefix: Bearer
+#    expiration: 86400
+#    secret: JwtSecretKey
+#
+
 security:
-  basic:
-    enable: false
   jwt:
-    uri: /auth/**
-    header: Authorization
-    prefix: Bearer
-    expiration: 86400
-    secret: JwtSecretKey
-
-
+    secret: slj35v6845b@d@sidbò#oefuvwdibvsòduvoeubwfeuo8efqb
+    expiration: 18000000
 
 topology:
   krypto:
