@@ -1,5 +1,6 @@
 active-mq:
   users-queue: users
+  broker-url: tcp://localhost:61616
 
 spring:
   activemq:
@@ -12,7 +13,7 @@ spring:
     username: sa
     password:
   jooq:
-    sql-dialect: org.hibernate.dialect.H2Dialect
+    sql-dialect: org.hibernate.dialect.HSQLDialect
   jpa:
     hibernate:
       ddl-auto: create-drop

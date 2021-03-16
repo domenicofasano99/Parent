@@ -34,7 +34,7 @@ public class TestContextConfiguration {
 
     @Bean
     public ConnectionFactory connectionFactory() {
-        return new ActiveMQConnectionFactory("vm://localhost");
+        return new ActiveMQConnectionFactory("tcp://localhost:61616");
     }
 
 }
