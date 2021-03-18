@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,7 +45,7 @@ public class UserHelper implements UserDetailsService {
         User user = userRepository.findByUsername(s);
         if (Objects.nonNull(user)) {
             if (user.getEnabled()) {
-                roles = Arrays.asList(new SimpleGrantedAuthority(user.getRole()));
+                roles = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));
                 return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), roles);
             } else {
                 throw new UserException(USER_NOT_ENABLED);
@@ -62,9 +63,9 @@ public class UserHelper implements UserDetailsService {
             return userRepository.save(User.builder()
                     .username(userDTO.username)
                     .password(bcryptEncoder.encode(userDTO.password))
-                    .role(userDTO.role.toUpperCase())
+                    .role(userDTO.role)
                     .enabled(true)
-                    .email(userDTO.role)
+                    .email(userDTO.email)
                     .build());
         }
     }
@@ -81,10 +82,10 @@ public class UserHelper implements UserDetailsService {
         }
         UserDetails userdetails = loadUserByUsername(userDTO.username);
         String token = jwtUtil.generateToken(userdetails);
-        String role = userRepository.findByUsername(userDTO.username).getRole();
+        User.Role role = userRepository.findByUsername(userDTO.username).getRole();
         return AuthenticationResponseDTO.builder()
                 .token(token)
-                .role(role)
+                .role(role.name())
                 .build();
     }
 }
