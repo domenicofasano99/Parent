@@ -13,7 +13,7 @@ import java.util.Objects;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserHelper userHelper;

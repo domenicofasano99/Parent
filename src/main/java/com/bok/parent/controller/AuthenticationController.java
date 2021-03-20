@@ -16,12 +16,12 @@ public class AuthenticationController {
     private UserServiceImpl userServiceImpl;
 
     @PostMapping("/authenticate")
-    public AuthenticationResponseDTO authenticate(@RequestBody UserDTO userDTO){
+    public AuthenticationResponseDTO authenticate(@RequestBody UserDTO userDTO) {
         return userServiceImpl.authenticate(userDTO);
     }
 
     @PostMapping
-    public User register(@RequestBody UserDTO userDTO){
+    public User register(@RequestBody UserDTO userDTO) {
         return userServiceImpl.createUser(userDTO);
     }
 }

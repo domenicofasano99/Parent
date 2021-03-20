@@ -1,8 +1,9 @@
 active-mq:
   users-queue: users
   broker-url: tcp://active-mq:61616
-
 spring:
+  application:
+    name: parent
   activemq:
     packages:
       trusted: com.bok.krypto.model

@@ -6,5 +6,6 @@ import com.bok.parent.model.User;
 
 public interface UserService {
     User createUser(UserDTO userDTO);
+
     AuthenticationResponseDTO authenticate(UserDTO userDTO);
 }
