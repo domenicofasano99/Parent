@@ -80,17 +80,18 @@ public class UserHelper implements UserDetailsService {
 
     public User updateUser(UserDTO userDTO) {
         if (userRepository.existsByUsername(userDTO.username)) {
-            User u = userRepository.save(User.builder()
-                    .email(userDTO.email)
-                    .username(userDTO.username)
-                    .password(userDTO.password)
-                    .role(userDTO.role)
-                    .build());
-            messageProducer.sendUserModify(UserCreationDTO.builder()
-                    .id(u.getId())
-                    .email(u.getEmail())
-                    .build());
-            return u;
+            User u = userRepository.findById(userDTO.id).orElseThrow(() -> new UserException(BAD_ID_PROVIDED));
+            u.setUsername(userDTO.username);
+            u.setPassword(userDTO.password);
+            u.setEmail(userDTO.email);
+            if (userRepository.existsByEmail(userDTO.email)) {
+                throw new UserException(EMAIL_ALREADY_EXISTS);
+            } else if (userRepository.existsByUsername(userDTO.username)) {
+                throw new UserException(USERNAME_ALREADY_EXISTS);
+            } else {
+                userRepository.save(u);
+                return u;
+            }
         }
         throw new UserException(USER_NOT_EXISTS);
     }

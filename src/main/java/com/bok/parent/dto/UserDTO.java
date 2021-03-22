@@ -8,4 +8,5 @@ public class UserDTO {
     public String password;
     public String role;
     public String email;
+    public Long id;
 }

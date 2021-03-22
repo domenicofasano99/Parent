@@ -8,7 +8,7 @@ public class UserException extends RuntimeException {
         USER_NOT_ENABLED,
         INVALID_CREDENTIALS,
         USER_NOT_EXISTS,
-        USERNAME_CAN_NOT_BE_CHANGED
+        BAD_ID_PROVIDED
     }
 
     public UserException(UserExceptionCode userExceptionCode) {

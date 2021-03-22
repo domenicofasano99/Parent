@@ -33,4 +33,13 @@ public class UserServiceImpl implements UserService{
         Preconditions.checkArgument(Objects.nonNull(userDTO.password));
         return userHelper.authenticate(userDTO);
     }
+
+    public User updateUser(UserDTO userDTO){
+        Preconditions.checkArgument(Objects.nonNull(userDTO.id));
+        Preconditions.checkArgument(Objects.nonNull(userDTO.username));
+        Preconditions.checkArgument(Objects.nonNull(userDTO.password));
+        Preconditions.checkArgument(Objects.nonNull(userDTO.email));
+        return userHelper.updateUser(userDTO);
+
+    }
 }
