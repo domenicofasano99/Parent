@@ -10,5 +10,4 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface KryptoClient {
     @GetMapping(value = "/price/{symbol}", consumes = MediaType.APPLICATION_JSON_VALUE)
     PriceResponseDTO getPriceBySymbol(@PathVariable("symbol") String symbol);
-
 }

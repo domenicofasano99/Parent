@@ -70,7 +70,7 @@ public class UserHelper implements UserDetailsService {
                     .enabled(true)
                     .email(userDTO.role)
                     .build());
-            messageProducer.sendUserModify(UserCreationDTO.builder()
+            messageProducer.produce(UserCreationDTO.builder()
                     .id(u.getId())
                     .email(u.getEmail())
                     .build());
