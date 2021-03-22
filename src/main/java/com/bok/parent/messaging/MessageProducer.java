@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class MessageProducer {
+public class MessageProducer implements Producer<UserCreationDTO>{
 
     @Autowired
     JmsTemplate queueJmsTemplate;
@@ -17,7 +17,13 @@ public class MessageProducer {
     @Value("${active-mq.users-queue}")
     private String usersQueue;
 
-    public void sendUserModify(UserCreationDTO userCreationDTO) {
+    /**
+     * this method will send a message to the queue that will be listened by
+     * krypto. the message will be sent each time a new user is created into the system
+     * @param userCreationDTO represents the just created user
+     **/
+    @Override
+    public void produce(UserCreationDTO userCreationDTO) {
         try {
             log.info("Attempting Send transfer to Topic: " + usersQueue);
             queueJmsTemplate.convertAndSend(usersQueue, userCreationDTO);
