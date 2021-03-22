@@ -1,6 +1,6 @@
 active-mq:
   users-queue: users
-  broker-url: tcp://active-mq:61616
+  broker-url: tcp://dev.faraone.ovh:61616
 spring:
   application:
     name: parent
@@ -9,9 +9,9 @@ spring:
       trusted: com.bok.krypto.model
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mysql://parent-db:3306/parentdb
-    username: parent
-    password: parent
+    url: jdbc:mysql://dev.faraone.ovh:3307/parent
+    username: developer
+    password: password4testing
   jooq:
     sql-dialect: org.hibernate.dialect.MariaDBDialect
   jpa:
