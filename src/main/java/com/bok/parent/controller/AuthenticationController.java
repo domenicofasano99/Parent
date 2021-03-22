@@ -20,7 +20,7 @@ public class AuthenticationController {
         return userServiceImpl.authenticate(userDTO);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public User register(@RequestBody UserDTO userDTO){
         return userServiceImpl.createUser(userDTO);
     }
