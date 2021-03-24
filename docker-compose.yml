@@ -5,5 +5,5 @@ services:
     container_name: active-mq
     image: rmohr/activemq:latest
     ports:
-    - 61616:61616
-    - 8161:8161
+      - 61616:61616
+      - 8161:8161

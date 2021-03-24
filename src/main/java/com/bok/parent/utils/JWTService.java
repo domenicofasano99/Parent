@@ -14,28 +14,30 @@ import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.bok.parent.utils.Constants.EMAIL;
+
 @Service
 public class JWTService {
-
-    @Autowired
-    CryptoUtils cryptoUtils;
 
     private final Algorithm algorithm;
     private final int defaultExpiration;
 
+    @Autowired
+    CryptoUtils cryptoUtils;
+
     public JWTService(
-            @Value("${security.jwt.secret}") String secret,
-            @Value("${security.jwt.expiration}") int defaultExpirationSeconds) {
+            @Value("${jwt.security.secret}") String secret,
+            @Value("${jwt.security.expiration}") int defaultExpirationSeconds) {
         this.algorithm = Algorithm.HMAC256(secret);
         this.defaultExpiration = defaultExpirationSeconds;
     }
 
-    public String create(String username) {
+    public String create(String email) {
         Instant issuedAt = Instant.now();
         return cryptoUtils.encryptToken(JWT.create()
                 .withIssuedAt(Date.from(issuedAt))
                 .withExpiresAt(Date.from(issuedAt.plusSeconds(defaultExpiration)))
-                .withClaim("username", username)
+                .withClaim(EMAIL, email)
                 .sign(algorithm));
     }
 

@@ -8,9 +8,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.time.Instant;
 
-
-@AllArgsConstructor
-@Builder
 @Entity
 public class User {
 
@@ -41,9 +38,9 @@ public class User {
         //hibernate
     }
 
-    public enum Role {
-        USER,
-        INTERNAL
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
     public Long getId() {
@@ -100,5 +97,9 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public enum Role {
+        USER
     }
 }

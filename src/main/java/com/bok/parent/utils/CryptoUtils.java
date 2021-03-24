@@ -3,8 +3,6 @@ package com.bok.parent.utils;
 import com.bok.parent.utils.encryption.JWTEncryption;
 import com.bok.parent.utils.encryption.PasswordEncryption;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,15 +14,12 @@ import java.security.spec.InvalidKeySpecException;
 @Slf4j
 public class CryptoUtils {
 
-
-    @Value("${security.jwt.secret}")
-    private String jwtSecret;
-
     @Autowired
     JWTEncryption jwtEncryption;
-
     @Autowired
     PasswordEncryption passwordEncryption;
+    @Value("${jwt.security.secret}")
+    private String jwtSecret;
 
     public String encryptPassword(String plainPassword) {
         try {

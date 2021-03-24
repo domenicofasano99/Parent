@@ -10,8 +10,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+import static com.bok.parent.utils.Constants.EMAIL;
+
 @Component
-public class JWTAuthenticationHandler {
+public class JWTAuthenticationHelper {
     @Autowired
     UserHelper userHelper;
 
@@ -21,17 +23,17 @@ public class JWTAuthenticationHandler {
     @Autowired
     CryptoUtils cryptoUtils;
 
-    public String login(String username, String password) throws BadCredentialsException {
+    public String login(String email, String password) throws BadCredentialsException {
         return userHelper
-                .findByEmail(username)
+                .findByEmail(email)
                 .filter(user -> user.getEnabled() && cryptoUtils.checkPassword(password, user.getPassword()))
-                .map(user -> jwtService.create(username))
-                .orElseThrow(() -> new BadCredentialsException("Invalid username or password."));
+                .map(user -> jwtService.create(email))
+                .orElseThrow(() -> new BadCredentialsException("Invalid email or password."));
     }
 
     public User authenticateByToken(String token) {
         try {
-            Object username = jwtService.verify(token).get("username");
+            Object username = jwtService.verify(token).get(EMAIL);
             return Optional.ofNullable(username)
                     .flatMap(name -> userHelper.findByEmail(String.valueOf(name)))
                     .filter(User::getEnabled)

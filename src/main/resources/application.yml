@@ -4,20 +4,47 @@ active-mq:
 spring:
   application:
     name: parent
+
   activemq:
     packages:
       trusted: com.bok.krypto.model
+
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mysql://dev.faraone.ovh:3307/parent
     username: developer
     password: password4testing
+
   jooq:
     sql-dialect: org.hibernate.dialect.MariaDBDialect
+
   jpa:
     hibernate:
       ddl-auto: update
     open-in-view: false
+
+zuul:
+  routes:
+    bank:
+      path: /bank/**
+      serviceId: bank
+    krypto:
+      path: /krypto/**
+      serviceId: krypto
+server:
+  port: 8080
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://eureka:8762/eureka
+    enabled: true
+jwt:
+  security:
+    secret: j3H5Ld5nYmGWyULy6xwpOgfSH++NgKXnJMq20vpfd+8=t
+    expiration: 3600
 
 management:
   endpoints:
@@ -26,9 +53,4 @@ management:
         include: '*'
   server:
     port: 9090
-
-security:
-  jwt:
-    secret: slj35v6845b@d@sidbò#oefuvwdibvsòduvoeubwfeuo8efqb
-    expiration: 18000000
 

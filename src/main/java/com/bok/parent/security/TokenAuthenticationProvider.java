@@ -1,6 +1,6 @@
 package com.bok.parent.security;
 
-import com.bok.parent.utils.JWTAuthenticationHandler;
+import com.bok.parent.utils.JWTAuthenticationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
-    JWTAuthenticationHandler jwtAuthenticationHandler;
+    JWTAuthenticationHelper jwtAuthenticationHelper;
 
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
@@ -28,7 +28,7 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
         Object token = authentication.getCredentials();
         return Optional
                 .ofNullable(token)
-                .flatMap(t -> Optional.of(jwtAuthenticationHandler.authenticateByToken(String.valueOf(t)))
+                .flatMap(t -> Optional.of(jwtAuthenticationHelper.authenticateByToken(String.valueOf(t)))
                         .map(u -> User.builder()
                                 .username(u.getEmail())
                                 .password(u.getPassword())
