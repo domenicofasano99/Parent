@@ -18,9 +18,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    private String username;
-
     @Column
     private String password;
 
@@ -31,10 +28,10 @@ public class User {
     private String email;
 
     @CreationTimestamp
-    private Instant createdAt;
+    private Instant creationTimestamp;
 
     @UpdateTimestamp
-    private Instant updatedAt;
+    private Instant updateTimestamp;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -46,7 +43,7 @@ public class User {
 
     public enum Role {
         USER,
-        ADMIN
+        INTERNAL
     }
 
     public Long getId() {
@@ -55,14 +52,6 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {
@@ -89,20 +78,20 @@ public class User {
         this.email = email;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
+    public Instant getCreationTimestamp() {
+        return creationTimestamp;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
+    public void setCreationTimestamp(Instant createdAt) {
+        this.creationTimestamp = createdAt;
     }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
+    public Instant getUpdateTimestamp() {
+        return updateTimestamp;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setUpdateTimestamp(Instant updatedAt) {
+        this.updateTimestamp = updatedAt;
     }
 
     public Role getRole() {

@@ -1,89 +1,35 @@
 package com.bok.parent.helper;
 
-import com.bok.integration.parent.dto.AuthenticationResponseDTO;
 import com.bok.parent.dto.UserDTO;
-import com.bok.parent.exception.UserException;
 import com.bok.parent.model.User;
 import com.bok.parent.repository.UserRepository;
-import com.bok.parent.security.JwtUtil;
+import com.bok.parent.utils.CryptoUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
-import static com.bok.parent.exception.UserException.UserExceptionCode.*;
 
 @Component
 @Slf4j
-public class UserHelper implements UserDetailsService {
+public class UserHelper {
 
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private JwtUtil jwtUtil;
-    @Autowired
-    private PasswordEncoder bcryptEncoder;
+    UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String s) {
-        List<SimpleGrantedAuthority> roles;
-        User user = userRepository.findByUsername(s);
-        if (Objects.nonNull(user)) {
-            if (user.getEnabled()) {
-                roles = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));
-                return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), roles);
-            } else {
-                throw new UserException(USER_NOT_ENABLED);
-            }
-        }
-        throw new UserException(USER_NOT_FOUND);
+    @Autowired
+    CryptoUtils cryptoUtils;
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public User createUser(UserDTO userDTO) {
-        if (userRepository.existsByEmail(userDTO.email)) {
-            throw new UserException(EMAIL_ALREADY_EXISTS);
-        } else if (userRepository.existsByUsername(userDTO.username)) {
-            throw new UserException(USERNAME_ALREADY_EXISTS);
-        } else {
-            return userRepository.save(User.builder()
-                    .username(userDTO.username)
-                    .password(bcryptEncoder.encode(userDTO.password))
-                    .role(userDTO.role)
-                    .enabled(true)
-                    .email(userDTO.email)
-                    .build());
-        }
-    }
-
-
-    public AuthenticationResponseDTO authenticate(UserDTO userDTO) {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    userDTO.username, userDTO.password));
-        } catch (DisabledException e) {
-            throw new UserException(UserException.UserExceptionCode.USER_NOT_ENABLED);
-        } catch (BadCredentialsException e) {
-            throw new UserException(UserException.UserExceptionCode.INVALID_CREDENTIALS);
-        }
-        UserDetails userdetails = loadUserByUsername(userDTO.username);
-        String token = jwtUtil.generateToken(userdetails);
-        User.Role role = userRepository.findByUsername(userDTO.username).getRole();
-        return AuthenticationResponseDTO.builder()
-                .token(token)
-                .role(role.name())
-                .build();
+        User user = new User();
+        user.setEmail(userDTO.email);
+        user.setPassword(cryptoUtils.encryptPassword(userDTO.password));
+        user.setEnabled(true);
+        return userRepository.save(user);
     }
 }

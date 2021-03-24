@@ -1,11 +1,12 @@
 package com.bok.parent.service;
 
-import com.bok.integration.parent.dto.AuthenticationResponseDTO;
 import com.bok.parent.dto.UserDTO;
 import com.bok.parent.model.User;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface UserService {
     User createUser(UserDTO userDTO);
 
-    AuthenticationResponseDTO authenticate(UserDTO userDTO);
+    Object login(UserDTO user);
 }
