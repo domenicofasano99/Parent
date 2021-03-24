@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class PreFilter extends ZuulFilter {
+public class PreForwardingProcessor extends ZuulFilter {
 
     @Autowired
     SecurityService securityService;
@@ -41,12 +41,12 @@ public class PreFilter extends ZuulFilter {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
         // Add a custom header in the request
-        Long userId = securityService.extractUserId(request.getHeader("Authorization").replaceFirst("Bearer ",""));
+        Long userId = securityService.extractUserId(request.getHeader("Authorization").replaceFirst("Bearer ", ""));
         Map<String, List<String>> queryParam = new HashMap<>();
         queryParam.put("userId", Collections.singletonList(userId.toString()));
         ctx.setRequestQueryParams(queryParam);
-        log.info(String.valueOf(ctx.getRequestQueryParams()));
-        log.info(String.format("%s request to %s %s", request.getMethod(), request.getRequestURL().toString(), request.getQueryString()));
+        //log.info(String.valueOf(ctx.getRequestQueryParams()));
+        //log.info(String.format("%s request to %s %s", request.getMethod(), request.getRequestURL().toString(), request.getQueryString()));
         return null;
     }
 }
