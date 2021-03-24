@@ -42,4 +42,10 @@ public class JWTAuthenticationHelper {
             throw new BadCredentialsException("Invalid JWT token.", e);
         }
     }
+
+
+    public Long extractUserIdFromToken(String token) {
+        String email = (String) jwtService.verify(token).get(EMAIL);
+        return userHelper.findIdByEmail(email);
+    }
 }

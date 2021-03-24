@@ -15,4 +15,9 @@ public class SecurityServiceImpl implements SecurityService {
     public Object login(LoginUser loginUser) {
         return securityHelper.login(loginUser);
     }
+
+    @Override
+    public Long extractUserId(String token){
+        return securityHelper.extractUserId(token);
+    }
 }

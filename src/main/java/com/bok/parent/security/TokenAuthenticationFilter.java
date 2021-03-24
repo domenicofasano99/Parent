@@ -13,9 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.bok.parent.utils.Constants.BEARER;
+
 public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
     private static final String AUTHORIZATION = "Authorization";
-    private static final String BEARER = "Bearer";
 
     public TokenAuthenticationFilter(RequestMatcher requiresAuth) {
         super(requiresAuth);

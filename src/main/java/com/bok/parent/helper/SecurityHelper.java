@@ -27,4 +27,8 @@ public class SecurityHelper {
             return ResponseEntity.status(UNAUTHORIZED).body(e.getMessage());
         }
     }
+
+    public Long extractUserId(String token) {
+        return jwtAuthenticationHelper.extractUserIdFromToken(token);
+    }
 }

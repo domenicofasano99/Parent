@@ -42,4 +42,8 @@ public class UserHelper {
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    public Long findIdByEmail(String email) {
+        return userRepository.findIdByEmail(email);
+    }
 }

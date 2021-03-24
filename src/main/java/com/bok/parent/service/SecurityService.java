@@ -6,4 +6,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface SecurityService {
     Object login(LoginUser loginUser);
+    Long extractUserId(String token);
 }
