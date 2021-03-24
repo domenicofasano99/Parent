@@ -36,11 +36,8 @@ server:
 
 eureka:
   client:
-    registerWithEureka: true
-    fetchRegistry: false
     serviceUrl:
-      defaultZone: http://eureka:8762/eureka
-    enabled: true
+      defaultZone: http://dev.faraone.ovh:8761/eureka
 jwt:
   security:
     secret: j3H5Ld5nYmGWyULy6xwpOgfSH++NgKXnJMq20vpfd+8=t
