@@ -3,7 +3,7 @@ server:
 
 active-mq:
   users-queue: users
-  broker-url: tcp://eureka:61616
+  broker-url: tcp://activemq:61616
 
 spring:
   application:
