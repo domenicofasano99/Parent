@@ -3,7 +3,7 @@ server:
 
 active-mq:
   users-queue: users
-  broker-url: tcp://dev.faraone.ovh:61616
+  broker-url: tcp://eureka:61616
 
 spring:
   application:
@@ -39,7 +39,7 @@ zuul:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://dev.faraone.ovh:8761/eureka
+      defaultZone: http://eureka:8761/eureka
   instance:
     lease-renewal-interval-in-seconds: 30
 
