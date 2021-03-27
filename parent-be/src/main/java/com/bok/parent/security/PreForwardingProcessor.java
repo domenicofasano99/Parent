@@ -41,7 +41,8 @@ public class PreForwardingProcessor extends ZuulFilter {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
         // Add a custom header in the request
-        Long userId = securityService.extractUserId(request.getHeader("Authorization").replaceFirst("Bearer ", ""));
+        String token = request.getHeader("Authorization").replaceFirst("Bearer ", "");
+        Long userId = securityService.extractUserId(token);
         Map<String, List<String>> queryParam = new HashMap<>();
         queryParam.put("userId", Collections.singletonList(userId.toString()));
         ctx.setRequestQueryParams(queryParam);
