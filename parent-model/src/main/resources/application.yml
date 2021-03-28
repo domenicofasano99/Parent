@@ -2,7 +2,8 @@ server:
   port: 8080
 
 active-mq:
-  users-queue: users
+  krypto-users: krypto-accounts
+  bank-users: bank-accounts
   broker-url: tcp://activemq:61616
 
 spring:

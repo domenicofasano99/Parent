@@ -1,7 +1,5 @@
 package com.bok.parent.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -9,7 +7,7 @@ import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
-public class User {
+public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,11 +32,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User() {
+    public Account() {
         //hibernate
     }
 
-    public User(String email, String password) {
+    public Account(String email, String password) {
         this.email = email;
         this.password = password;
     }

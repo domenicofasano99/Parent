@@ -1,8 +1,8 @@
 package com.bok.parent.utils;
 
 import com.bok.parent.exception.BokException;
-import com.bok.parent.helper.UserHelper;
-import com.bok.parent.model.User;
+import com.bok.parent.helper.AccountHelper;
+import com.bok.parent.model.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,7 +15,7 @@ import static com.bok.parent.utils.Constants.EMAIL;
 @Component
 public class JWTAuthenticationHelper {
     @Autowired
-    UserHelper userHelper;
+    AccountHelper accountHelper;
 
     @Autowired
     JWTService jwtService;
@@ -24,28 +24,28 @@ public class JWTAuthenticationHelper {
     CryptoUtils cryptoUtils;
 
     public String login(String email, String password) throws BadCredentialsException {
-        return userHelper
+        return accountHelper
                 .findByEmail(email)
                 .filter(user -> user.getEnabled() && cryptoUtils.checkPassword(password, user.getPassword()))
                 .map(user -> jwtService.create(email))
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password."));
     }
 
-    public User authenticateByToken(String token) {
+    public Account authenticateByToken(String token) {
         try {
             Object username = jwtService.verify(token).get(EMAIL);
             return Optional.ofNullable(username)
-                    .flatMap(name -> userHelper.findByEmail(String.valueOf(name)))
-                    .filter(User::getEnabled)
-                    .orElseThrow(() -> new UsernameNotFoundException("User '" + username + "' not found."));
+                    .flatMap(name -> accountHelper.findByEmail(String.valueOf(name)))
+                    .filter(Account::getEnabled)
+                    .orElseThrow(() -> new UsernameNotFoundException("Account '" + username + "' not found."));
         } catch (BokException e) {
             throw new BadCredentialsException("Invalid JWT token.", e);
         }
     }
 
 
-    public Long extractUserIdFromToken(String token) {
+    public Long extractAccountIdFromToken(String token) {
         String email = (String) jwtService.verify(token).get(EMAIL);
-        return userHelper.findIdByEmail(email);
+        return accountHelper.findIdByEmail(email);
     }
 }

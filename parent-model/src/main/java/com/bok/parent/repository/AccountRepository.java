@@ -1,6 +1,6 @@
 package com.bok.parent.repository;
 
-import com.bok.parent.model.User;
+import com.bok.parent.model.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    Optional<User> findByEmail(String email);
+    Optional<Account> findByEmail(String email);
 
     Boolean existsByEmail(String email);
 
-    @Query("SELECT u.id FROM User u WHERE u.email=:email")
+    @Query("SELECT a.id FROM Account a WHERE a.email=:email")
     Long findIdByEmail(@Param("email") String email);
 }

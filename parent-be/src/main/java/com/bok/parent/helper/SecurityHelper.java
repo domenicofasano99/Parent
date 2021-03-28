@@ -1,6 +1,6 @@
 package com.bok.parent.helper;
 
-import com.bok.parent.dto.LoginUser;
+import com.bok.parent.dto.LoginAccount;
 import com.bok.parent.utils.Constants;
 import com.bok.parent.utils.JWTAuthenticationHelper;
 import com.google.common.base.Preconditions;
@@ -20,11 +20,11 @@ public class SecurityHelper {
     @Autowired
     JWTAuthenticationHelper jwtAuthenticationHelper;
 
-    public Object login(LoginUser loginUser) {
-        Preconditions.checkArgument(Objects.nonNull(loginUser.password));
-        Preconditions.checkArgument(Objects.nonNull(loginUser.email));
+    public Object login(LoginAccount loginAccount) {
+        Preconditions.checkArgument(Objects.nonNull(loginAccount.password));
+        Preconditions.checkArgument(Objects.nonNull(loginAccount.email));
         try {
-            return jwtAuthenticationHelper.login(loginUser.email, loginUser.password);
+            return jwtAuthenticationHelper.login(loginAccount.email, loginAccount.password);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(UNAUTHORIZED).body(e.getMessage());
         }
@@ -37,10 +37,10 @@ public class SecurityHelper {
      * Caching the result will improve the speed by a lot since there will be probably multiple requests from the same
      * user in a defined period of time.
      * @param token the token that arrives from the request sent by the client
-     * @return the ID of the user that has made the request
+     * @return the ID of the account that has made the request
      */
     @Cacheable(value = Constants.TOKENS, unless = "#result == null")
-    public Long extractUserId(String token) {
-        return jwtAuthenticationHelper.extractUserIdFromToken(token);
+    public Long extractAccountId(String token) {
+        return jwtAuthenticationHelper.extractAccountIdFromToken(token);
     }
 }

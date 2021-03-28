@@ -1,6 +1,6 @@
 package com.bok.parent.internal;
 
-import com.bok.parent.repository.UserRepository;
+import com.bok.parent.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class InternalUserController {
 
     @Autowired
-    UserRepository userRepository;
+    AccountRepository accountRepository;
 
 }

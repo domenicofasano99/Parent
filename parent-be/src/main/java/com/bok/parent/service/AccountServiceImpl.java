@@ -1,8 +1,8 @@
 package com.bok.parent.service;
 
-import com.bok.parent.dto.LoginUser;
-import com.bok.parent.helper.UserHelper;
-import com.bok.parent.model.User;
+import com.bok.parent.dto.RegisterAccount;
+import com.bok.parent.helper.AccountHelper;
+import com.bok.parent.model.Account;
 import com.bok.parent.utils.JWTAuthenticationHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +10,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements UserService {
+public class AccountServiceImpl implements AccountService {
 
     @Autowired
     JWTAuthenticationHelper jwtAuthenticationHelper;
+
     @Autowired
-    private UserHelper userHelper;
+    private AccountHelper accountHelper;
 
     @Override
-    public User register(LoginUser loginUser) {
-        return userHelper.register(loginUser);
+    public Account register(RegisterAccount registerAccount) {
+        return accountHelper.register(registerAccount);
     }
 }
