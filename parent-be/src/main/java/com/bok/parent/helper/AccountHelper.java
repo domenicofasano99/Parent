@@ -96,14 +96,15 @@ public class AccountHelper {
         log.info("Notifying services about the account {} creation", account);
         KryptoAccountCreationMessage kryptoMessage = new KryptoAccountCreationMessage();
         kryptoMessage.accountId = account.getId();
-        TemporaryUser userData = temporaryUserRepository.findByAccount_Id(account.getId()).orElseThrow(() -> new RuntimeException("Couldn't find account " + account));
+        TemporaryUser userData = temporaryUserRepository.findByAccount(account).orElseThrow(() -> new RuntimeException("Couldn't find account " + account.getId()));
         kryptoMessage.email = account.getEmail();
         kryptoMessage.name = userData.getName();
         kryptoMessage.surname = userData.getSurname();
 
         messageHelper.send(kryptoMessage);
-
         //here bank should be notified about the creation of the user
+
+        temporaryUserRepository.deleteByAccount_Id(account.getId());
     }
 
     @Transactional
@@ -122,7 +123,6 @@ public class AccountHelper {
         account.setEnabled(true);
         accountRepository.save(account);
         log.info("Successfully verified account {}", account);
-        temporaryUserRepository.deleteByAccount_Id(account.getId());
         accountConfirmationTokenRepository.delete(token);
         notifyServices(account);
 
