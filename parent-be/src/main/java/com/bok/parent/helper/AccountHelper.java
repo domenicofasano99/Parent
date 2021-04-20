@@ -5,11 +5,11 @@ import com.bok.parent.dto.RegisterAccount;
 import com.bok.parent.exception.EmailAlreadyExistsException;
 import com.bok.parent.message.KryptoAccountCreationMessage;
 import com.bok.parent.model.Account;
-import com.bok.parent.model.AccountConfirmationToken;
-import com.bok.parent.model.TemporaryUserData;
+import com.bok.parent.model.ConfirmationToken;
+import com.bok.parent.model.TemporaryUser;
 import com.bok.parent.repository.AccountConfirmationTokenRepository;
 import com.bok.parent.repository.AccountRepository;
-import com.bok.parent.repository.TemporaryUserDataRepository;
+import com.bok.parent.repository.TemporaryUserRepository;
 import com.bok.parent.utils.CryptoUtils;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ public class AccountHelper {
     AccountConfirmationTokenRepository accountConfirmationTokenRepository;
 
     @Autowired
-    TemporaryUserDataRepository temporaryUserDataRepository;
+    TemporaryUserRepository temporaryUserRepository;
 
     @Autowired
     CryptoUtils cryptoUtils;
@@ -40,7 +40,7 @@ public class AccountHelper {
     @Autowired
     MessageHelper messageHelper;
 
-    public Account register(RegisterAccount registerAccount) {
+    public String register(RegisterAccount registerAccount) {
         Preconditions.checkArgument(Objects.nonNull(registerAccount.password));
         Preconditions.checkArgument(Objects.nonNull(registerAccount.email));
         Preconditions.checkArgument(Objects.nonNull(registerAccount.name));
@@ -57,26 +57,27 @@ public class AccountHelper {
         account = accountRepository.save(account);
         saveTemporaryUserData(account, registerAccount.name, registerAccount.surname, null);
         sendAccountConfirmationEmail(account);
-        return account;
+        return "registered";
     }
 
     private void sendAccountConfirmationEmail(Account account) {
-        AccountConfirmationToken token = new AccountConfirmationToken(account);
-
+        ConfirmationToken confirmationToken = new ConfirmationToken(account);
+        accountConfirmationTokenRepository.save(confirmationToken);
         EmailMessage emailMessage = new EmailMessage();
         emailMessage.to = account.getEmail();
         emailMessage.subject = "BOK Account Verification";
-        emailMessage.text = "Click on the link to verify your BOK account: https://bok.faraone.ovh:8082/confirm?token=" + token.getConfirmationToken();
+        emailMessage.text = "Click on the link to verify your BOK account: https://bok.faraone.ovh:8082/confirm?token=" + confirmationToken.getConfirmationToken();
 
         messageHelper.send(emailMessage);
     }
 
     private void saveTemporaryUserData(Account account, String name, String surname, Date birthdate) {
-        TemporaryUserData t = new TemporaryUserData();
-        t.setAccount(account);
-        t.setName(name);
-        t.setSurname(surname);
-        t.setBirthDate(birthdate);
+        TemporaryUser temporaryUser = new TemporaryUser();
+        temporaryUser.setAccount(account);
+        temporaryUser.setName(name);
+        temporaryUser.setSurname(surname);
+        temporaryUser.setBirthDate(birthdate);
+        temporaryUserRepository.save(temporaryUser);
     }
 
 
@@ -91,7 +92,7 @@ public class AccountHelper {
     private void notifyServices(Account account) {
         KryptoAccountCreationMessage kryptoMessage = new KryptoAccountCreationMessage();
         kryptoMessage.accountId = account.getId();
-        TemporaryUserData userData = temporaryUserDataRepository.findByAccount_Id(account.getId());
+        TemporaryUser userData = temporaryUserRepository.findByAccount_Id(account.getId());
         kryptoMessage.email = account.getEmail();
         kryptoMessage.name = userData.getName();
         kryptoMessage.surname = userData.getSurname();
@@ -103,7 +104,7 @@ public class AccountHelper {
 
     public String confirmAccount(String accountConfirmationToken) {
         Preconditions.checkArgument(Objects.nonNull(accountConfirmationToken));
-        AccountConfirmationToken token = accountConfirmationTokenRepository.findByConfirmationToken(accountConfirmationToken);
+        ConfirmationToken token = accountConfirmationTokenRepository.findByConfirmationToken(accountConfirmationToken);
         Preconditions.checkArgument(Objects.nonNull(token));
 
         Account account = accountRepository.findByEmail(token.getAccount().getEmail()).orElseThrow(() -> new RuntimeException("Error while activating you account, contact customer care"));

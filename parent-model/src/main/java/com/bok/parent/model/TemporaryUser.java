@@ -12,7 +12,7 @@ import java.util.Date;
 
 
 @Entity
-public class TemporaryUserData {
+public class TemporaryUser {
 
     @Id
     private Long id;
@@ -30,10 +30,10 @@ public class TemporaryUserData {
     @JoinColumn(nullable = false, name = "account_id")
     private Account account;
 
-    public TemporaryUserData() {
+    public TemporaryUser() {
     }
 
-    public TemporaryUserData(String name, String surname, Date birthDate) {
+    public TemporaryUser(String name, String surname, Date birthDate) {
         this.name = name;
         this.surname = surname;
         this.birthDate = birthDate;

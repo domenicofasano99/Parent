@@ -15,7 +15,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-public class AccountConfirmationToken {
+public class ConfirmationToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,11 +31,11 @@ public class AccountConfirmationToken {
     @JoinColumn(nullable = false, name = "account_id")
     private Account account;
 
-    public AccountConfirmationToken() {
+    public ConfirmationToken() {
         //hibernate
     }
 
-    public AccountConfirmationToken(Account account) {
+    public ConfirmationToken(Account account) {
         this.account = account;
         createdDate = Instant.now();
         confirmationToken = UUID.randomUUID().toString();

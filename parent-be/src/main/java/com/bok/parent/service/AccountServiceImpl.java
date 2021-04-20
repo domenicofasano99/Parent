@@ -19,7 +19,7 @@ public class AccountServiceImpl implements AccountService {
     private AccountHelper accountHelper;
 
     @Override
-    public Account register(RegisterAccount registerAccount) {
+    public String register(RegisterAccount registerAccount) {
         return accountHelper.register(registerAccount);
     }
 

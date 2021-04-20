@@ -28,7 +28,7 @@ public class AuthenticationController {
 
 
     @PostMapping("/register")
-    public Account register(@RequestBody RegisterAccount registerAccount) {
+    public String register(@RequestBody RegisterAccount registerAccount) {
         return accountService.register(registerAccount);
     }
 
