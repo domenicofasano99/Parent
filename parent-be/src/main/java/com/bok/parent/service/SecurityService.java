@@ -1,11 +1,11 @@
 package com.bok.parent.service;
 
-import com.bok.parent.dto.LoginAccount;
+import com.bok.parent.dto.AccountLoginDTO;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface SecurityService {
-    Object login(LoginAccount loginAccount);
+    Object login(AccountLoginDTO accountLoginDTO);
 
     Long extractAccountId(String token);
 }

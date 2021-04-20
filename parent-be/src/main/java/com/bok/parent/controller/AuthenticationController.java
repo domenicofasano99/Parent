@@ -1,7 +1,7 @@
 package com.bok.parent.controller;
 
-import com.bok.parent.dto.LoginAccount;
-import com.bok.parent.dto.RegisterAccount;
+import com.bok.parent.dto.AccountLoginDTO;
+import com.bok.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +21,14 @@ public class AuthenticationController {
     SecurityService securityService;
 
     @PostMapping("/login")
-    public Object login(@RequestBody LoginAccount user) {
+    public Object login(@RequestBody AccountLoginDTO user) {
         return securityService.login(user);
     }
 
 
     @PostMapping("/register")
-    public String register(@RequestBody RegisterAccount registerAccount) {
-        return accountService.register(registerAccount);
+    public String register(@RequestBody AccountRegistrationDTO accountRegistrationDTO) {
+        return accountService.register(accountRegistrationDTO);
     }
 
     @GetMapping("/verify")

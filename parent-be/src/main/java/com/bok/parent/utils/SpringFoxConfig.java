@@ -26,11 +26,11 @@ public class SpringFoxConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfo(
-                "My REST API",
-                "Some custom description of API.",
-                "API TOS",
+                "Parent REST API",
+                "Account management REST API",
+                "1.0",
                 "Terms of service",
-                new Contact("John Doe", "www.example.com", "myeaddress@company.com"),
+                new Contact("BOK", "bok@faraone.ovh", "bok@faraone.ovh"),
                 "License of API", "API license URL", Collections.emptyList());
     }
 }

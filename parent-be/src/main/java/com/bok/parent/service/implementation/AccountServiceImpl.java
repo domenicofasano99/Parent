@@ -1,8 +1,9 @@
-package com.bok.parent.service;
+package com.bok.parent.service.implementation;
 
-import com.bok.parent.dto.RegisterAccount;
+import com.bok.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.helper.AccountHelper;
-import com.bok.parent.utils.JWTAuthenticationHelper;
+import com.bok.parent.service.AccountService;
+import com.bok.parent.helper.JWTAuthenticationHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,8 @@ public class AccountServiceImpl implements AccountService {
     private AccountHelper accountHelper;
 
     @Override
-    public String register(RegisterAccount registerAccount) {
-        return accountHelper.register(registerAccount);
+    public String register(AccountRegistrationDTO accountRegistrationDTO) {
+        return accountHelper.register(accountRegistrationDTO);
     }
 
     @Override

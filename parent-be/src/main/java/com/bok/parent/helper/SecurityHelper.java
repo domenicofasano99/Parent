@@ -1,8 +1,7 @@
 package com.bok.parent.helper;
 
-import com.bok.parent.dto.LoginAccount;
+import com.bok.parent.dto.AccountLoginDTO;
 import com.bok.parent.utils.Constants;
-import com.bok.parent.utils.JWTAuthenticationHelper;
 import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,11 +19,11 @@ public class SecurityHelper {
     @Autowired
     JWTAuthenticationHelper jwtAuthenticationHelper;
 
-    public Object login(LoginAccount loginAccount) {
-        Preconditions.checkArgument(Objects.nonNull(loginAccount.password));
-        Preconditions.checkArgument(Objects.nonNull(loginAccount.email));
+    public Object login(AccountLoginDTO accountLoginDTO) {
+        Preconditions.checkArgument(Objects.nonNull(accountLoginDTO.password));
+        Preconditions.checkArgument(Objects.nonNull(accountLoginDTO.email));
         try {
-            return jwtAuthenticationHelper.login(loginAccount.email, loginAccount.password);
+            return jwtAuthenticationHelper.login(accountLoginDTO.email, accountLoginDTO.password);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(UNAUTHORIZED).body(e.getMessage());
         }

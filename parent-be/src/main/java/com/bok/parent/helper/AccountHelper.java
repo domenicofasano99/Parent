@@ -1,7 +1,7 @@
 package com.bok.parent.helper;
 
 import com.bok.integration.EmailMessage;
-import com.bok.parent.dto.RegisterAccount;
+import com.bok.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.exception.EmailAlreadyExistsException;
 import com.bok.parent.message.KryptoAccountCreationMessage;
 import com.bok.parent.model.Account;
@@ -10,10 +10,13 @@ import com.bok.parent.model.TemporaryUser;
 import com.bok.parent.repository.AccountConfirmationTokenRepository;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.TemporaryUserRepository;
+import com.bok.parent.utils.Constants;
 import com.bok.parent.utils.CryptoUtils;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -41,23 +44,27 @@ public class AccountHelper {
     @Autowired
     MessageHelper messageHelper;
 
-    @Transactional
-    public String register(RegisterAccount registerAccount) {
-        Preconditions.checkArgument(Objects.nonNull(registerAccount.password));
-        Preconditions.checkArgument(Objects.nonNull(registerAccount.email));
-        Preconditions.checkArgument(Objects.nonNull(registerAccount.name));
-        Preconditions.checkArgument(Objects.nonNull(registerAccount.surname));
+    @Value("${server.baseUrl}")
+    String baseUrl;
 
-        if (accountRepository.existsByEmail(registerAccount.email)) {
+    @Transactional
+    public String register(AccountRegistrationDTO accountRegistrationDTO) {
+        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.password));
+        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.email));
+        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.name));
+        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.surname));
+        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.birthdate));
+
+        if (accountRepository.existsByEmail(accountRegistrationDTO.email)) {
             throw new EmailAlreadyExistsException("Account already registered.");
         }
         Account account = new Account();
-        account.setEmail(registerAccount.email);
-        account.setPassword(cryptoUtils.encryptPassword(registerAccount.password));
+        account.setEmail(accountRegistrationDTO.email);
+        account.setPassword(cryptoUtils.encryptPassword(accountRegistrationDTO.password));
         account.setEnabled(false);
         account.setRole(Account.Role.USER);
         account = accountRepository.save(account);
-        saveTemporaryUserData(account, registerAccount.name, registerAccount.surname, null);
+        saveTemporaryUserData(account, accountRegistrationDTO.name, accountRegistrationDTO.surname, accountRegistrationDTO.birthdate);
         sendAccountConfirmationEmail(account);
         return "registered";
     }
@@ -68,7 +75,9 @@ public class AccountHelper {
         EmailMessage emailMessage = new EmailMessage();
         emailMessage.to = account.getEmail();
         emailMessage.subject = "BOK Account Verification";
-        emailMessage.text = "Click on the link to verify your BOK account: \n http://dev.faraone.ovh:8082/verify?verificationToken=" + confirmationToken.getConfirmationToken();
+        emailMessage.text = "Click on the link to verify your BOK account: \n" +
+                baseUrl + "/verify?verificationToken=" + confirmationToken.getConfirmationToken() +
+                "\n\nThe BOK Team.";
 
         messageHelper.send(emailMessage);
     }
@@ -83,11 +92,11 @@ public class AccountHelper {
         temporaryUserRepository.save(temporaryUser);
     }
 
-
     public Optional<Account> findByEmail(String email) {
         return accountRepository.findByEmail(email);
     }
 
+    @Cacheable(value = Constants.IDS, unless = "#result == null")
     public Long findIdByEmail(String email) {
         return accountRepository.findIdByEmail(email);
     }
