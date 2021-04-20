@@ -113,8 +113,9 @@ public class AccountHelper {
 
         Optional<Account> accountOptional = accountRepository.findByEmail(token.getAccount().getEmail());
         if (!accountOptional.isPresent()) {
+            log.warn("Couldn't find token {} related account.", accountConfirmationToken);
             accountConfirmationTokenRepository.delete(token);
-            throw new RuntimeException("Error while activating you account, try registering again or contact customer care");
+            throw new RuntimeException("Error while activating you account, try registering again or contact customer care.");
         }
         Account account = accountOptional.get();
         account.setEnabled(true);

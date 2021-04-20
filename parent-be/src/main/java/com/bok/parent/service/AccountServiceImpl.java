@@ -24,6 +24,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public String verify(String verificationToken) {
+        log.info("Verifying user with token{}", verificationToken);
         return accountHelper.verify(verificationToken);
     }
 }
