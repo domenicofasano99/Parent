@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,6 +41,7 @@ public class AccountHelper {
     @Autowired
     MessageHelper messageHelper;
 
+    @Transactional
     public String register(RegisterAccount registerAccount) {
         Preconditions.checkArgument(Objects.nonNull(registerAccount.password));
         Preconditions.checkArgument(Objects.nonNull(registerAccount.email));
@@ -71,6 +73,7 @@ public class AccountHelper {
         messageHelper.send(emailMessage);
     }
 
+    @Transactional
     private void saveTemporaryUserData(Account account, String name, String surname, Date birthdate) {
         TemporaryUser temporaryUser = new TemporaryUser();
         temporaryUser.setAccount(account);
@@ -102,6 +105,7 @@ public class AccountHelper {
         //here bank should be notified about the creation of the user
     }
 
+    @Transactional
     public String verify(String accountConfirmationToken) {
         Preconditions.checkArgument(Objects.nonNull(accountConfirmationToken));
         ConfirmationToken token = accountConfirmationTokenRepository.findByConfirmationToken(accountConfirmationToken);
