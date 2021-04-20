@@ -29,6 +29,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(
             new AntPathRequestMatcher("/login"),
             new AntPathRequestMatcher("/register"),
+            new AntPathRequestMatcher("/verify"),
             new AntPathRequestMatcher("/authenticate"),
             new AntPathRequestMatcher("/register"),
             new AntPathRequestMatcher("/swagger-ui/**"),
