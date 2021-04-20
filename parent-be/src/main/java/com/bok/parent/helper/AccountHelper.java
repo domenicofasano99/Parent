@@ -107,9 +107,16 @@ public class AccountHelper {
         ConfirmationToken token = accountConfirmationTokenRepository.findByConfirmationToken(accountConfirmationToken);
         Preconditions.checkArgument(Objects.nonNull(token));
 
-        Account account = accountRepository.findByEmail(token.getAccount().getEmail()).orElseThrow(() -> new RuntimeException("Error while activating you account, contact customer care"));
+        Optional<Account> accountOptional = accountRepository.findByEmail(token.getAccount().getEmail());
+        if (!accountOptional.isPresent()) {
+            accountConfirmationTokenRepository.delete(token);
+            throw new RuntimeException("Error while activating you account, try registering again or contact customer care");
+        }
+        Account account = accountOptional.get();
         account.setEnabled(true);
         accountRepository.save(account);
+        temporaryUserRepository.deleteByAccount_Id(account.getId());
+        accountConfirmationTokenRepository.delete(token);
         notifyServices(account);
 
         return "Your account has been confirmed, you can now login to the user area.";
