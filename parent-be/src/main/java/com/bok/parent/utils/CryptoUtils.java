@@ -18,8 +18,10 @@ public class CryptoUtils {
 
     @Autowired
     JWTEncryption jwtEncryption;
+
     @Autowired
     PasswordEncryption passwordEncryption;
+
     @Value("${jwt.security.secret}")
     private String jwtSecret;
 

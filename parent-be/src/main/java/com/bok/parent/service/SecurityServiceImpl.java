@@ -17,7 +17,7 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    public Long extractAccountId(String token){
+    public Long extractAccountId(String token) {
         return securityHelper.extractAccountId(token);
     }
 }
