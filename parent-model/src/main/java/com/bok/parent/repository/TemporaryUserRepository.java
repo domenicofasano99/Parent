@@ -4,9 +4,11 @@ import com.bok.parent.model.TemporaryUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 
+import java.util.Optional;
+
 public interface TemporaryUserRepository extends JpaRepository<TemporaryUser, Long> {
 
-    TemporaryUser findByAccount_Id(Long accountId);
+    Optional<TemporaryUser> findByAccount_Id(Long accountId);
 
 
     @Modifying

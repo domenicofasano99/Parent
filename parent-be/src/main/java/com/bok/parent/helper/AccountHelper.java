@@ -74,7 +74,7 @@ public class AccountHelper {
     }
 
     @Transactional
-    private void saveTemporaryUserData(Account account, String name, String surname, Date birthdate) {
+    public void saveTemporaryUserData(Account account, String name, String surname, Date birthdate) {
         TemporaryUser temporaryUser = new TemporaryUser();
         temporaryUser.setAccount(account);
         temporaryUser.setName(name);
@@ -93,9 +93,10 @@ public class AccountHelper {
     }
 
     private void notifyServices(Account account) {
+        log.info("Notifying services about the account {} creation", account);
         KryptoAccountCreationMessage kryptoMessage = new KryptoAccountCreationMessage();
         kryptoMessage.accountId = account.getId();
-        TemporaryUser userData = temporaryUserRepository.findByAccount_Id(account.getId());
+        TemporaryUser userData = temporaryUserRepository.findByAccount_Id(account.getId()).orElseThrow(() -> new RuntimeException("Couldn't find account " + account));
         kryptoMessage.email = account.getEmail();
         kryptoMessage.name = userData.getName();
         kryptoMessage.surname = userData.getSurname();
@@ -120,6 +121,7 @@ public class AccountHelper {
         Account account = accountOptional.get();
         account.setEnabled(true);
         accountRepository.save(account);
+        log.info("Successfully verified account {}", account);
         temporaryUserRepository.deleteByAccount_Id(account.getId());
         accountConfirmationTokenRepository.delete(token);
         notifyServices(account);
