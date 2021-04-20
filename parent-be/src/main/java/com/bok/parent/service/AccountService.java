@@ -8,5 +8,5 @@ import org.springframework.stereotype.Service;
 public interface AccountService {
     String register(RegisterAccount registerAccount);
 
-    String confirm(String confirmationToken);
+    String verify(String verificationToken);
 }

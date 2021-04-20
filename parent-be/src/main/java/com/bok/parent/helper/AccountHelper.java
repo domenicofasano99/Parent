@@ -66,7 +66,7 @@ public class AccountHelper {
         EmailMessage emailMessage = new EmailMessage();
         emailMessage.to = account.getEmail();
         emailMessage.subject = "BOK Account Verification";
-        emailMessage.text = "Click on the link to verify your BOK account: https://bok.faraone.ovh:8082/confirm?token=" + confirmationToken.getConfirmationToken();
+        emailMessage.text = "Click on the link to verify your BOK account: http://bok.faraone.ovh:8082/verify?token=" + confirmationToken.getConfirmationToken();
 
         messageHelper.send(emailMessage);
     }
@@ -102,7 +102,7 @@ public class AccountHelper {
         //here bank should be notified about the creation of the user
     }
 
-    public String confirmAccount(String accountConfirmationToken) {
+    public String verify(String accountConfirmationToken) {
         Preconditions.checkArgument(Objects.nonNull(accountConfirmationToken));
         ConfirmationToken token = accountConfirmationTokenRepository.findByConfirmationToken(accountConfirmationToken);
         Preconditions.checkArgument(Objects.nonNull(token));

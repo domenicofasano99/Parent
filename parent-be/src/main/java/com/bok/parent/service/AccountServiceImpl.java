@@ -2,7 +2,6 @@ package com.bok.parent.service;
 
 import com.bok.parent.dto.RegisterAccount;
 import com.bok.parent.helper.AccountHelper;
-import com.bok.parent.model.Account;
 import com.bok.parent.utils.JWTAuthenticationHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String confirm(String confirmationToken) {
-        return accountHelper.confirmAccount(confirmationToken);
+    public String verify(String verificationToken) {
+        return accountHelper.verify(verificationToken);
     }
 }

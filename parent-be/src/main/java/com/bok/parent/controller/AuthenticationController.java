@@ -2,7 +2,6 @@ package com.bok.parent.controller;
 
 import com.bok.parent.dto.LoginAccount;
 import com.bok.parent.dto.RegisterAccount;
-import com.bok.parent.model.Account;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +31,8 @@ public class AuthenticationController {
         return accountService.register(registerAccount);
     }
 
-    @GetMapping("/confirm")
-    public String confirm(@RequestParam("token") String confirmationToken) {
-        return accountService.confirm(confirmationToken);
+    @GetMapping("/verify")
+    public String verify(@RequestParam("verificationToken") String verificationToken) {
+        return accountService.verify(verificationToken);
     }
 }
