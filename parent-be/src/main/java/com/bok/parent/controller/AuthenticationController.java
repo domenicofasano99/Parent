@@ -1,5 +1,7 @@
 package com.bok.parent.controller;
 
+import com.bok.parent.audit.LoginAudit;
+import com.bok.parent.audit.RegisterAudit;
 import com.bok.parent.dto.AccountLoginDTO;
 import com.bok.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.service.AccountService;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 public class AuthenticationController {
 
@@ -20,14 +24,15 @@ public class AuthenticationController {
     @Autowired
     SecurityService securityService;
 
+    @LoginAudit
     @PostMapping("/login")
-    public Object login(@RequestBody AccountLoginDTO user) {
+    public Object login(@RequestBody AccountLoginDTO user, HttpServletRequest request) {
         return securityService.login(user);
     }
 
-
+    @RegisterAudit
     @PostMapping("/register")
-    public String register(@RequestBody AccountRegistrationDTO accountRegistrationDTO) {
+    public String register(@RequestBody AccountRegistrationDTO accountRegistrationDTO, HttpServletRequest request) {
         return accountService.register(accountRegistrationDTO);
     }
 
