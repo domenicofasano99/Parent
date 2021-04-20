@@ -1,8 +1,8 @@
 package com.bok.parent.security;
 
+import com.bok.parent.exception.TokenAuthenticationException;
 import com.bok.parent.helper.JWTAuthenticationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
@@ -34,6 +34,6 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
                                 .password(u.getPassword())
                                 .roles(u.getRole().toString())
                                 .build()))
-                .orElseThrow(() -> new BadCredentialsException("Invalid authentication token=" + token));
+                .orElseThrow(() -> new TokenAuthenticationException("Invalid authentication token=" + token));
     }
 }

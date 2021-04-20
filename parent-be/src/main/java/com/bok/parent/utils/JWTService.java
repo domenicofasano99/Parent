@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.bok.parent.exception.BokException;
+import com.bok.parent.exception.TokenAuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class JWTService {
                 .sign(algorithm));
     }
 
-    public Map<String, Object> verify(String token) throws BokException {
+    public Map<String, Object> verify(String token) {
         JWTVerifier verifier = JWT.require(algorithm)
                 .build();
         try {
@@ -52,7 +53,7 @@ public class JWTService {
                     .stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().as(Object.class)));
         } catch (Exception e) {
-            throw new BokException("TOKEN_VERIFICATION_EXCEPTION");
+            throw new TokenAuthenticationException("TOKEN_VERIFICATION_EXCEPTION");
         }
     }
 }

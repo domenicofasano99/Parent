@@ -46,7 +46,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final RequestMatcher PROTECTED_URLS = new NegatedRequestMatcher(PUBLIC_URLS);
 
     @Autowired
-    private TokenAuthenticationProvider authenticationProvider;
+    TokenAuthenticationProvider authenticationProvider;
+
+    @Autowired
+    TokenAuthenticationFilter tokenAuthenticationFilter;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
@@ -94,8 +97,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    FilterRegistrationBean disableAutoRegistration(TokenAuthenticationFilter filter) {
-        FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+    FilterRegistrationBean disableAutoRegistration() {
+        FilterRegistrationBean registration = new FilterRegistrationBean(tokenAuthenticationFilter);
         registration.setEnabled(false);
         return registration;
     }
