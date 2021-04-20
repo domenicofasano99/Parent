@@ -68,7 +68,7 @@ public class AccountHelper {
         EmailMessage emailMessage = new EmailMessage();
         emailMessage.to = account.getEmail();
         emailMessage.subject = "BOK Account Verification";
-        emailMessage.text = "Click on the link to verify your BOK account: http://dev.faraone.ovh:8082/verify?verificationToken=" + confirmationToken.getConfirmationToken();
+        emailMessage.text = "Click on the link to verify your BOK account: \n http://dev.faraone.ovh:8082/verify?verificationToken=" + confirmationToken.getConfirmationToken();
 
         messageHelper.send(emailMessage);
     }

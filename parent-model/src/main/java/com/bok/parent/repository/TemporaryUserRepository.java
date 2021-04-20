@@ -11,7 +11,6 @@ public interface TemporaryUserRepository extends JpaRepository<TemporaryUser, Lo
 
     Optional<TemporaryUser> findByAccount(Account account);
 
-
     @Modifying
     void deleteByAccount_Id(Long id);
 }
