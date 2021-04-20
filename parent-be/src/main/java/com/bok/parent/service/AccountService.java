@@ -7,4 +7,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface AccountService {
     Account register(RegisterAccount registerAccount);
+
+    String confirm(String confirmationToken);
 }

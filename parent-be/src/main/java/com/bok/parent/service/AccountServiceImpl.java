@@ -22,4 +22,9 @@ public class AccountServiceImpl implements AccountService {
     public Account register(RegisterAccount registerAccount) {
         return accountHelper.register(registerAccount);
     }
+
+    @Override
+    public String confirm(String confirmationToken) {
+        return accountHelper.confirmAccount(confirmationToken);
+    }
 }
