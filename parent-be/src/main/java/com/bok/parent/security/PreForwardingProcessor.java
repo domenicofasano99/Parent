@@ -58,7 +58,7 @@ public class PreForwardingProcessor extends ZuulFilter {
         return null;
     }
 
-    @Async
+    //@Async
     public void auditRequest(HttpServletRequest request, Long accountId) {
         AuditLog auditLog = new AuditLog();
         auditLog.setIpAddress(request.getRemoteAddr());
