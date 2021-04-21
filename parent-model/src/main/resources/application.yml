@@ -1,6 +1,6 @@
 server:
   port: 8080
-  baseUrl: http://dev.faraone.ovh:81/
+  baseUrl: http://dev.faraone.ovh:81
 
 active-mq:
   krypto-users: krypto-accounts
