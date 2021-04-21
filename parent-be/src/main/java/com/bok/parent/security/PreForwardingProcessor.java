@@ -1,13 +1,11 @@
 package com.bok.parent.security;
 
-import com.bok.parent.model.AuditLog;
-import com.bok.parent.repository.AuditLogRepository;
+import com.bok.parent.audit.AuditHelper;
 import com.bok.parent.service.SecurityService;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +23,7 @@ public class PreForwardingProcessor extends ZuulFilter {
     SecurityService securityService;
 
     @Autowired
-    AuditLogRepository auditLogRepository;
+    AuditHelper auditHelper;
 
     @Override
     public String filterType() {
@@ -52,18 +50,8 @@ public class PreForwardingProcessor extends ZuulFilter {
         Map<String, List<String>> queryParam = new HashMap<>();
         queryParam.put("accountId", Collections.singletonList(accountId.toString()));
         ctx.setRequestQueryParams(queryParam);
-        auditRequest(request, accountId);
-        //log.info(String.valueOf(ctx.getRequestQueryParams()));
-        //log.info(String.format("%s request to %s %s", request.getMethod(), request.getRequestURL().toString(), request.getQueryString()));
+        auditHelper.auditRequest(request, accountId);
         return null;
     }
 
-    //@Async
-    public void auditRequest(HttpServletRequest request, Long accountId) {
-        AuditLog auditLog = new AuditLog();
-        auditLog.setIpAddress(request.getRemoteAddr());
-        auditLog.setAccountId(accountId);
-        auditLog.setMethodName(request.getRequestURL().toString());
-        auditLogRepository.save(auditLog);
-    }
 }
