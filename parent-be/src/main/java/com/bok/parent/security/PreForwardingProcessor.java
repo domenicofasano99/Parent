@@ -50,7 +50,7 @@ public class PreForwardingProcessor extends ZuulFilter {
         Map<String, List<String>> queryParam = new HashMap<>();
         queryParam.put("accountId", Collections.singletonList(accountId.toString()));
         ctx.setRequestQueryParams(queryParam);
-        auditHelper.auditRequest(request, accountId);
+        auditHelper.auditGatewayRequest(request, accountId);
         return null;
     }
 

@@ -2,7 +2,6 @@ package com.bok.parent.audit;
 
 import com.bok.parent.dto.AccountLoginDTO;
 import com.bok.parent.dto.AccountRegistrationDTO;
-import com.bok.parent.model.AuditLog;
 import com.bok.parent.repository.AuditLogRepository;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,28 +19,21 @@ public class AuditAspect {
     @Autowired
     AuditLogRepository auditLogRepository;
 
+    @Autowired
+    AuditHelper auditHelper;
+
     @Before("@annotation(LoginAudit)")
     public void loginDetails(JoinPoint joinPoint) {
         HttpServletRequest req = (HttpServletRequest) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof HttpServletRequest).findFirst().get();
         AccountLoginDTO login = (AccountLoginDTO) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof AccountLoginDTO).findFirst().get();
-
-        AuditLog audit = new AuditLog();
-        audit.setIpAddress(req.getRemoteAddr());
-        audit.setEmail(login.email);
-        audit.setMethodName("login");
-        auditLogRepository.save(audit);
+        auditHelper.auditLoginRequest(req.getRemoteAddr(), login.email);
     }
 
     @Before("@annotation(RegisterAudit)")
     public void registerDetails(JoinPoint joinPoint) {
         HttpServletRequest req = (HttpServletRequest) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof HttpServletRequest).findFirst().get();
         AccountRegistrationDTO registration = (AccountRegistrationDTO) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof AccountRegistrationDTO).findFirst().get();
-
-        AuditLog audit = new AuditLog();
-        audit.setIpAddress(req.getRemoteAddr());
-        audit.setEmail(registration.email);
-        audit.setMethodName("register");
-        auditLogRepository.save(audit);
+        auditHelper.auditRegistrationRequest(req.getRemoteAddr(), registration.email);
     }
 
 }
