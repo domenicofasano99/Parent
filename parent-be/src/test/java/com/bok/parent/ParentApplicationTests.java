@@ -12,7 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -22,7 +25,9 @@ import static org.junit.Assert.assertTrue;
 
 @SpringBootTest
 @Slf4j
-class ParentApplicationTests {
+@ActiveProfiles("test")
+public class ParentApplicationTests {
+
     public static final Faker faker = new Faker();
 
     @Autowired
@@ -45,7 +50,6 @@ class ParentApplicationTests {
     public void clearAll() {
         modelTestUtil.clearAll();
     }
-
 
     @Test
     public void accountCreation_butNotEnabledTest() {

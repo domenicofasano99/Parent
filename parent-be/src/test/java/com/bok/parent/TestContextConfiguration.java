@@ -6,10 +6,12 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.jms.ConnectionFactory;
 
 @TestConfiguration
+@ActiveProfiles("test")
 public class TestContextConfiguration {
     @Bean
     public KryptoUserMessageProducer messageProducer() {
@@ -20,7 +22,6 @@ public class TestContextConfiguration {
     public JmsTemplate jmsTemplate() {
         JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setConnectionFactory(connectionFactory());
-        //jmsTemplate.setPubSubDomain(true);  // enable for Pub Sub to topic. Not Required for Queue.
         return jmsTemplate;
     }
 
@@ -28,7 +29,6 @@ public class TestContextConfiguration {
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory());
-        //factory.setPubSubDomain(true);
         return factory;
     }
 
