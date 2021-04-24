@@ -13,7 +13,7 @@ public class SecurityServiceImpl implements SecurityService {
     SecurityHelper securityHelper;
 
     @Override
-    public Object login(AccountLoginDTO accountLoginDTO) {
+    public String login(AccountLoginDTO accountLoginDTO) {
         return securityHelper.login(accountLoginDTO);
     }
 

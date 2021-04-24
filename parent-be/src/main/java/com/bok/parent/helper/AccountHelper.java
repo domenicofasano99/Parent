@@ -96,6 +96,10 @@ public class AccountHelper {
         return accountRepository.findByEmail(email);
     }
 
+    public Optional<Account> findByEmailAndEnabled(String email) {
+        return accountRepository.findByEmailAndEnabledIsTrue(email);
+    }
+
     @Cacheable(value = Constants.IDS, unless = "#result == null")
     public Long findIdByEmail(String email) {
         return accountRepository.findIdByEmail(email);

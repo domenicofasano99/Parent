@@ -5,13 +5,9 @@ import com.bok.parent.utils.Constants;
 import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
-
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Component
 public class SecurityHelper {
@@ -19,14 +15,11 @@ public class SecurityHelper {
     @Autowired
     JWTAuthenticationHelper jwtAuthenticationHelper;
 
-    public Object login(AccountLoginDTO accountLoginDTO) {
+    public String login(AccountLoginDTO accountLoginDTO) {
         Preconditions.checkArgument(Objects.nonNull(accountLoginDTO.password));
         Preconditions.checkArgument(Objects.nonNull(accountLoginDTO.email));
-        try {
-            return jwtAuthenticationHelper.login(accountLoginDTO.email, accountLoginDTO.password);
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(UNAUTHORIZED).body(e.getMessage());
-        }
+
+        return jwtAuthenticationHelper.login(accountLoginDTO.email, accountLoginDTO.password);
     }
 
     /***

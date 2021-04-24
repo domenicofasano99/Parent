@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface SecurityService {
-    Object login(AccountLoginDTO accountLoginDTO);
+    String login(AccountLoginDTO accountLoginDTO);
 
     Long extractAccountId(String token);
 }
