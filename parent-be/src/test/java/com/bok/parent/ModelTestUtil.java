@@ -3,15 +3,14 @@ package com.bok.parent;
 import com.bok.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.helper.AccountHelper;
 import com.bok.parent.model.Account;
+import com.bok.parent.repository.AccountConfirmationTokenRepository;
 import com.bok.parent.repository.AccountRepository;
+import com.bok.parent.repository.AuditLogRepository;
+import com.bok.parent.repository.TemporaryUserRepository;
 import com.bok.parent.service.AccountService;
 import com.github.javafaker.Faker;
-import com.netflix.discovery.converters.Auto;
-import io.micrometer.core.instrument.step.StepTuple2;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import reactor.util.function.Tuple2;
 
 @Component
 public class ModelTestUtil {
@@ -27,7 +26,16 @@ public class ModelTestUtil {
     @Autowired
     AccountService accountService;
 
-    public Account enableAccount(Account account){
+    @Autowired
+    AuditLogRepository auditLogRepository;
+
+    @Autowired
+    AccountConfirmationTokenRepository accountConfirmationTokenRepository;
+
+    @Autowired
+    TemporaryUserRepository temporaryUserRepository;
+
+    public Account enableAccount(Account account) {
         account.setEnabled(true);
         return accountRepository.save(account);
     }
@@ -45,5 +53,12 @@ public class ModelTestUtil {
         Account account = accountRepository.findByEmail(registrationDTO.email).orElseThrow(RuntimeException::new);
         enableAccount(account);
         return new AccountDetails(email, password);
+    }
+
+    public void clearAll() {
+        auditLogRepository.deleteAll();
+        accountConfirmationTokenRepository.deleteAll();
+        temporaryUserRepository.deleteAll();
+        accountRepository.deleteAll();
     }
 }

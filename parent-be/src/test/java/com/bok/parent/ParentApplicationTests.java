@@ -9,10 +9,10 @@ import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.BadCredentialsException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -39,6 +39,11 @@ class ParentApplicationTests {
 
     @Test
     void contextLoads() {
+    }
+
+    @Before
+    public void clearAll() {
+        modelTestUtil.clearAll();
     }
 
 
@@ -102,7 +107,7 @@ class ParentApplicationTests {
     }
 
     @Test
-    public void loginToUnverifiedAccountTest(){
+    public void loginToUnverifiedAccountTest() {
         AccountDetails credentials = modelTestUtil.createAccountWithCredentials();
         Account account = accountRepository.findByEmail(credentials.email).orElseThrow(RuntimeException::new);
         account.setEnabled(false);

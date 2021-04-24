@@ -28,6 +28,7 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+    database: mysql
 
 zuul:
   routes:
