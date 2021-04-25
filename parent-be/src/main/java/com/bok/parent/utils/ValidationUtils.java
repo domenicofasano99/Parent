@@ -1,6 +1,5 @@
 package com.bok.parent.utils;
 
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 
 @Component

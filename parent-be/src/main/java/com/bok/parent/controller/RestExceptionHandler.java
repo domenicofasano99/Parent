@@ -60,7 +60,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
-    
+
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> handleAllUnhandled(Exception ex) {
         ApiError apiError = new ApiError(INTERNAL_SERVER_ERROR);
