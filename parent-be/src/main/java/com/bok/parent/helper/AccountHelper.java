@@ -3,7 +3,7 @@ package com.bok.parent.helper;
 import com.bok.integration.EmailMessage;
 import com.bok.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.exception.EmailAlreadyExistsException;
-import com.bok.parent.message.AccountCreationMessage;
+import com.bok.integration.AccountCreationMessage;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.ConfirmationToken;
 import com.bok.parent.model.TemporaryUser;
