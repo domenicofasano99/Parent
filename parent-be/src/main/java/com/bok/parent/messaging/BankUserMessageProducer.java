@@ -1,6 +1,6 @@
 package com.bok.parent.messaging;
 
-import com.bok.parent.message.BankAccountCreationMessage;
+import com.bok.parent.message.AccountCreationMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +18,7 @@ public class BankUserMessageProducer {
     private String usersQueue;
 
 
-    public void send(BankAccountCreationMessage userCreationMessage) {
+    public void send(AccountCreationMessage userCreationMessage) {
         try {
             log.info("Attempting Send user creation message to queue: " + usersQueue);
             jmsTemplate.convertAndSend(usersQueue, userCreationMessage);

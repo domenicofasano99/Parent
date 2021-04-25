@@ -1,6 +1,8 @@
 package com.bok.parent.message;
 
-public abstract class AccountMessage {
+import java.io.Serializable;
+
+public class AccountCreationMessage implements Serializable {
     public Long accountId;
     public String name;
     public String surname;

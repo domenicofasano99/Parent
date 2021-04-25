@@ -3,7 +3,7 @@ package com.bok.parent.helper;
 import com.bok.integration.EmailMessage;
 import com.bok.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.exception.EmailAlreadyExistsException;
-import com.bok.parent.message.KryptoAccountCreationMessage;
+import com.bok.parent.message.AccountCreationMessage;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.ConfirmationToken;
 import com.bok.parent.model.TemporaryUser;
@@ -114,15 +114,14 @@ public class AccountHelper {
 
     private void notifyServices(Account account) {
         log.info("Notifying services about the account {} creation", account);
-        KryptoAccountCreationMessage kryptoMessage = new KryptoAccountCreationMessage();
-        kryptoMessage.accountId = account.getId();
+        AccountCreationMessage creationCreationMessage = new AccountCreationMessage();
+        creationCreationMessage.accountId = account.getId();
         TemporaryUser userData = temporaryUserRepository.findByAccount(account).orElseThrow(() -> new RuntimeException("Couldn't find account " + account.getId()));
-        kryptoMessage.email = account.getEmail();
-        kryptoMessage.name = userData.getName();
-        kryptoMessage.surname = userData.getSurname();
+        creationCreationMessage.email = account.getEmail();
+        creationCreationMessage.name = userData.getName();
+        creationCreationMessage.surname = userData.getSurname();
 
-        messageHelper.send(kryptoMessage);
-        //here bank should be notified about the creation of the user
+        messageHelper.send(creationCreationMessage);
 
         temporaryUserRepository.deleteByAccount_Id(account.getId());
     }

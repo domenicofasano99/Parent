@@ -1,8 +1,7 @@
 package com.bok.parent.helper;
 
 import com.bok.integration.EmailMessage;
-import com.bok.parent.message.BankAccountCreationMessage;
-import com.bok.parent.message.KryptoAccountCreationMessage;
+import com.bok.parent.message.AccountCreationMessage;
 import com.bok.parent.messaging.BankUserMessageProducer;
 import com.bok.parent.messaging.EmailMessageProducer;
 import com.bok.parent.messaging.KryptoUserMessageProducer;
@@ -21,12 +20,9 @@ public class MessageHelper {
     @Autowired
     EmailMessageProducer emailMessageProducer;
 
-    public void send(BankAccountCreationMessage userCreationMessage) {
-        bankUserMessageProducer.send(userCreationMessage);
-    }
-
-    public void send(KryptoAccountCreationMessage userCreationMessage) {
-        kryptoUserMessageProducer.send(userCreationMessage);
+    public void send(AccountCreationMessage accountCreationMessage) {
+        kryptoUserMessageProducer.send(accountCreationMessage);
+        bankUserMessageProducer.send(accountCreationMessage);
     }
 
     public void send(EmailMessage emailMessage) {
