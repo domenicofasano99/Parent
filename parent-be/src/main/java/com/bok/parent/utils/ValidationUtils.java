@@ -10,12 +10,16 @@ public class ValidationUtils {
         return EmailValidator.getInstance().isValid(email);
     }
 
+    //fixme fix this
     public Boolean validateName(String name){
-        return name.matches( "[A-Z][a-z]*" );
+        return true;
+        //return name.matches( "[A-Z][a-z]*" );
     }
 
+    //fixme fix this
     public Boolean validateSurname(String surname){
-        return surname.matches( "[A-Z]+([ '-][a-zA-Z]+)*" );
+        return true;
+        //return surname.matches( "[A-Z]+([ '-][a-zA-Z]+)*" );
     }
 
 }
