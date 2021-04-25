@@ -123,4 +123,27 @@ public class ParentApplicationTests {
         assertThrows(WrongCredentialsException.class, () -> securityService.login(loginDTO));
     }
 
+    @Test
+    public void accountWithFakeNameAttempt() {
+        AccountRegistrationDTO registrationDTO = new AccountRegistrationDTO();
+        registrationDTO.name = "Aless34andro";
+        registrationDTO.surname = faker.name().lastName() + ".#";
+        registrationDTO.birthdate = faker.date().birthday();
+        registrationDTO.email = faker.internet().emailAddress();
+        registrationDTO.password = faker.internet().password();
+        assertThrows(IllegalArgumentException.class, () -> accountService.register(registrationDTO));
+    }
+
+    @Test
+    public void accountWithBadEmailAttempt() {
+        AccountRegistrationDTO registrationDTO = new AccountRegistrationDTO();
+        registrationDTO.name = faker.name().name();
+        registrationDTO.surname = faker.name().lastName();
+        registrationDTO.birthdate = faker.date().birthday();
+        registrationDTO.birthdate = faker.date().birthday();
+        registrationDTO.email = "bad_email!ò@@aaaa";
+        registrationDTO.password = faker.internet().password();
+        assertThrows(IllegalArgumentException.class, () -> accountService.register(registrationDTO));
+    }
+
 }

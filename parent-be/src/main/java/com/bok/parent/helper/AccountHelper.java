@@ -12,6 +12,7 @@ import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.TemporaryUserRepository;
 import com.bok.parent.utils.Constants;
 import com.bok.parent.utils.CryptoUtils;
+import com.bok.parent.utils.ValidationUtils;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ public class AccountHelper {
     @Autowired
     MessageHelper messageHelper;
 
+    @Autowired
+    ValidationUtils validationUtils;
+
     @Value("${server.baseUrl}")
     String baseUrl;
 
@@ -51,8 +55,11 @@ public class AccountHelper {
     public String register(AccountRegistrationDTO accountRegistrationDTO) {
         Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.password));
         Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.email));
+        Preconditions.checkArgument(validationUtils.validateEmail(accountRegistrationDTO.email));
         Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.name));
+        Preconditions.checkArgument(validationUtils.validateName(accountRegistrationDTO.name));
         Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.surname));
+        Preconditions.checkArgument(validationUtils.validateSurname(accountRegistrationDTO.surname));
         Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.birthdate));
 
         if (accountRepository.existsByEmail(accountRegistrationDTO.email)) {
