@@ -12,14 +12,12 @@ public class ValidationUtils {
 
     //fixme fix this
     public Boolean validateName(String name) {
-        return true;
-        //return name.matches( "[A-Z][a-z]*" );
+        return name.matches("^[a-zA-Z\\\\s]+");
     }
 
     //fixme fix this
     public Boolean validateSurname(String surname) {
-        return true;
-        //return surname.matches( "[A-Z]+([ '-][a-zA-Z]+)*" );
+        return surname.matches("^[a-zA-Z\\\\s]+");
     }
 
 }

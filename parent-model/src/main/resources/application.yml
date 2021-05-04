@@ -6,7 +6,7 @@ active-mq:
   krypto-users: krypto-accounts
   bank-users: bank-accounts
   broker-url: tcp://activemq:61616
-  emails-queue: emails
+  emails: emails
 spring:
   application:
     name: parent
