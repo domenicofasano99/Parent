@@ -5,8 +5,8 @@ import com.bok.integration.EmailMessage;
 import com.bok.integration.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.exception.EmailAlreadyExistsException;
 import com.bok.parent.model.Account;
+import com.bok.parent.model.AccountInformations;
 import com.bok.parent.model.ConfirmationToken;
-import com.bok.parent.model.TemporaryAccount;
 import com.bok.parent.repository.AccountConfirmationTokenRepository;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.TemporaryUserRepository;
@@ -71,7 +71,7 @@ public class AccountHelper {
         account.setRole(Account.Role.USER);
         account = accountRepository.save(account);
 
-        TemporaryAccount temporaryAccount = new TemporaryAccount(request.name,
+        AccountInformations accountInformations = new AccountInformations(request.name,
                 request.middleName,
                 request.surname,
                 request.credentials.email,
@@ -91,7 +91,7 @@ public class AccountHelper {
                 account);
 
 
-        saveTemporaryUserData(temporaryAccount);
+        saveAccountInformations(accountInformations);
         sendAccountConfirmationEmail(account);
         return "registered";
     }
@@ -110,8 +110,8 @@ public class AccountHelper {
     }
 
     @Transactional
-    public void saveTemporaryUserData(TemporaryAccount temporaryAccount) {
-        temporaryUserRepository.save(temporaryAccount);
+    public void saveAccountInformations(AccountInformations accountInformations) {
+        temporaryUserRepository.save(accountInformations);
     }
 
     public Optional<Account> findByEmail(String email) {
@@ -129,16 +129,8 @@ public class AccountHelper {
 
     private void notifyServices(Account account) {
         log.info("Notifying services about the account {} creation", account);
-        AccountCreationMessage creationCreationMessage = new AccountCreationMessage();
-        creationCreationMessage.accountId = account.getId();
-
-        TemporaryAccount userData = temporaryUserRepository.findByAccount(account).orElseThrow(() -> new RuntimeException("Couldn't find account " + account.getId()));
-        creationCreationMessage.email = account.getEmail();
-        creationCreationMessage.name = userData.getName();
-        creationCreationMessage.surname = userData.getSurname();
-
-        messageHelper.send(creationCreationMessage);
-
+        AccountInformations accountInformations = temporaryUserRepository.findByAccount(account).orElseThrow(() -> new RuntimeException("Couldn't find account " + account.getId()));
+        messageHelper.send(generateAccountCreationMessage(accountInformations));
         temporaryUserRepository.deleteByAccount_Id(account.getId());
     }
 
@@ -159,12 +151,32 @@ public class AccountHelper {
         accountRepository.save(account);
         log.info("Successfully verified account {}", account);
         accountConfirmationTokenRepository.delete(token);
-        notifyServices();
+        notifyServices(account);
 
         return "Your account has been confirmed, you can now login to the user area.";
     }
 
-    private AccountCreationMessage generateAccountCreationMessage() {
+    private AccountCreationMessage generateAccountCreationMessage(AccountInformations userData) {
+        AccountCreationMessage message = new AccountCreationMessage();
+        message.name = userData.getName();
+        message.middleName = userData.getMiddleName();
+        message.surname = userData.getSurname();
+        message.email = userData.getEmail();
+        message.birthdate = userData.getBirthdate();
+        message.business = userData.getBusiness();
+        message.fiscalCode = userData.getFiscalCode();
+        message.vatNumber = userData.getVatNumber();
+        message.icc = userData.getIcc();
+        message.mobile = userData.getMobile();
+        message.houseNumber = userData.getHouseNumber();
+        message.street = userData.getStreet();
+        message.city = userData.getCity();
+        message.county = userData.getCounty();
+        message.country = userData.getCountry();
+        message.postalCode = userData.getPostalCode();
+        message.gender = userData.getGender();
+        message.accountId = userData.getAccount().getId();
 
+        return message;
     }
 }

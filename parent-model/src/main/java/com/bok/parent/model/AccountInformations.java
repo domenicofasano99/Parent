@@ -16,7 +16,7 @@ import java.util.Date;
 
 
 @Entity
-public class TemporaryAccount {
+public class AccountInformations {
 
     @Id
     @GeneratedValue
@@ -62,10 +62,10 @@ public class TemporaryAccount {
     @JoinColumn(nullable = false, name = "account_id")
     private Account account;
 
-    public TemporaryAccount() {
+    public AccountInformations() {
     }
 
-    public TemporaryAccount(String name, String middleName, String surname, String email, Date birthdate, Boolean business, String fiscalCode, String vatNumber, String icc, String mobile, String houseNumber, String street, String city, String county, String country, String postalCode, String gender, Account account) {
+    public AccountInformations(String name, String middleName, String surname, String email, Date birthdate, Boolean business, String fiscalCode, String vatNumber, String icc, String mobile, String houseNumber, String street, String city, String county, String country, String postalCode, String gender, Account account) {
         this.name = name;
         this.middleName = middleName;
         this.surname = surname;

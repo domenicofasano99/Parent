@@ -74,8 +74,12 @@ public class ParentApplicationTests {
         registrationDTO.name = faker.name().name();
         registrationDTO.surname = faker.name().lastName();
         registrationDTO.birthdate = faker.date().birthday();
-        registrationDTO.credentials.email = faker.internet().emailAddress();
-        registrationDTO.credentials.password = faker.internet().password();
+
+        AccountRegistrationDTO.CredentialsDTO credentials = new AccountRegistrationDTO.CredentialsDTO();
+        credentials.email = faker.internet().emailAddress();
+        credentials.password = faker.internet().password();
+
+        registrationDTO.credentials = credentials;
         accountService.register(registrationDTO);
 
         Account account = accountRepository.findByEmail(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
