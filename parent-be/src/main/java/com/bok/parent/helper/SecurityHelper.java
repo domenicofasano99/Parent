@@ -1,6 +1,6 @@
 package com.bok.parent.helper;
 
-import com.bok.parent.dto.AccountLoginDTO;
+import com.bok.integration.parent.dto.AccountLoginDTO;
 import com.bok.parent.utils.Constants;
 import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,12 +1,12 @@
 package com.bok.parent.helper;
 
-import com.bok.integration.EmailMessage;
-import com.bok.parent.dto.AccountRegistrationDTO;
-import com.bok.parent.exception.EmailAlreadyExistsException;
 import com.bok.integration.AccountCreationMessage;
+import com.bok.integration.EmailMessage;
+import com.bok.integration.parent.dto.AccountRegistrationDTO;
+import com.bok.parent.exception.EmailAlreadyExistsException;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.ConfirmationToken;
-import com.bok.parent.model.TemporaryUser;
+import com.bok.parent.model.TemporaryAccount;
 import com.bok.parent.repository.AccountConfirmationTokenRepository;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.TemporaryUserRepository;
@@ -21,7 +21,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -52,26 +51,47 @@ public class AccountHelper {
     String baseUrl;
 
     @Transactional
-    public String register(AccountRegistrationDTO accountRegistrationDTO) {
-        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.credentials.password));
-        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.credentials.email));
-        Preconditions.checkArgument(validationUtils.validateEmail(accountRegistrationDTO.credentials.email));
-        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.name));
-        Preconditions.checkArgument(validationUtils.validateName(accountRegistrationDTO.name));
-        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.surname));
-        Preconditions.checkArgument(validationUtils.validateSurname(accountRegistrationDTO.surname));
-        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.birthdate));
+    public String register(AccountRegistrationDTO request) {
+        Preconditions.checkArgument(Objects.nonNull(request.credentials.password));
+        Preconditions.checkArgument(Objects.nonNull(request.credentials.email));
+        Preconditions.checkArgument(validationUtils.validateEmail(request.credentials.email));
+        Preconditions.checkArgument(Objects.nonNull(request.name));
+        Preconditions.checkArgument(validationUtils.validateName(request.name));
+        Preconditions.checkArgument(Objects.nonNull(request.surname));
+        Preconditions.checkArgument(validationUtils.validateSurname(request.surname));
+        Preconditions.checkArgument(Objects.nonNull(request.birthdate));
 
-        if (accountRepository.existsByEmail(accountRegistrationDTO.credentials.email)) {
+        if (accountRepository.existsByEmail(request.credentials.email)) {
             throw new EmailAlreadyExistsException("Account already registered.");
         }
         Account account = new Account();
-        account.setEmail(accountRegistrationDTO.credentials.email);
-        account.setPassword(cryptoUtils.encryptPassword(accountRegistrationDTO.credentials.password));
+        account.setEmail(request.credentials.email);
+        account.setPassword(cryptoUtils.encryptPassword(request.credentials.password));
         account.setEnabled(false);
         account.setRole(Account.Role.USER);
         account = accountRepository.save(account);
-        saveTemporaryUserData(account, accountRegistrationDTO.name, accountRegistrationDTO.surname, accountRegistrationDTO.birthdate);
+
+        TemporaryAccount temporaryAccount = new TemporaryAccount(request.name,
+                request.middleName,
+                request.surname,
+                request.credentials.email,
+                request.birthdate,
+                request.business,
+                request.fiscalCode,
+                request.vatNumber,
+                request.mobile.icc,
+                request.mobile.mobile,
+                request.address.houseNumber,
+                request.address.street,
+                request.address.city,
+                request.address.county,
+                request.address.country,
+                request.address.postalCode,
+                request.gender.name(),
+                account);
+
+
+        saveTemporaryUserData(temporaryAccount);
         sendAccountConfirmationEmail(account);
         return "registered";
     }
@@ -90,13 +110,8 @@ public class AccountHelper {
     }
 
     @Transactional
-    public void saveTemporaryUserData(Account account, String name, String surname, Date birthdate) {
-        TemporaryUser temporaryUser = new TemporaryUser();
-        temporaryUser.setAccount(account);
-        temporaryUser.setName(name);
-        temporaryUser.setSurname(surname);
-        temporaryUser.setBirthDate(birthdate);
-        temporaryUserRepository.save(temporaryUser);
+    public void saveTemporaryUserData(TemporaryAccount temporaryAccount) {
+        temporaryUserRepository.save(temporaryAccount);
     }
 
     public Optional<Account> findByEmail(String email) {
@@ -116,7 +131,8 @@ public class AccountHelper {
         log.info("Notifying services about the account {} creation", account);
         AccountCreationMessage creationCreationMessage = new AccountCreationMessage();
         creationCreationMessage.accountId = account.getId();
-        TemporaryUser userData = temporaryUserRepository.findByAccount(account).orElseThrow(() -> new RuntimeException("Couldn't find account " + account.getId()));
+
+        TemporaryAccount userData = temporaryUserRepository.findByAccount(account).orElseThrow(() -> new RuntimeException("Couldn't find account " + account.getId()));
         creationCreationMessage.email = account.getEmail();
         creationCreationMessage.name = userData.getName();
         creationCreationMessage.surname = userData.getSurname();
@@ -143,8 +159,12 @@ public class AccountHelper {
         accountRepository.save(account);
         log.info("Successfully verified account {}", account);
         accountConfirmationTokenRepository.delete(token);
-        notifyServices(account);
+        notifyServices();
 
         return "Your account has been confirmed, you can now login to the user area.";
+    }
+
+    private AccountCreationMessage generateAccountCreationMessage() {
+
     }
 }

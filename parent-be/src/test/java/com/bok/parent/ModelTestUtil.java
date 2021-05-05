@@ -1,6 +1,6 @@
 package com.bok.parent;
 
-import com.bok.parent.dto.AccountRegistrationDTO;
+import com.bok.integration.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.helper.AccountHelper;
 import com.bok.parent.model.Account;
 import com.bok.parent.repository.AccountConfirmationTokenRepository;

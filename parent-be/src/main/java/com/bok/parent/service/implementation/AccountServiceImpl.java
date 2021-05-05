@@ -1,6 +1,6 @@
 package com.bok.parent.service.implementation;
 
-import com.bok.parent.dto.AccountRegistrationDTO;
+import com.bok.integration.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.helper.AccountHelper;
 import com.bok.parent.helper.JWTAuthenticationHelper;
 import com.bok.parent.service.AccountService;

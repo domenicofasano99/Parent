@@ -1,7 +1,7 @@
 package com.bok.parent;
 
-import com.bok.parent.dto.AccountLoginDTO;
-import com.bok.parent.dto.AccountRegistrationDTO;
+import com.bok.integration.parent.dto.AccountLoginDTO;
+import com.bok.integration.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.exception.WrongCredentialsException;
 import com.bok.parent.model.Account;
 import com.bok.parent.repository.AccountRepository;

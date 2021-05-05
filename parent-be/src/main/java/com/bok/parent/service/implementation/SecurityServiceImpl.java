@@ -1,6 +1,6 @@
 package com.bok.parent.service.implementation;
 
-import com.bok.parent.dto.AccountLoginDTO;
+import com.bok.integration.parent.dto.AccountLoginDTO;
 import com.bok.parent.helper.SecurityHelper;
 import com.bok.parent.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
