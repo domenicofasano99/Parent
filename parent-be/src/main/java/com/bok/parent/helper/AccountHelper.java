@@ -5,7 +5,7 @@ import com.bok.integration.EmailMessage;
 import com.bok.integration.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.exception.EmailAlreadyExistsException;
 import com.bok.parent.model.Account;
-import com.bok.parent.model.AccountInformations;
+import com.bok.parent.model.AccountTemporaryDetails;
 import com.bok.parent.model.ConfirmationToken;
 import com.bok.parent.repository.AccountConfirmationTokenRepository;
 import com.bok.parent.repository.AccountRepository;
@@ -52,14 +52,6 @@ public class AccountHelper {
 
     @Transactional
     public String register(AccountRegistrationDTO request) {
-        Preconditions.checkArgument(Objects.nonNull(request.credentials.password));
-        Preconditions.checkArgument(Objects.nonNull(request.credentials.email));
-        Preconditions.checkArgument(validationUtils.validateEmail(request.credentials.email));
-        Preconditions.checkArgument(Objects.nonNull(request.name));
-        Preconditions.checkArgument(validationUtils.validateName(request.name));
-        Preconditions.checkArgument(Objects.nonNull(request.surname));
-        Preconditions.checkArgument(validationUtils.validateSurname(request.surname));
-        Preconditions.checkArgument(Objects.nonNull(request.birthdate));
 
         if (accountRepository.existsByEmail(request.credentials.email)) {
             throw new EmailAlreadyExistsException("Account already registered.");
@@ -71,7 +63,7 @@ public class AccountHelper {
         account.setRole(Account.Role.USER);
         account = accountRepository.save(account);
 
-        AccountInformations accountInformations = new AccountInformations(request.name,
+        AccountTemporaryDetails accountTemporaryDetails = new AccountTemporaryDetails(request.name,
                 request.middleName,
                 request.surname,
                 request.credentials.email,
@@ -80,18 +72,18 @@ public class AccountHelper {
                 request.fiscalCode,
                 request.vatNumber,
                 request.mobile.icc,
-                request.mobile.mobile,
+                request.mobile.number,
                 request.address.houseNumber,
                 request.address.street,
                 request.address.city,
                 request.address.county,
                 request.address.country,
                 request.address.postalCode,
-                request.gender.name(),
+                request.gender,
                 account);
 
 
-        saveAccountInformations(accountInformations);
+        saveAccountInformations(accountTemporaryDetails);
         sendAccountConfirmationEmail(account);
         return "registered";
     }
@@ -110,8 +102,8 @@ public class AccountHelper {
     }
 
     @Transactional
-    public void saveAccountInformations(AccountInformations accountInformations) {
-        temporaryUserRepository.save(accountInformations);
+    public void saveAccountInformations(AccountTemporaryDetails accountTemporaryDetails) {
+        temporaryUserRepository.save(accountTemporaryDetails);
     }
 
     public Optional<Account> findByEmail(String email) {
@@ -129,14 +121,13 @@ public class AccountHelper {
 
     private void notifyServices(Account account) {
         log.info("Notifying services about the account {} creation", account);
-        AccountInformations accountInformations = temporaryUserRepository.findByAccount(account).orElseThrow(() -> new RuntimeException("Couldn't find account " + account.getId()));
-        messageHelper.send(generateAccountCreationMessage(accountInformations));
+        AccountTemporaryDetails accountTemporaryDetails = temporaryUserRepository.findByAccount(account).orElseThrow(() -> new RuntimeException("Couldn't find account " + account.getId()));
+        messageHelper.send(generateAccountCreationMessage(accountTemporaryDetails));
         temporaryUserRepository.deleteByAccount_Id(account.getId());
     }
 
     @Transactional
     public String verify(String accountConfirmationToken) {
-        Preconditions.checkArgument(Objects.nonNull(accountConfirmationToken));
         ConfirmationToken token = accountConfirmationTokenRepository.findByConfirmationToken(accountConfirmationToken);
         Preconditions.checkArgument(Objects.nonNull(token));
 
@@ -156,7 +147,7 @@ public class AccountHelper {
         return "Your account has been confirmed, you can now login to the user area.";
     }
 
-    private AccountCreationMessage generateAccountCreationMessage(AccountInformations userData) {
+    private AccountCreationMessage generateAccountCreationMessage(AccountTemporaryDetails userData) {
         AccountCreationMessage message = new AccountCreationMessage();
         message.name = userData.getName();
         message.middleName = userData.getMiddleName();

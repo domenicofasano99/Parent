@@ -40,19 +40,47 @@ public class ModelTestUtil {
         return accountRepository.save(account);
     }
 
-    public AccountDetails createAccountWithCredentials() {
+    public AccountRegistrationDTO createRegistrationDTO() {
         String email = faker.internet().emailAddress();
         String password = faker.internet().password();
         AccountRegistrationDTO registrationDTO = new AccountRegistrationDTO();
         registrationDTO.name = faker.name().name();
         registrationDTO.surname = faker.name().lastName();
         registrationDTO.birthdate = faker.date().birthday();
-        registrationDTO.credentials.email = email;
-        registrationDTO.credentials.password = password;
+        registrationDTO.fiscalCode = "FFFFFF99F99F999F";
+        registrationDTO.gender = faker.demographic().sex();
+        registrationDTO.business = false;
+
+        AccountRegistrationDTO.CredentialsDTO credentials = new AccountRegistrationDTO.CredentialsDTO();
+        credentials.email = faker.internet().emailAddress();
+        credentials.password = faker.internet().password();
+        registrationDTO.credentials = credentials;
+
+        AccountRegistrationDTO.AddressDTO address = new AccountRegistrationDTO.AddressDTO();
+        address.city = faker.address().city();
+        address.country = faker.address().country();
+        address.postalCode = faker.address().zipCode();
+        address.county = "county";
+        address.street = faker.address().streetAddress();
+        address.houseNumber = faker.address().buildingNumber();
+        registrationDTO.address = address;
+
+        AccountRegistrationDTO.MobileDTO mobile = new AccountRegistrationDTO.MobileDTO();
+        mobile.number = faker.phoneNumber().cellPhone();
+        mobile.icc = faker.phoneNumber().extension();
+        registrationDTO.mobile = mobile;
+
+        return registrationDTO;
+    }
+
+    public AccountRegistrationDTO.CredentialsDTO createAccountWithCredentials() {
+
+        AccountRegistrationDTO registrationDTO = createRegistrationDTO();
+
         accountService.register(registrationDTO);
         Account account = accountRepository.findByEmail(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
         enableAccount(account);
-        return new AccountDetails(email, password);
+        return registrationDTO.credentials;
     }
 
     public void clearAll() {

@@ -1,12 +1,9 @@
 package com.bok.parent.model;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -16,7 +13,7 @@ import java.util.Date;
 
 
 @Entity
-public class AccountInformations {
+public class AccountTemporaryDetails {
 
     @Id
     @GeneratedValue
@@ -34,7 +31,6 @@ public class AccountInformations {
     @Column
     private Boolean business;
     @Column
-    @NaturalId
     private String fiscalCode;
     @Column
     private String vatNumber;
@@ -62,10 +58,10 @@ public class AccountInformations {
     @JoinColumn(nullable = false, name = "account_id")
     private Account account;
 
-    public AccountInformations() {
+    public AccountTemporaryDetails() {
     }
 
-    public AccountInformations(String name, String middleName, String surname, String email, Date birthdate, Boolean business, String fiscalCode, String vatNumber, String icc, String mobile, String houseNumber, String street, String city, String county, String country, String postalCode, String gender, Account account) {
+    public AccountTemporaryDetails(String name, String middleName, String surname, String email, Date birthdate, Boolean business, String fiscalCode, String vatNumber, String icc, String mobile, String houseNumber, String street, String city, String county, String country, String postalCode, String gender, Account account) {
         this.name = name;
         this.middleName = middleName;
         this.surname = surname;

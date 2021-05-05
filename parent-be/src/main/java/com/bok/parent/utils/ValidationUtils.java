@@ -2,22 +2,19 @@ package com.bok.parent.utils;
 
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 public class ValidationUtils {
 
-    public Boolean validateEmail(String email) {
-        return true;
-        //return EmailValidator.getInstance().isValid(email);
+    public static void nonNull(Object o) {
+        nonNull(o, "Parameter cannot be null");
     }
 
-    //fixme fix this
-    public Boolean validateName(String name) {
-        return name.matches("^[a-zA-Z\\\\s]+");
-    }
 
-    //fixme fix this
-    public Boolean validateSurname(String surname) {
-        return surname.matches("^[a-zA-Z\\\\s]+");
+    public static void nonNull(Object object, String errorMessage) {
+        if (Objects.isNull(object)) {
+            throw new IllegalArgumentException(errorMessage);
+        }
     }
-
 }
