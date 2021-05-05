@@ -33,7 +33,7 @@ public class AuditAspect {
     public void registerDetails(JoinPoint joinPoint) {
         HttpServletRequest req = (HttpServletRequest) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof HttpServletRequest).findFirst().get();
         AccountRegistrationDTO registration = (AccountRegistrationDTO) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof AccountRegistrationDTO).findFirst().get();
-        auditHelper.auditRegistrationRequest(req.getRemoteAddr(), registration.email);
+        auditHelper.auditRegistrationRequest(req.getRemoteAddr(), registration.credentials.email);
     }
 
 }

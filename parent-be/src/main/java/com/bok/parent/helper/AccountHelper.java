@@ -53,21 +53,21 @@ public class AccountHelper {
 
     @Transactional
     public String register(AccountRegistrationDTO accountRegistrationDTO) {
-        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.password));
-        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.email));
-        Preconditions.checkArgument(validationUtils.validateEmail(accountRegistrationDTO.email));
+        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.credentials.password));
+        Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.credentials.email));
+        Preconditions.checkArgument(validationUtils.validateEmail(accountRegistrationDTO.credentials.email));
         Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.name));
         Preconditions.checkArgument(validationUtils.validateName(accountRegistrationDTO.name));
         Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.surname));
         Preconditions.checkArgument(validationUtils.validateSurname(accountRegistrationDTO.surname));
         Preconditions.checkArgument(Objects.nonNull(accountRegistrationDTO.birthdate));
 
-        if (accountRepository.existsByEmail(accountRegistrationDTO.email)) {
+        if (accountRepository.existsByEmail(accountRegistrationDTO.credentials.email)) {
             throw new EmailAlreadyExistsException("Account already registered.");
         }
         Account account = new Account();
-        account.setEmail(accountRegistrationDTO.email);
-        account.setPassword(cryptoUtils.encryptPassword(accountRegistrationDTO.password));
+        account.setEmail(accountRegistrationDTO.credentials.email);
+        account.setPassword(cryptoUtils.encryptPassword(accountRegistrationDTO.credentials.password));
         account.setEnabled(false);
         account.setRole(Account.Role.USER);
         account = accountRepository.save(account);

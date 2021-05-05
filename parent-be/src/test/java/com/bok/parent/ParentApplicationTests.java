@@ -57,13 +57,13 @@ public class ParentApplicationTests {
         registrationDTO.name = faker.name().name();
         registrationDTO.surname = faker.name().lastName();
         registrationDTO.birthdate = faker.date().birthday();
-        registrationDTO.email = faker.internet().emailAddress();
-        registrationDTO.password = faker.internet().password();
+        registrationDTO.credentials.email = faker.internet().emailAddress();
+        registrationDTO.credentials.password = faker.internet().password();
         accountService.register(registrationDTO);
 
-        Account account = accountRepository.findByEmail(registrationDTO.email).orElseThrow(RuntimeException::new);
+        Account account = accountRepository.findByEmail(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
         assertNotNull(account);
-        assertEquals(account.getEmail(), registrationDTO.email);
+        assertEquals(account.getEmail(), registrationDTO.credentials.email);
         assertFalse(account.getEnabled());
     }
 
@@ -74,14 +74,14 @@ public class ParentApplicationTests {
         registrationDTO.name = faker.name().name();
         registrationDTO.surname = faker.name().lastName();
         registrationDTO.birthdate = faker.date().birthday();
-        registrationDTO.email = faker.internet().emailAddress();
-        registrationDTO.password = faker.internet().password();
+        registrationDTO.credentials.email = faker.internet().emailAddress();
+        registrationDTO.credentials.password = faker.internet().password();
         accountService.register(registrationDTO);
 
-        Account account = accountRepository.findByEmail(registrationDTO.email).orElseThrow(RuntimeException::new);
+        Account account = accountRepository.findByEmail(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
         modelTestUtil.enableAccount(account);
         assertNotNull(account);
-        assertEquals(account.getEmail(), registrationDTO.email);
+        assertEquals(account.getEmail(), registrationDTO.credentials.email);
         assertTrue(account.getEnabled());
 
     }
@@ -127,8 +127,8 @@ public class ParentApplicationTests {
         registrationDTO.name = "Aless34andro";
         registrationDTO.surname = faker.name().lastName() + ".#";
         registrationDTO.birthdate = faker.date().birthday();
-        registrationDTO.email = faker.internet().emailAddress();
-        registrationDTO.password = faker.internet().password();
+        registrationDTO.credentials.email = faker.internet().emailAddress();
+        registrationDTO.credentials.password = faker.internet().password();
         assertThrows(IllegalArgumentException.class, () -> accountService.register(registrationDTO));
     }
 
@@ -139,8 +139,8 @@ public class ParentApplicationTests {
         registrationDTO.surname = faker.name().lastName();
         registrationDTO.birthdate = faker.date().birthday();
         registrationDTO.birthdate = faker.date().birthday();
-        registrationDTO.email = "bad_email!ò@@aaaa";
-        registrationDTO.password = faker.internet().password();
+        registrationDTO.credentials.email = "bad_email!ò@@aaaa";
+        registrationDTO.credentials.password = faker.internet().password();
         assertThrows(IllegalArgumentException.class, () -> accountService.register(registrationDTO));
     }
 

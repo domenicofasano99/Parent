@@ -47,10 +47,10 @@ public class ModelTestUtil {
         registrationDTO.name = faker.name().name();
         registrationDTO.surname = faker.name().lastName();
         registrationDTO.birthdate = faker.date().birthday();
-        registrationDTO.email = email;
-        registrationDTO.password = password;
+        registrationDTO.credentials.email = email;
+        registrationDTO.credentials.password = password;
         accountService.register(registrationDTO);
-        Account account = accountRepository.findByEmail(registrationDTO.email).orElseThrow(RuntimeException::new);
+        Account account = accountRepository.findByEmail(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
         enableAccount(account);
         return new AccountDetails(email, password);
     }
