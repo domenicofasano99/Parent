@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Objects;
 
 @Component
 @Slf4j
@@ -63,7 +64,7 @@ public class AuditHelper {
     }
 
     public String getRequestParameters(HttpServletRequest request) {
-        if (!request.getParameterMap().isEmpty()) {
+        if (!Objects.isNull(request.getParameterMap()) && !request.getParameterMap().isEmpty()) {
             return StringUtils.join(request.getParameterMap());
         }
         return null;
