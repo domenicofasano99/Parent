@@ -1,11 +1,11 @@
 package com.bok.parent;
 
 //for testing purposes only
-public class AccountDetails {
+public class AccountRegistray {
     public String email;
     public String password;
 
-    public AccountDetails(String email, String password) {
+    public AccountRegistray(String email, String password) {
         this.email = email;
         this.password = password;
     }

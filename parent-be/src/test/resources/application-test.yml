@@ -1,5 +1,5 @@
 active-mq:
-  users-queue: users
+  users: users
   broker-url: tcp://localhost:61616
 
 spring:

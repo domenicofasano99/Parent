@@ -1,7 +1,7 @@
 package com.bok.parent.audit;
 
-import com.bok.parent.dto.AccountLoginDTO;
-import com.bok.parent.dto.AccountRegistrationDTO;
+import com.bok.integration.parent.dto.AccountLoginDTO;
+import com.bok.integration.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.repository.AuditLogRepository;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -33,7 +33,7 @@ public class AuditAspect {
     public void registerDetails(JoinPoint joinPoint) {
         HttpServletRequest req = (HttpServletRequest) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof HttpServletRequest).findFirst().get();
         AccountRegistrationDTO registration = (AccountRegistrationDTO) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof AccountRegistrationDTO).findFirst().get();
-        auditHelper.auditRegistrationRequest(req.getRemoteAddr(), registration.email);
+        auditHelper.auditRegistrationRequest(req.getRemoteAddr(), registration.credentials.email);
     }
 
 }

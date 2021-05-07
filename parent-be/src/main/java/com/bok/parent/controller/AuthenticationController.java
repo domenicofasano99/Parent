@@ -2,8 +2,8 @@ package com.bok.parent.controller;
 
 import com.bok.parent.audit.LoginAudit;
 import com.bok.parent.audit.RegisterAudit;
-import com.bok.parent.dto.AccountLoginDTO;
-import com.bok.parent.dto.AccountRegistrationDTO;
+import com.bok.integration.parent.dto.AccountLoginDTO;
+import com.bok.integration.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;

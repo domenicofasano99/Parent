@@ -1,7 +1,7 @@
 package com.bok.parent;
 
-import com.bok.parent.dto.AccountLoginDTO;
-import com.bok.parent.dto.AccountRegistrationDTO;
+import com.bok.integration.parent.dto.AccountLoginDTO;
+import com.bok.integration.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.exception.WrongCredentialsException;
 import com.bok.parent.model.Account;
 import com.bok.parent.repository.AccountRepository;
@@ -52,43 +52,44 @@ public class ParentApplicationTests {
     @Test
     public void accountCreation_butNotEnabledTest() {
 
-        AccountRegistrationDTO registrationDTO = new AccountRegistrationDTO();
+        AccountRegistrationDTO registrationDTO = modelTestUtil.createRegistrationDTO();
 
         registrationDTO.name = faker.name().name();
         registrationDTO.surname = faker.name().lastName();
         registrationDTO.birthdate = faker.date().birthday();
-        registrationDTO.email = faker.internet().emailAddress();
-        registrationDTO.password = faker.internet().password();
+        registrationDTO.credentials.email = faker.internet().emailAddress();
+        registrationDTO.credentials.password = faker.internet().password();
         accountService.register(registrationDTO);
 
-        Account account = accountRepository.findByEmail(registrationDTO.email).orElseThrow(RuntimeException::new);
+        Account account = accountRepository.findByEmail(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
         assertNotNull(account);
-        assertEquals(account.getEmail(), registrationDTO.email);
+        assertEquals(account.getEmail(), registrationDTO.credentials.email);
         assertFalse(account.getEnabled());
     }
 
     @Test
     public void accountCreation_enabledTest() {
-        AccountRegistrationDTO registrationDTO = new AccountRegistrationDTO();
 
-        registrationDTO.name = faker.name().name();
-        registrationDTO.surname = faker.name().lastName();
-        registrationDTO.birthdate = faker.date().birthday();
-        registrationDTO.email = faker.internet().emailAddress();
-        registrationDTO.password = faker.internet().password();
+        AccountRegistrationDTO registrationDTO = modelTestUtil.createRegistrationDTO();
+
+        AccountRegistrationDTO.CredentialsDTO credentials = new AccountRegistrationDTO.CredentialsDTO();
+        credentials.email = faker.internet().emailAddress();
+        credentials.password = faker.internet().password();
+
+        registrationDTO.credentials = credentials;
         accountService.register(registrationDTO);
 
-        Account account = accountRepository.findByEmail(registrationDTO.email).orElseThrow(RuntimeException::new);
+        Account account = accountRepository.findByEmail(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
         modelTestUtil.enableAccount(account);
         assertNotNull(account);
-        assertEquals(account.getEmail(), registrationDTO.email);
+        assertEquals(account.getEmail(), registrationDTO.credentials.email);
         assertTrue(account.getEnabled());
 
     }
 
     @Test
     public void successfulLoginTest() {
-        AccountDetails account = modelTestUtil.createAccountWithCredentials();
+        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
 
         AccountLoginDTO loginDTO = new AccountLoginDTO();
         loginDTO.email = account.email;
@@ -100,7 +101,7 @@ public class ParentApplicationTests {
 
     @Test
     public void failedLoginTest() {
-        AccountDetails account = modelTestUtil.createAccountWithCredentials();
+        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
 
         AccountLoginDTO loginDTO = new AccountLoginDTO();
         loginDTO.email = account.email;
@@ -110,7 +111,7 @@ public class ParentApplicationTests {
 
     @Test
     public void loginToUnverifiedAccountTest() {
-        AccountDetails credentials = modelTestUtil.createAccountWithCredentials();
+        AccountRegistrationDTO.CredentialsDTO credentials = modelTestUtil.createAccountWithCredentials();
         Account account = accountRepository.findByEmail(credentials.email).orElseThrow(RuntimeException::new);
         account.setEnabled(false);
         accountRepository.save(account);
@@ -123,24 +124,17 @@ public class ParentApplicationTests {
 
     @Test
     public void accountWithFakeNameAttempt() {
-        AccountRegistrationDTO registrationDTO = new AccountRegistrationDTO();
+        AccountRegistrationDTO registrationDTO = modelTestUtil.createRegistrationDTO();
         registrationDTO.name = "Aless34andro";
         registrationDTO.surname = faker.name().lastName() + ".#";
-        registrationDTO.birthdate = faker.date().birthday();
-        registrationDTO.email = faker.internet().emailAddress();
-        registrationDTO.password = faker.internet().password();
         assertThrows(IllegalArgumentException.class, () -> accountService.register(registrationDTO));
     }
 
     @Test
     public void accountWithBadEmailAttempt() {
-        AccountRegistrationDTO registrationDTO = new AccountRegistrationDTO();
-        registrationDTO.name = faker.name().name();
-        registrationDTO.surname = faker.name().lastName();
-        registrationDTO.birthdate = faker.date().birthday();
-        registrationDTO.birthdate = faker.date().birthday();
-        registrationDTO.email = "bad_email!ò@@aaaa";
-        registrationDTO.password = faker.internet().password();
+        AccountRegistrationDTO registrationDTO = modelTestUtil.createRegistrationDTO();
+        registrationDTO.credentials.email = "bad_email!ò@@aaaa";
+        registrationDTO.credentials.password = faker.internet().password();
         assertThrows(IllegalArgumentException.class, () -> accountService.register(registrationDTO));
     }
 

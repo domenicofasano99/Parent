@@ -1,6 +1,6 @@
 package com.bok.parent.service;
 
-import com.bok.parent.dto.AccountLoginDTO;
+import com.bok.integration.parent.dto.AccountLoginDTO;
 import org.springframework.stereotype.Service;
 
 @Service
