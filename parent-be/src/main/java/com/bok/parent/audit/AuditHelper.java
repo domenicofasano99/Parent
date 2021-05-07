@@ -30,7 +30,7 @@ public class AuditHelper {
             auditLog.setParameters(getRequestParameters(request));
         }
         auditLog.setPayload(getRequestPayload(request));
-        auditLog.setPath(request.getPathInfo());
+        auditLog.setPath(getRequestPath(request));
         auditLogRepository.save(auditLog);
     }
 
@@ -68,5 +68,23 @@ public class AuditHelper {
             return StringUtils.join(request.getParameterMap());
         }
         return null;
+    }
+
+    public String getRequestPath(HttpServletRequest req){
+        String contextPath = req.getContextPath();
+        String servletPath = req.getServletPath();
+        String pathInfo = req.getPathInfo();
+        String queryString = req.getQueryString();
+
+        StringBuilder url = new StringBuilder();
+        url.append(contextPath).append(servletPath);
+
+        if (pathInfo != null) {
+            url.append(pathInfo);
+        }
+        if (queryString != null) {
+            url.append("?").append(queryString);
+        }
+        return url.toString();
     }
 }

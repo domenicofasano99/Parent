@@ -22,13 +22,16 @@ public class AuditLog {
     private String ipAddress;
 
     @Column
-    private String email;
-
-    @Column
     private Long accountId;
 
     @Column
     private String method;
+
+    @Column
+    private String path;
+
+    @Column
+    private String email;
 
     @Column
     @Type(type = "text")
@@ -37,9 +40,6 @@ public class AuditLog {
     @Column
     @Type(type = "text")
     private String parameters;
-
-    @Column
-    private String path;
 
     @CreationTimestamp
     private Instant timestamp;
