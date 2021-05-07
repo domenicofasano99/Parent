@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Objects;
 
+import static java.util.Objects.isNull;
+
 @Component
 @Slf4j
 public class AuditHelper {
@@ -64,13 +66,16 @@ public class AuditHelper {
     }
 
     public String getRequestParameters(HttpServletRequest request) {
-        if (!Objects.isNull(request.getParameterMap()) && !request.getParameterMap().isEmpty()) {
-            return StringUtils.join(request.getParameterMap());
+        if (isNull(request.getParameterMap())) {
+            return null;
         }
-        return null;
+        if (request.getParameterMap().isEmpty()) {
+            return null;
+        }
+        return StringUtils.join(request.getParameterMap());
     }
 
-    public String getRequestPath(HttpServletRequest req){
+    public String getRequestPath(HttpServletRequest req) {
         String contextPath = req.getContextPath();
         String servletPath = req.getServletPath();
         String pathInfo = req.getPathInfo();
