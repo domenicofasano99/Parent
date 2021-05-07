@@ -2,6 +2,7 @@ package com.bok.parent.model;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,6 +26,17 @@ public class AuditLog {
 
     @Column
     private Long accountId;
+
+    @Column
+    private String method;
+
+    @Column
+    @Type(type = "text")
+    private String payload;
+
+    @Column
+    @Type(type = "text")
+    private String parameters;
 
     @Column
     private String methodName;
@@ -84,12 +96,37 @@ public class AuditLog {
         this.timestamp = timestamp;
     }
 
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    public void setPayload(String payload) {
+        this.payload = payload;
+    }
+
+    public String getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(String parameters) {
+        this.parameters = parameters;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append("id", id)
                 .append("ipAddress", ipAddress)
                 .append("email", email)
+                .append("method", method)
                 .append("accountId", accountId)
                 .append("methodName", methodName)
                 .append("timestamp", timestamp)
