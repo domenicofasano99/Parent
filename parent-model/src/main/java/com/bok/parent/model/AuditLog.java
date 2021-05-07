@@ -39,7 +39,7 @@ public class AuditLog {
     private String parameters;
 
     @Column
-    private String methodName;
+    private String path;
 
     @CreationTimestamp
     private Instant timestamp;
@@ -80,12 +80,12 @@ public class AuditLog {
         this.email = email;
     }
 
-    public String getMethodName() {
-        return methodName;
+    public String getPath() {
+        return path;
     }
 
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
+    public void setPath(String methodName) {
+        this.path = methodName;
     }
 
     public Instant getTimestamp() {
@@ -128,7 +128,7 @@ public class AuditLog {
                 .append("email", email)
                 .append("method", method)
                 .append("accountId", accountId)
-                .append("methodName", methodName)
+                .append("methodName", path)
                 .append("timestamp", timestamp)
                 .toString();
     }
