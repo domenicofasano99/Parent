@@ -33,7 +33,9 @@ public class AuditHelper {
                 auditLog.setPayload(payload);
             }
         } else {
-            auditLog.setParameters(StringUtils.join(request.getParameterMap()));
+            if (!request.getParameterMap().isEmpty()) {
+                auditLog.setParameters(StringUtils.join(request.getParameterMap()));
+            }
         }
         auditLog.setMethodName(request.getRequestURL().toString());
         auditLogRepository.save(auditLog);
