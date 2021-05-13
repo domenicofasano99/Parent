@@ -78,7 +78,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(TokenAuthenticationException.class)
-    protected ResponseEntity<Object> handleITokenInvalidException(TokenAuthenticationException ex) {
+    protected ResponseEntity<Object> handleInvalidTokenException(TokenAuthenticationException ex) {
         ApiError apiError = new ApiError(BAD_REQUEST);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
