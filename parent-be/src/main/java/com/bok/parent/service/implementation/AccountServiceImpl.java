@@ -9,10 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
+import java.util.Date;
 
 @Service
 @Slf4j
@@ -31,6 +32,9 @@ public class AccountServiceImpl implements AccountService {
         ValidationUtils.nonNull(registrationDTO.surname);
         ValidationUtils.nonNull(registrationDTO.birthdate);
 
+        if(registrationDTO.birthdate.after(java.sql.Date.valueOf(LocalDate.now().minus(18L, ChronoUnit.YEARS)))){
+            throw new IllegalArgumentException("User must be 18 or over to register");
+        }
         ValidationUtils.nonNull(registrationDTO.business);
         if (registrationDTO.business) {
             if (registrationDTO.vatNumber == null && registrationDTO.fiscalCode == null) {
