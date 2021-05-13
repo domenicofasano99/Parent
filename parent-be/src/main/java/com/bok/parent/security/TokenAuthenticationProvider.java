@@ -34,6 +34,6 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
                                 .password(u.getPassword())
                                 .roles(u.getRole().toString())
                                 .build()))
-                .orElseThrow(() -> new TokenAuthenticationException("Invalid authentication token=" + token));
+                .orElseThrow(() -> new TokenAuthenticationException("Invalid authentication token: " + token));
     }
 }
