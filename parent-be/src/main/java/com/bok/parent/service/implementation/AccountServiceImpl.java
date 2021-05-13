@@ -30,9 +30,7 @@ public class AccountServiceImpl implements AccountService {
         ValidationUtils.nonNull(registrationDTO.name);
         ValidationUtils.nonNull(registrationDTO.surname);
         ValidationUtils.nonNull(registrationDTO.birthdate);
-        if(registrationDTO.birthdate.before(Date.valueOf(LocalDate.now().minus(18L, ChronoUnit.YEARS)))){
-            throw new RuntimeException("User must be 18 or older.");
-        }
+
         ValidationUtils.nonNull(registrationDTO.business);
         if (registrationDTO.business) {
             if (registrationDTO.vatNumber == null && registrationDTO.fiscalCode == null) {
