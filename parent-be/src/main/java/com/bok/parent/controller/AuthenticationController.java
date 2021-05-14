@@ -44,7 +44,7 @@ public class AuthenticationController {
     }
 
     @PostMapping
-    public PasswordRecoveryResponseDTO recoverPassword(@RequestBody PasswordResetRequestDTO passwordResetRequestDTO){
+    public PasswordRecoveryResponseDTO recoverPassword(@RequestBody PasswordResetRequestDTO passwordResetRequestDTO) {
         return accountService.recover(passwordResetRequestDTO);
     }
 }

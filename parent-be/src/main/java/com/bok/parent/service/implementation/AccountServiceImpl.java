@@ -1,5 +1,6 @@
 package com.bok.parent.service.implementation;
 
+import com.bok.parent.helper.EmailHelper;
 import com.bok.parent.integration.dto.PasswordRecoveryResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
@@ -24,14 +25,21 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     AccountHelper accountHelper;
 
+    @Autowired
+    EmailHelper emailHelper;
+
     @Override
     public String register(AccountRegistrationDTO registrationDTO) {
         ValidationUtils.nonNull(registrationDTO);
+        ValidationUtils.nonNull(registrationDTO.credentials);
+        ValidationUtils.nonNull(registrationDTO.credentials.email);
+        ValidationUtils.nonNull(registrationDTO.credentials.password);
+        ValidationUtils.checkEmail(registrationDTO.credentials.email, "The given email is not valid!");
         ValidationUtils.nonNull(registrationDTO.name);
         ValidationUtils.nonNull(registrationDTO.surname);
         ValidationUtils.nonNull(registrationDTO.birthdate);
 
-        if(registrationDTO.birthdate.after(java.sql.Date.valueOf(LocalDate.now().minus(18L, ChronoUnit.YEARS)))){
+        if (registrationDTO.birthdate.after(java.sql.Date.valueOf(LocalDate.now().minus(18L, ChronoUnit.YEARS)))) {
             throw new IllegalArgumentException("User must be 18 or over to register");
         }
         ValidationUtils.nonNull(registrationDTO.business);
@@ -44,9 +52,6 @@ public class AccountServiceImpl implements AccountService {
             ValidationUtils.nonNull(registrationDTO.gender);
             ValidationUtils.nonNull(registrationDTO.fiscalCode);
         }
-        ValidationUtils.nonNull(registrationDTO.credentials);
-        ValidationUtils.nonNull(registrationDTO.credentials.email);
-        ValidationUtils.nonNull(registrationDTO.credentials.password);
 
         ValidationUtils.nonNull(registrationDTO.mobile);
         ValidationUtils.nonNull(registrationDTO.mobile.icc);
