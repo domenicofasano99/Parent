@@ -2,8 +2,10 @@ package com.bok.parent.audit;
 
 import com.bok.integration.parent.dto.AccountLoginDTO;
 import com.bok.integration.parent.dto.AccountRegistrationDTO;
+import com.bok.parent.helper.AuditHelper;
 import com.bok.parent.repository.AuditLogRepository;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,13 @@ public class AuditAspect {
         HttpServletRequest req = (HttpServletRequest) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof HttpServletRequest).findFirst().get();
         AccountLoginDTO login = (AccountLoginDTO) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof AccountLoginDTO).findFirst().get();
         auditHelper.auditLoginRequest(req.getRemoteAddr(), login.email);
+    }
+
+    @After("@annotation(LoginAudit)")
+    public void saveLoginAccessInfo(JoinPoint joinPoint) {
+        HttpServletRequest req = (HttpServletRequest) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof HttpServletRequest).findFirst().get();
+        AccountLoginDTO login = (AccountLoginDTO) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof AccountLoginDTO).findFirst().get();
+        auditHelper.saveAccessInfo(req.getRemoteAddr(), login.email);
     }
 
     @Before("@annotation(RegisterAudit)")

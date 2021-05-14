@@ -1,5 +1,6 @@
 package com.bok.parent;
 
+import com.bok.integration.parent.LoginResponseDTO;
 import com.bok.integration.parent.dto.AccountLoginDTO;
 import com.bok.integration.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.exception.WrongCredentialsException;
@@ -94,9 +95,9 @@ public class ParentApplicationTests {
         AccountLoginDTO loginDTO = new AccountLoginDTO();
         loginDTO.email = account.email;
         loginDTO.password = account.password;
-        String token = securityService.login(loginDTO);
-        log.debug(token);
-        assertNotNull(token);
+        LoginResponseDTO login = securityService.login(loginDTO);
+        log.debug(login.token);
+        assertNotNull(login.token);
     }
 
     @Test

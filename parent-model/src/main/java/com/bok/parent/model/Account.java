@@ -10,7 +10,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 public class Account {
@@ -37,6 +39,10 @@ public class Account {
     @Column
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany
+    private List<AccessInfo> accessInfo;
+
 
     public Account() {
         //hibernate
@@ -101,6 +107,14 @@ public class Account {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public List<AccessInfo> getAccessInfo() {
+        return accessInfo;
+    }
+
+    public void setAccessInfo(List<AccessInfo> accessInfo) {
+        this.accessInfo = accessInfo;
     }
 
     public enum Role {

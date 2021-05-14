@@ -1,6 +1,6 @@
 package com.bok.parent.security;
 
-import com.bok.parent.audit.AuditHelper;
+import com.bok.parent.helper.AuditHelper;
 import com.bok.parent.service.SecurityService;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;

@@ -1,6 +1,8 @@
-package com.bok.parent.audit;
+package com.bok.parent.helper;
 
+import com.bok.parent.model.AccessInfo;
 import com.bok.parent.model.AuditLog;
+import com.bok.parent.repository.AccessInfoRepository;
 import com.bok.parent.repository.AuditLogRepository;
 import com.google.common.io.CharStreams;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Objects;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
@@ -21,6 +23,12 @@ public class AuditHelper {
 
     @Autowired
     AuditLogRepository auditLogRepository;
+
+    @Autowired
+    AccessInfoRepository accessInfoRepository;
+
+    @Autowired
+    AccountHelper accountHelper;
 
     @Async
     public void auditGatewayRequest(HttpServletRequest request, Long accountId) {
@@ -91,5 +99,17 @@ public class AuditHelper {
             url.append("?").append(queryString);
         }
         return url.toString();
+    }
+
+    public AccessInfo findLastAccessInfo(String email) {
+        Optional<AccessInfo> accessInfo = accessInfoRepository.findLastAccessInfoByEmail(email);
+        return accessInfo.orElse(null);
+    }
+
+    public void saveAccessInfo(String remoteAddr, String email) {
+        AccessInfo accessInfo = new AccessInfo();
+        accessInfo.setAccount(accountHelper.findByEmail(email).orElseThrow(() -> new RuntimeException("Couldn't find associated account with email " + email)));
+        accessInfo.setIpAddress(remoteAddr);
+        accessInfoRepository.save(accessInfo);
     }
 }

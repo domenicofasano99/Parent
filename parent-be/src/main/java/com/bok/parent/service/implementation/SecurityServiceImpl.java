@@ -1,5 +1,6 @@
 package com.bok.parent.service.implementation;
 
+import com.bok.integration.parent.LoginResponseDTO;
 import com.bok.integration.parent.dto.AccountLoginDTO;
 import com.bok.parent.helper.SecurityHelper;
 import com.bok.parent.service.SecurityService;
@@ -14,7 +15,7 @@ public class SecurityServiceImpl implements SecurityService {
     SecurityHelper securityHelper;
 
     @Override
-    public String login(AccountLoginDTO accountLoginDTO) {
+    public LoginResponseDTO login(AccountLoginDTO accountLoginDTO) {
         ValidationUtils.nonNull(accountLoginDTO.email);
         ValidationUtils.nonNull(accountLoginDTO.password);
         return securityHelper.login(accountLoginDTO);

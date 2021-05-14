@@ -1,12 +1,16 @@
 package com.bok.parent.helper;
 
+import com.bok.integration.parent.LoginResponseDTO;
 import com.bok.integration.parent.dto.AccountLoginDTO;
+import com.bok.parent.model.AccessInfo;
 import com.bok.parent.utils.Constants;
 import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
 
 @Component
@@ -15,11 +19,23 @@ public class SecurityHelper {
     @Autowired
     JWTAuthenticationHelper jwtAuthenticationHelper;
 
-    public String login(AccountLoginDTO accountLoginDTO) {
+    @Autowired
+    AuditHelper auditHelper;
+
+    public LoginResponseDTO login(AccountLoginDTO accountLoginDTO) {
         Preconditions.checkArgument(Objects.nonNull(accountLoginDTO.password));
         Preconditions.checkArgument(Objects.nonNull(accountLoginDTO.email));
+        String token = jwtAuthenticationHelper.login(accountLoginDTO.email, accountLoginDTO.password);
 
-        return jwtAuthenticationHelper.login(accountLoginDTO.email, accountLoginDTO.password);
+        AccessInfo accessInfo = auditHelper.findLastAccessInfo(accountLoginDTO.email);
+        LoginResponseDTO response = new LoginResponseDTO();
+        response.token = token;
+        if (Objects.nonNull(accessInfo)) {
+            response.lastAccessDateTime = LocalDateTime.ofInstant(accessInfo.getTimestamp(), ZoneOffset.UTC);
+            response.lastAccessIP = accessInfo.getIpAddress();
+        }
+
+        return response;
     }
 
     /***
