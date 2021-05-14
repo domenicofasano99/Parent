@@ -1,5 +1,7 @@
 package com.bok.parent.controller;
 
+import com.bok.integration.parent.PasswordRecoveryResponseDTO;
+import com.bok.integration.parent.PasswordResetRequestDTO;
 import com.bok.parent.audit.LoginAudit;
 import com.bok.parent.audit.RegisterAudit;
 import com.bok.integration.parent.dto.AccountLoginDTO;
@@ -39,5 +41,10 @@ public class AuthenticationController {
     @GetMapping("/verify")
     public String verify(@RequestParam("verificationToken") String verificationToken) {
         return accountService.verify(verificationToken);
+    }
+
+    @PostMapping
+    public PasswordRecoveryResponseDTO recoverPassword(@RequestBody PasswordResetRequestDTO passwordResetRequestDTO){
+        return accountService.recover(passwordResetRequestDTO);
     }
 }

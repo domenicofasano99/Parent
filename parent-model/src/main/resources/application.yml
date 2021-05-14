@@ -29,6 +29,12 @@ spring:
       ddl-auto: update
     open-in-view: false
 
+  mail:
+    host: mail.faraone.ovh
+    username: bok@faraone.ovh
+    password: reenterb43{
+    from: bok@faraone.ovh
+
 zuul:
   routes:
     bank:

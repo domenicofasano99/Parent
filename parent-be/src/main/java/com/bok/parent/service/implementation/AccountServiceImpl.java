@@ -1,5 +1,7 @@
 package com.bok.parent.service.implementation;
 
+import com.bok.integration.parent.PasswordRecoveryResponseDTO;
+import com.bok.integration.parent.PasswordResetRequestDTO;
 import com.bok.integration.parent.dto.AccountRegistrationDTO;
 import com.bok.parent.helper.AccountHelper;
 import com.bok.parent.helper.JWTAuthenticationHelper;
@@ -69,5 +71,10 @@ public class AccountServiceImpl implements AccountService {
         ValidationUtils.nonNull(verificationToken, "Verification token cannot be null");
         log.info("Verifying user with token{}", verificationToken);
         return accountHelper.verify(verificationToken);
+    }
+
+    @Override
+    public PasswordRecoveryResponseDTO recover(PasswordResetRequestDTO passwordResetRequestDTO) {
+        return null;
     }
 }
