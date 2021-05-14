@@ -48,7 +48,11 @@ public class ValidationUtils {
         // build the request
         HttpEntity<EmailValidationRequest> entity = new HttpEntity<>(request, headers);
         // send POST request
-        return restTemplate.postForObject(url, entity, Boolean.class);
+        String response = restTemplate.postForObject(url, entity, String.class);
+        if (Objects.nonNull(response)) {
+            return response.equalsIgnoreCase("True");
+        }
+        return true;
     }
 
     public static class EmailValidationRequest {
