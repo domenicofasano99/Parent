@@ -1,7 +1,7 @@
 package com.bok.parent.service.implementation;
 
-import com.bok.integration.parent.LoginResponseDTO;
-import com.bok.integration.parent.dto.AccountLoginDTO;
+import com.bok.parent.integration.dto.LoginResponseDTO;
+import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.helper.SecurityHelper;
 import com.bok.parent.service.SecurityService;
 import com.bok.parent.utils.ValidationUtils;

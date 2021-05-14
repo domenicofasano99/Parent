@@ -1,7 +1,7 @@
 package com.bok.parent.helper;
 
-import com.bok.integration.EmailMessage;
-import com.bok.integration.AccountCreationMessage;
+import com.bok.parent.integration.message.EmailMessage;
+import com.bok.parent.integration.message.AccountCreationMessage;
 import com.bok.parent.messaging.BankUserMessageProducer;
 import com.bok.parent.messaging.EmailMessageProducer;
 import com.bok.parent.messaging.KryptoUserMessageProducer;

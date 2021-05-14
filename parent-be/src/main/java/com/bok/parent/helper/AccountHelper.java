@@ -1,8 +1,8 @@
 package com.bok.parent.helper;
 
-import com.bok.integration.AccountCreationMessage;
-import com.bok.integration.EmailMessage;
-import com.bok.integration.parent.dto.AccountRegistrationDTO;
+import com.bok.parent.integration.message.AccountCreationMessage;
+import com.bok.parent.integration.message.EmailMessage;
+import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.exception.EmailAlreadyExistsException;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.AccountTemporaryDetails;

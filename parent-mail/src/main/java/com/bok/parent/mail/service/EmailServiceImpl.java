@@ -19,23 +19,12 @@ public class EmailServiceImpl implements EmailService {
     @Value("${spring.mail.from}")
     String from;
 
-    public void sendSimpleMessage(EmailMessage emailMessage) {
+    public void sendEmail(EmailMessage emailMessage) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
         message.setTo(emailMessage.to);
         message.setSubject(emailMessage.subject);
         message.setText(emailMessage.text);
         emailSender.send(message);
-    }
-
-    public void sendIt(String to) {
-        log.info("into the sendIt function");
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(from);
-        message.setTo(to);
-        message.setSubject("christian è un test!");
-        message.setText("se vedi questo allora le API di spring funzionano");
-        emailSender.send(message);
-        log.info("email sent!!?");
     }
 }

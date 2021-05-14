@@ -1,11 +1,11 @@
 package com.bok.parent.controller;
 
-import com.bok.integration.parent.PasswordRecoveryResponseDTO;
-import com.bok.integration.parent.PasswordResetRequestDTO;
+import com.bok.parent.integration.dto.PasswordRecoveryResponseDTO;
+import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.audit.LoginAudit;
 import com.bok.parent.audit.RegisterAudit;
-import com.bok.integration.parent.dto.AccountLoginDTO;
-import com.bok.integration.parent.dto.AccountRegistrationDTO;
+import com.bok.parent.integration.dto.AccountLoginDTO;
+import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;

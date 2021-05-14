@@ -1,7 +1,7 @@
 package com.bok.parent.audit;
 
-import com.bok.integration.parent.dto.AccountLoginDTO;
-import com.bok.integration.parent.dto.AccountRegistrationDTO;
+import com.bok.parent.integration.dto.AccountLoginDTO;
+import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.helper.AuditHelper;
 import com.bok.parent.repository.AuditLogRepository;
 import org.aspectj.lang.JoinPoint;

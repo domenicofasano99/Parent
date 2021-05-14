@@ -1,8 +1,8 @@
 package com.bok.parent.service;
 
-import com.bok.integration.parent.PasswordRecoveryResponseDTO;
-import com.bok.integration.parent.PasswordResetRequestDTO;
-import com.bok.integration.parent.dto.AccountRegistrationDTO;
+import com.bok.parent.integration.dto.PasswordRecoveryResponseDTO;
+import com.bok.parent.integration.dto.PasswordResetRequestDTO;
+import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import org.springframework.stereotype.Service;
 
 @Service

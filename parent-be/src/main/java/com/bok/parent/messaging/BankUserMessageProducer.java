@@ -1,6 +1,6 @@
 package com.bok.parent.messaging;
 
-import com.bok.integration.AccountCreationMessage;
+import com.bok.parent.integration.message.AccountCreationMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -23,7 +23,8 @@
     <modules>
         <module>parent-be</module>
         <module>parent-model</module>
-        <module>mail</module>
+        <module>parent-mail</module>
+        <module>parent-integration</module>
     </modules>
 
     <dependencies>

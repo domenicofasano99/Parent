@@ -18,7 +18,7 @@ public class MailConsumer {
     @JmsListener(destination = "${active-mq.mail}")
     public void onSendEmailMessage(EmailMessage emailMessage) {
         log.info("Received Message: " + emailMessage.toString());
-        emailService.sendSimpleMessage(emailMessage);
+        emailService.sendEmail(emailMessage);
     }
 
 
