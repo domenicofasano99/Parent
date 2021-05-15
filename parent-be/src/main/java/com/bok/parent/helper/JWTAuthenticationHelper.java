@@ -26,7 +26,7 @@ public class JWTAuthenticationHelper {
     public String login(String email, String password) {
         return accountHelper
                 .findByEmailAndEnabled(email)
-                .filter(user -> user.getEnabled() && cryptoUtils.checkPassword(password, user.getPassword()))
+                .filter(user -> user.getEnabled() && cryptoUtils.checkPassword(password, user.getCredentials().getPassword()))
                 .map(user -> jwtService.create(email))
                 .orElseThrow(() -> new WrongCredentialsException("Invalid email or password."));
     }

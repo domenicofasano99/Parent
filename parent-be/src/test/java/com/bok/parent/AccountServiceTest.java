@@ -1,15 +1,16 @@
 package com.bok.parent;
 
+import com.bok.parent.helper.MessageHelper;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
+import com.bok.parent.integration.message.EmailMessage;
 import com.bok.parent.model.Account;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
-import com.bok.parent.utils.ValidationUtils;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 @Slf4j
@@ -43,10 +44,12 @@ public class AccountServiceTest {
     @Autowired
     SecurityService securityService;
 
-    @Before
+    @Autowired
+    MessageHelper messageHelper;
+
+    @BeforeEach
     public void setup() {
         modelTestUtil.clearAll();
-        Mockito.when(ValidationUtils.validateEmail(anyString())).thenReturn(true);
     }
 
     @Test
@@ -61,9 +64,9 @@ public class AccountServiceTest {
         registrationDTO.credentials.password = faker.internet().password();
         accountService.register(registrationDTO);
 
-        Account account = accountRepository.findByEmail(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
+        Account account = accountRepository.findByCredentials_Email(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
         assertNotNull(account);
-        assertEquals(account.getEmail(), registrationDTO.credentials.email);
+        assertEquals(account.getCredentials().getEmail(), registrationDTO.credentials.email);
         assertFalse(account.getEnabled());
     }
 
@@ -79,10 +82,10 @@ public class AccountServiceTest {
         registrationDTO.credentials = credentials;
         accountService.register(registrationDTO);
 
-        Account account = accountRepository.findByEmail(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
+        Account account = accountRepository.findByCredentials_Email(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
         modelTestUtil.enableAccount(account);
         assertNotNull(account);
-        assertEquals(account.getEmail(), registrationDTO.credentials.email);
+        assertEquals(account.getCredentials().getEmail(), registrationDTO.credentials.email);
         assertTrue(account.getEnabled());
 
     }
@@ -108,11 +111,11 @@ public class AccountServiceTest {
         AccountRegistrationDTO.CredentialsDTO credentials = modelTestUtil.createAccountWithCredentials();
         String email = credentials.email;
 
-        Account a = accountRepository.findByEmail(email).orElseThrow(RuntimeException::new);
+        Account a = accountRepository.findByCredentials_Email(email).orElseThrow(RuntimeException::new);
         PasswordResetRequestDTO requestDTO = new PasswordResetRequestDTO();
         requestDTO.email = email;
         accountService.resetPassword(requestDTO);
-        Account aa = accountRepository.findByEmail(email).orElseThrow(RuntimeException::new);
-        assertNotEquals(a.getPassword(), aa.getPassword());
+        Account aa = accountRepository.findByCredentials_Email(email).orElseThrow(RuntimeException::new);
+        assertNotEquals(a.getCredentials().getPassword(), aa.getCredentials().getPassword());
     }
 }

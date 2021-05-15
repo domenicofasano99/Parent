@@ -78,7 +78,7 @@ public class ModelTestUtil {
         AccountRegistrationDTO registrationDTO = createRegistrationDTO();
 
         accountService.register(registrationDTO);
-        Account account = accountRepository.findByEmail(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
+        Account account = accountRepository.findByCredentials_Email(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
         enableAccount(account);
         return registrationDTO.credentials;
     }

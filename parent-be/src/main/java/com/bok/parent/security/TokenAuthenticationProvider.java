@@ -30,8 +30,8 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
                 .ofNullable(token)
                 .flatMap(t -> Optional.of(jwtAuthenticationHelper.authenticateByToken(String.valueOf(t)))
                         .map(u -> User.builder()
-                                .username(u.getEmail())
-                                .password(u.getPassword())
+                                .username(u.getCredentials().getEmail())
+                                .password(u.getCredentials().getPassword())
                                 .roles(u.getRole().toString())
                                 .build()))
                 .orElseThrow(() -> new TokenAuthenticationException("Invalid authentication token: " + token));

@@ -5,6 +5,7 @@ import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.model.AccessInfo;
 import com.bok.parent.utils.Constants;
 import com.google.common.base.Preconditions;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import java.time.ZoneOffset;
 import java.util.Objects;
 
 @Component
+@Slf4j
 public class SecurityHelper {
 
     @Autowired
@@ -34,7 +36,7 @@ public class SecurityHelper {
             response.lastAccessDateTime = LocalDateTime.ofInstant(accessInfo.getTimestamp(), ZoneOffset.UTC);
             response.lastAccessIP = accessInfo.getIpAddress();
         }
-
+        log.info("User {} logged in", accountLoginDTO.email);
         return response;
     }
 

@@ -78,7 +78,7 @@ public class SecurityServiceTest {
     @Test
     public void loginToUnverifiedAccountTest() {
         AccountRegistrationDTO.CredentialsDTO credentials = modelTestUtil.createAccountWithCredentials();
-        Account account = accountRepository.findByEmail(credentials.email).orElseThrow(RuntimeException::new);
+        Account account = accountRepository.findByCredentials_Email(credentials.email).orElseThrow(RuntimeException::new);
         account.setEnabled(false);
         accountRepository.save(account);
 

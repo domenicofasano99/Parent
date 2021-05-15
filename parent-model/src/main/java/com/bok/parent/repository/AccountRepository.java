@@ -11,12 +11,12 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    Optional<Account> findByEmail(String email);
+    Optional<Account> findByCredentials_Email(String email);
 
-    Optional<Account> findByEmailAndEnabledIsTrue(String email);
+    Optional<Account> findByCredentials_EmailAndEnabledIsTrue(String email);
 
-    Boolean existsByEmail(String email);
+    Boolean existsByCredentials_Email(String email);
 
-    @Query("SELECT a.id FROM Account a WHERE a.email=:email")
+    @Query("SELECT a.id FROM Account a WHERE a.credentials.email=:email")
     Long findIdByEmail(@Param("email") String email);
 }

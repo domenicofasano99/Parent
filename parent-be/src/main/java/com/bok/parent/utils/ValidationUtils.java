@@ -1,6 +1,7 @@
 package com.bok.parent.utils;
 
 import com.bok.parent.helper.EmailHelper;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -35,31 +36,6 @@ public class ValidationUtils {
     }
 
     public static Boolean validateEmail(String email) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://emailvalidator.russi.ovh/validate";
-        // create headers
-        HttpHeaders headers = new HttpHeaders();
-        // set `content-type` header
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        // set `accept` header
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        // create a post object
-        EmailValidationRequest request = new EmailValidationRequest(email);
-        // build the request
-        HttpEntity<EmailValidationRequest> entity = new HttpEntity<>(request, headers);
-        // send POST request
-        String response = restTemplate.postForObject(url, entity, String.class);
-        if (Objects.nonNull(response)) {
-            return response.equalsIgnoreCase("True");
-        }
-        return true;
-    }
-
-    public static class EmailValidationRequest {
-        public String email;
-
-        public EmailValidationRequest(String email) {
-            this.email = email;
-        }
+        return EmailValidator.getInstance().isValid(email);
     }
 }

@@ -10,6 +10,7 @@ import com.bok.parent.exception.EmailAlreadyExistsException;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.AccountTemporaryDetails;
 import com.bok.parent.model.ConfirmationToken;
+import com.bok.parent.model.Credentials;
 import com.bok.parent.repository.AccountConfirmationTokenRepository;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.TemporaryUserRepository;
@@ -57,12 +58,11 @@ public class AccountHelper {
     @Transactional
     public AccountRegistrationResponseDTO register(AccountRegistrationDTO request) {
 
-        if (accountRepository.existsByEmail(request.credentials.email)) {
+        if (accountRepository.existsByCredentials_Email(request.credentials.email)) {
             throw new EmailAlreadyExistsException("Account already registered.");
         }
         Account account = new Account();
-        account.setEmail(request.credentials.email);
-        account.setPassword(cryptoUtils.encryptPassword(request.credentials.password));
+        account.setCredentials(new Credentials(request.credentials.email, cryptoUtils.encryptPassword(request.credentials.password)));
         account.setEnabled(false);
         account.setRole(Account.Role.USER);
         account = accountRepository.save(account);
@@ -89,6 +89,7 @@ public class AccountHelper {
 
         saveAccountInformations(accountTemporaryDetails);
         sendAccountConfirmationEmail(account);
+        log.info("User {} registered", request.credentials.email);
         return new AccountRegistrationResponseDTO("registered");
     }
 
@@ -96,7 +97,7 @@ public class AccountHelper {
         ConfirmationToken confirmationToken = new ConfirmationToken(account);
         accountConfirmationTokenRepository.save(confirmationToken);
         EmailMessage emailMessage = new EmailMessage();
-        emailMessage.to = account.getEmail();
+        emailMessage.to = account.getCredentials().getEmail();
         emailMessage.subject = "BOK Account Verification";
         emailMessage.text = "Click on the link to verify your BOK account: \n" +
                 baseUrl + "/verify?verificationToken=" + confirmationToken.getConfirmationToken() +
@@ -111,11 +112,11 @@ public class AccountHelper {
     }
 
     public Optional<Account> findByEmail(String email) {
-        return accountRepository.findByEmail(email);
+        return accountRepository.findByCredentials_Email(email);
     }
 
     public Optional<Account> findByEmailAndEnabled(String email) {
-        return accountRepository.findByEmailAndEnabledIsTrue(email);
+        return accountRepository.findByCredentials_EmailAndEnabledIsTrue(email);
     }
 
     @Cacheable(value = Constants.IDS, unless = "#result == null")
@@ -135,7 +136,7 @@ public class AccountHelper {
         ConfirmationToken token = accountConfirmationTokenRepository.findByConfirmationToken(accountConfirmationToken);
         Preconditions.checkArgument(Objects.nonNull(token));
 
-        Optional<Account> accountOptional = accountRepository.findByEmail(token.getAccount().getEmail());
+        Optional<Account> accountOptional = accountRepository.findByCredentials_Email(token.getAccount().getCredentials().getEmail());
         if (!accountOptional.isPresent()) {
             log.warn("Couldn't find token {} related account.", accountConfirmationToken);
             accountConfirmationTokenRepository.delete(token);
@@ -144,7 +145,7 @@ public class AccountHelper {
         Account account = accountOptional.get();
         account.setEnabled(true);
         accountRepository.save(account);
-        log.info("Successfully verified account {}", account);
+        log.info("Account {} successfully verified!", account.getCredentials().getEmail());
         accountConfirmationTokenRepository.delete(token);
         notifyServices(account);
 
@@ -179,9 +180,10 @@ public class AccountHelper {
 
         Account account = findByEmail(email).orElseThrow(() -> new RuntimeException("Account not found."));
         String generatedPassword = generatePassword(8);
-        account.setPassword(cryptoUtils.encryptPassword(generatedPassword));
+        Credentials credentials = new Credentials(email, cryptoUtils.encryptPassword(generatedPassword));
+        account.setCredentials(credentials);
         accountRepository.save(account);
-        messageHelper.send(generatePasswordResetEmail(account.getEmail(), generatedPassword));
+        messageHelper.send(generatePasswordResetEmail(account.getCredentials().getEmail(), generatedPassword));
         return new PasswordResetResponseDTO("Password reset correctly");
     }
 
