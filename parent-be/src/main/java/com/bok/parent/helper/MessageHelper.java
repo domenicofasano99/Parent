@@ -1,7 +1,8 @@
 package com.bok.parent.helper;
 
-import com.bok.parent.integration.message.EmailMessage;
 import com.bok.parent.integration.message.AccountCreationMessage;
+import com.bok.parent.integration.message.AccountDeletionMessage;
+import com.bok.parent.integration.message.EmailMessage;
 import com.bok.parent.messaging.BankUserMessageProducer;
 import com.bok.parent.messaging.EmailMessageProducer;
 import com.bok.parent.messaging.KryptoUserMessageProducer;
@@ -27,5 +28,10 @@ public class MessageHelper {
 
     public void send(EmailMessage emailMessage) {
         emailMessageProducer.send(emailMessage);
+    }
+
+    public void send(AccountDeletionMessage accountDeletionMessage) {
+        kryptoUserMessageProducer.send(accountDeletionMessage);
+        bankUserMessageProducer.send(accountDeletionMessage);
     }
 }

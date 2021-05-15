@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import javax.transaction.Transactional;
 import java.util.Optional;
 
-public interface TemporaryUserRepository extends JpaRepository<AccountTemporaryDetails, Long> {
+public interface AccountTemporaryDetailsRepository extends JpaRepository<AccountTemporaryDetails, Long> {
 
     Optional<AccountTemporaryDetails> findByAccount(Account account);
 

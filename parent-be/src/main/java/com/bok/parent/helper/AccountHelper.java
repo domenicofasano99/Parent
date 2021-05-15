@@ -1,20 +1,21 @@
 package com.bok.parent.helper;
 
+import com.bok.parent.exception.EmailAlreadyExistsException;
+import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
 import com.bok.parent.integration.dto.VerificationResponseDTO;
 import com.bok.parent.integration.message.AccountCreationMessage;
+import com.bok.parent.integration.message.AccountDeletionMessage;
 import com.bok.parent.integration.message.EmailMessage;
-import com.bok.parent.integration.dto.AccountRegistrationDTO;
-import com.bok.parent.exception.EmailAlreadyExistsException;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.AccountTemporaryDetails;
 import com.bok.parent.model.ConfirmationToken;
 import com.bok.parent.model.Credentials;
 import com.bok.parent.repository.AccessInfoRepository;
-import com.bok.parent.repository.AccountConfirmationTokenRepository;
 import com.bok.parent.repository.AccountRepository;
-import com.bok.parent.repository.TemporaryUserRepository;
+import com.bok.parent.repository.AccountTemporaryDetailsRepository;
+import com.bok.parent.repository.ConfirmationTokenRepository;
 import com.bok.parent.utils.Constants;
 import com.bok.parent.utils.CryptoUtils;
 import com.bok.parent.utils.ValidationUtils;
@@ -39,10 +40,10 @@ public class AccountHelper {
     AccountRepository accountRepository;
 
     @Autowired
-    AccountConfirmationTokenRepository accountConfirmationTokenRepository;
+    ConfirmationTokenRepository confirmationTokenRepository;
 
     @Autowired
-    TemporaryUserRepository temporaryUserRepository;
+    AccountTemporaryDetailsRepository accountTemporaryDetailsRepository;
 
     @Autowired
     CryptoUtils cryptoUtils;
@@ -99,7 +100,7 @@ public class AccountHelper {
 
     private void sendAccountConfirmationEmail(Account account) {
         ConfirmationToken confirmationToken = new ConfirmationToken(account);
-        accountConfirmationTokenRepository.save(confirmationToken);
+        confirmationTokenRepository.save(confirmationToken);
         EmailMessage emailMessage = new EmailMessage();
         emailMessage.to = account.getCredentials().getEmail();
         emailMessage.subject = "BOK Account Verification";
@@ -112,7 +113,7 @@ public class AccountHelper {
 
     @Transactional
     public void saveAccountInformations(AccountTemporaryDetails accountTemporaryDetails) {
-        temporaryUserRepository.save(accountTemporaryDetails);
+        accountTemporaryDetailsRepository.save(accountTemporaryDetails);
     }
 
     public Optional<Account> findByEmail(String email) {
@@ -130,27 +131,27 @@ public class AccountHelper {
 
     private void notifyServices(Account account) {
         log.info("Notifying services about the account {} creation", account);
-        AccountTemporaryDetails accountTemporaryDetails = temporaryUserRepository.findByAccount(account).orElseThrow(() -> new RuntimeException("Couldn't find account " + account.getId()));
+        AccountTemporaryDetails accountTemporaryDetails = accountTemporaryDetailsRepository.findByAccount(account).orElseThrow(() -> new RuntimeException("Couldn't find account " + account.getId()));
         messageHelper.send(generateAccountCreationMessage(accountTemporaryDetails));
-        temporaryUserRepository.deleteByAccount_Id(account.getId());
+        accountTemporaryDetailsRepository.deleteByAccount_Id(account.getId());
     }
 
     @Transactional
     public VerificationResponseDTO verify(String accountConfirmationToken) {
-        ConfirmationToken token = accountConfirmationTokenRepository.findByConfirmationToken(accountConfirmationToken);
+        ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(accountConfirmationToken);
         Preconditions.checkArgument(Objects.nonNull(token));
 
         Optional<Account> accountOptional = accountRepository.findByCredentials_Email(token.getAccount().getCredentials().getEmail());
         if (!accountOptional.isPresent()) {
             log.warn("Couldn't find token {} related account.", accountConfirmationToken);
-            accountConfirmationTokenRepository.delete(token);
+            confirmationTokenRepository.delete(token);
             throw new RuntimeException("Error while activating you account, try registering again or contact customer care.");
         }
         Account account = accountOptional.get();
         account.setEnabled(true);
         accountRepository.save(account);
         log.info("Account {} successfully verified!", account.getCredentials().getEmail());
-        accountConfirmationTokenRepository.delete(token);
+        confirmationTokenRepository.delete(token);
         notifyServices(account);
 
         return new VerificationResponseDTO("Your account has been confirmed, you can now login to the user area.");
@@ -218,11 +219,19 @@ public class AccountHelper {
     }
 
     public String delete(String email) {
-        Account a = accountRepository.findByCredentials_Email(email).orElseThrow(()->new RuntimeException("Account not found"));
-        temporaryUserRepository.deleteByAccount(a);
-        accountConfirmationTokenRepository.deleteByAccount(a);
+        Account a = accountRepository.findByCredentials_Email(email).orElseThrow(() -> new RuntimeException("Account not found"));
+        accountTemporaryDetailsRepository.deleteByAccount(a);
+        confirmationTokenRepository.deleteByAccount(a);
         accessInfoRepository.deleteByAccount(a);
         accountRepository.delete(a);
+        messageHelper.send(new AccountDeletionMessage(a.getId()));
+
+        EmailMessage deletionEmail = new EmailMessage();
+        deletionEmail.to = email;
+        deletionEmail.text = "You account has been successfully deleted.";
+        deletionEmail.subject = "Account deletion request";
+        messageHelper.send(deletionEmail);
+
         return email + " deleted";
     }
 }

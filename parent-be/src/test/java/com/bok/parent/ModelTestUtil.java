@@ -1,12 +1,12 @@
 package com.bok.parent;
 
-import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.helper.AccountHelper;
+import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.model.Account;
-import com.bok.parent.repository.AccountConfirmationTokenRepository;
 import com.bok.parent.repository.AccountRepository;
+import com.bok.parent.repository.AccountTemporaryDetailsRepository;
 import com.bok.parent.repository.AuditLogRepository;
-import com.bok.parent.repository.TemporaryUserRepository;
+import com.bok.parent.repository.ConfirmationTokenRepository;
 import com.bok.parent.service.AccountService;
 import com.github.javafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +30,10 @@ public class ModelTestUtil {
     AuditLogRepository auditLogRepository;
 
     @Autowired
-    AccountConfirmationTokenRepository accountConfirmationTokenRepository;
+    ConfirmationTokenRepository confirmationTokenRepository;
 
     @Autowired
-    TemporaryUserRepository temporaryUserRepository;
+    AccountTemporaryDetailsRepository accountTemporaryDetailsRepository;
 
     public Account enableAccount(Account account) {
         account.setEnabled(true);
@@ -85,8 +85,8 @@ public class ModelTestUtil {
 
     public void clearAll() {
         auditLogRepository.deleteAll();
-        accountConfirmationTokenRepository.deleteAll();
-        temporaryUserRepository.deleteAll();
+        confirmationTokenRepository.deleteAll();
+        accountTemporaryDetailsRepository.deleteAll();
         accountRepository.deleteAll();
     }
 }

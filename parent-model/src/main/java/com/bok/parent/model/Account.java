@@ -1,6 +1,8 @@
 package com.bok.parent.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -14,12 +16,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.time.Instant;
 import java.util.List;
 
 @Entity
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Account {
 
     @Id
@@ -42,13 +47,11 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany
+    @OneToMany(orphanRemoval = true)
     private List<AccessInfo> accessInfo;
 
-
-    public Account() {
-        //hibernate
-    }
+    @OneToOne(orphanRemoval = true)
+    private AccountTemporaryDetails accountTemporaryDetails;
 
     public Account(String email, String password) {
         this.credentials = new Credentials(email, password);

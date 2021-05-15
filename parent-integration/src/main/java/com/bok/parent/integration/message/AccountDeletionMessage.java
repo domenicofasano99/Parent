@@ -8,13 +8,11 @@ import lombok.ToString;
 
 import java.io.Serializable;
 
-@ToString
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString
 @AllArgsConstructor
-public class EmailMessage implements Serializable {
-    public String to;
-    public String subject;
-    public String text;
+@NoArgsConstructor
+public class AccountDeletionMessage implements Serializable {
+    public Long accountId;
 }

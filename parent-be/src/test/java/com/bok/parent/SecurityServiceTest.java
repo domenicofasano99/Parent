@@ -1,9 +1,9 @@
 package com.bok.parent;
 
-import com.bok.parent.integration.dto.LoginResponseDTO;
+import com.bok.parent.exception.WrongCredentialsException;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
-import com.bok.parent.exception.WrongCredentialsException;
+import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.service.AccountService;
@@ -18,11 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest

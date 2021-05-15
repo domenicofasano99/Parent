@@ -1,6 +1,7 @@
 active-mq:
   users: users
   broker-url: tcp://localhost:61616
+  bank-account-deletion: bank-account-deletion
 
 spring:
   activemq:

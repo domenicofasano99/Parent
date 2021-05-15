@@ -1,14 +1,14 @@
 package com.bok.parent.controller;
 
-import com.bok.parent.audit.PasswordResetAudit;
-import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
-import com.bok.parent.integration.dto.LoginResponseDTO;
-import com.bok.parent.integration.dto.PasswordResetResponseDTO;
-import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.audit.LoginAudit;
+import com.bok.parent.audit.PasswordResetAudit;
 import com.bok.parent.audit.RegisterAudit;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
+import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
+import com.bok.parent.integration.dto.LoginResponseDTO;
+import com.bok.parent.integration.dto.PasswordResetRequestDTO;
+import com.bok.parent.integration.dto.PasswordResetResponseDTO;
 import com.bok.parent.integration.dto.VerificationResponseDTO;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
@@ -57,7 +57,7 @@ public class AuthenticationController {
 
     @Deprecated
     @DeleteMapping("/delete")
-    public String deleteByEmail(@RequestParam("email")String email){
+    public String deleteByEmail(@RequestParam("email") String email) {
         return accountService.delete(email);
     }
 }

@@ -5,9 +5,9 @@ import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.repository.AccessInfoRepository;
-import com.bok.parent.repository.AccountConfirmationTokenRepository;
 import com.bok.parent.repository.AccountRepository;
-import com.bok.parent.repository.TemporaryUserRepository;
+import com.bok.parent.repository.AccountTemporaryDetailsRepository;
+import com.bok.parent.repository.ConfirmationTokenRepository;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
 import com.github.javafaker.Faker;
@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -43,13 +42,13 @@ public class AccountServiceTest {
     AccountRepository accountRepository;
 
     @Autowired
-    TemporaryUserRepository temporaryUserRepository;
+    AccountTemporaryDetailsRepository accountTemporaryDetailsRepository;
 
     @Autowired
     AccessInfoRepository accessInfoRepository;
 
     @Autowired
-    AccountConfirmationTokenRepository accountConfirmationTokenRepository;
+    ConfirmationTokenRepository confirmationTokenRepository;
 
     @Autowired
     SecurityService securityService;
@@ -136,8 +135,8 @@ public class AccountServiceTest {
 
         accountService.delete(email);
         Account account = accountRepository.findByCredentials_Email(email).orElse(null);
-        assertFalse(accountConfirmationTokenRepository.findByAccount(account).isPresent());
-        assertFalse(temporaryUserRepository.findByAccount(account).isPresent());
+        assertFalse(confirmationTokenRepository.findByAccount(account).isPresent());
+        assertFalse(accountTemporaryDetailsRepository.findByAccount(account).isPresent());
         assertTrue(accessInfoRepository.findByAccount(account).isEmpty());
     }
 }

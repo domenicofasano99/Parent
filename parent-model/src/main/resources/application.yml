@@ -7,6 +7,8 @@ active-mq:
   bank-users: bank-accounts
   broker-url: tcp://dev.faraone.ovh:61616
   emails: emails
+  bank-account-deletion: bank-account-deletion
+  krypto-account-deletion: krypto-account-deletion
 spring:
   application:
     name: parent
