@@ -31,6 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             new AntPathRequestMatcher("/login"),
             new AntPathRequestMatcher("/register"),
             new AntPathRequestMatcher("/verify"),
+            new AntPathRequestMatcher("/delete"),
             new AntPathRequestMatcher("/authenticate"),
             new AntPathRequestMatcher("/register"),
             new AntPathRequestMatcher("/swagger-ui/**"),
