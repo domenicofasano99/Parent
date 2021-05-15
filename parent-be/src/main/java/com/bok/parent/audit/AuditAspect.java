@@ -3,6 +3,8 @@ package com.bok.parent.audit;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.helper.AuditHelper;
+import com.bok.parent.integration.dto.PasswordResetRequestDTO;
+import com.bok.parent.integration.dto.PasswordResetResponseDTO;
 import com.bok.parent.repository.AuditLogRepository;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
@@ -43,6 +45,13 @@ public class AuditAspect {
         HttpServletRequest req = (HttpServletRequest) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof HttpServletRequest).findFirst().get();
         AccountRegistrationDTO registration = (AccountRegistrationDTO) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof AccountRegistrationDTO).findFirst().get();
         auditHelper.auditRegistrationRequest(req.getRemoteAddr(), registration.credentials.email);
+    }
+
+    @Before("@annotation(PasswordResetAudit)")
+    public void passwordResetDetails(JoinPoint joinPoint) {
+        HttpServletRequest req = (HttpServletRequest) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof HttpServletRequest).findFirst().get();
+        PasswordResetRequestDTO resetRequest = (PasswordResetRequestDTO) Arrays.stream(joinPoint.getArgs()).filter(a -> a instanceof PasswordResetRequestDTO).findFirst().get();
+        auditHelper.auditPasswordResetRequest(req.getRemoteAddr(), resetRequest.email);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.bok.parent.controller;
 
+import com.bok.parent.audit.PasswordResetAudit;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
@@ -46,8 +47,9 @@ public class AuthenticationController {
         return accountService.verify(verificationToken);
     }
 
-    @PostMapping("/recover")
-    public PasswordResetResponseDTO recoverPassword(@RequestBody PasswordResetRequestDTO passwordResetRequestDTO) {
+    @PasswordResetAudit
+    @PostMapping("/resetPassword")
+    public PasswordResetResponseDTO resetPassword(@RequestBody PasswordResetRequestDTO passwordResetRequestDTO) {
         return accountService.resetPassword(passwordResetRequestDTO);
     }
 }

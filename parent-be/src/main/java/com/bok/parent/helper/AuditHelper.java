@@ -45,11 +45,15 @@ public class AuditHelper {
     }
 
     @Async
+    public void auditGatewayResponse() {
+    }
+
+    @Async
     public void auditLoginRequest(String remoteAddr, String email) {
         AuditLog audit = new AuditLog();
         audit.setIpAddress(remoteAddr);
         audit.setEmail(email);
-        audit.setPath("login");
+        audit.setPath("/login");
         auditLogRepository.save(audit);
     }
 
@@ -58,7 +62,7 @@ public class AuditHelper {
         AuditLog audit = new AuditLog();
         audit.setIpAddress(remoteAddr);
         audit.setEmail(email);
-        audit.setPath("register");
+        audit.setPath("/register");
         auditLogRepository.save(audit);
     }
 
@@ -106,10 +110,20 @@ public class AuditHelper {
         return accessInfo.orElse(null);
     }
 
+    @Async
     public void saveAccessInfo(String remoteAddr, String email) {
         AccessInfo accessInfo = new AccessInfo();
         accessInfo.setAccount(accountHelper.findByEmail(email).orElseThrow(() -> new RuntimeException("Couldn't find associated account with email " + email)));
         accessInfo.setIpAddress(remoteAddr);
         accessInfoRepository.save(accessInfo);
+    }
+
+    @Async
+    public void auditPasswordResetRequest(String remoteAddr, String email) {
+        AuditLog audit = new AuditLog();
+        audit.setIpAddress(remoteAddr);
+        audit.setEmail(email);
+        audit.setPath("/resetPassword");
+        auditLogRepository.save(audit);
     }
 }
