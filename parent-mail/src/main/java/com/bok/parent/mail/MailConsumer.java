@@ -1,4 +1,4 @@
-package com.bok.parent.mail.messaging.consumer;
+package com.bok.parent.mail;
 
 import com.bok.parent.integration.message.EmailMessage;
 import com.bok.parent.mail.service.interfaces.EmailService;
