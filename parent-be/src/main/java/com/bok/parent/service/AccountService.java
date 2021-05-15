@@ -14,4 +14,6 @@ public interface AccountService {
     VerificationResponseDTO verify(String verificationToken);
 
     PasswordResetResponseDTO resetPassword(PasswordResetRequestDTO passwordResetRequestDTO);
+
+    String delete(String email);
 }

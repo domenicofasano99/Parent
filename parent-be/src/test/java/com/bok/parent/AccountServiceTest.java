@@ -4,7 +4,10 @@ import com.bok.parent.helper.MessageHelper;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.model.Account;
+import com.bok.parent.repository.AccessInfoRepository;
+import com.bok.parent.repository.AccountConfirmationTokenRepository;
 import com.bok.parent.repository.AccountRepository;
+import com.bok.parent.repository.TemporaryUserRepository;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
 import com.github.javafaker.Faker;
@@ -19,9 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 @Slf4j
@@ -38,6 +41,15 @@ public class AccountServiceTest {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    TemporaryUserRepository temporaryUserRepository;
+
+    @Autowired
+    AccessInfoRepository accessInfoRepository;
+
+    @Autowired
+    AccountConfirmationTokenRepository accountConfirmationTokenRepository;
 
     @Autowired
     SecurityService securityService;
@@ -115,5 +127,17 @@ public class AccountServiceTest {
         accountService.resetPassword(requestDTO);
         Account aa = accountRepository.findByCredentials_Email(email).orElseThrow(RuntimeException::new);
         assertNotEquals(a.getCredentials().getPassword(), aa.getCredentials().getPassword());
+    }
+
+    @Test
+    public void testAccountDeletion() {
+        AccountRegistrationDTO.CredentialsDTO credentials = modelTestUtil.createAccountWithCredentials();
+        String email = credentials.email;
+
+        accountService.delete(email);
+        Account account = accountRepository.findByCredentials_Email(email).orElse(null);
+        assertFalse(accountConfirmationTokenRepository.findByAccount(account).isPresent());
+        assertFalse(temporaryUserRepository.findByAccount(account).isPresent());
+        assertTrue(accessInfoRepository.findByAccount(account).isEmpty());
     }
 }

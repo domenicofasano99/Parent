@@ -11,6 +11,7 @@ import com.bok.parent.model.Account;
 import com.bok.parent.model.AccountTemporaryDetails;
 import com.bok.parent.model.ConfirmationToken;
 import com.bok.parent.model.Credentials;
+import com.bok.parent.repository.AccessInfoRepository;
 import com.bok.parent.repository.AccountConfirmationTokenRepository;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.TemporaryUserRepository;
@@ -51,6 +52,9 @@ public class AccountHelper {
 
     @Autowired
     ValidationUtils validationUtils;
+
+    @Autowired
+    AccessInfoRepository accessInfoRepository;
 
     @Value("${server.baseUrl}")
     String baseUrl;
@@ -211,5 +215,14 @@ public class AccountHelper {
                 "best regards\n" +
                 "the bok team";
         return mail;
+    }
+
+    public String delete(String email) {
+        Account a = accountRepository.findByCredentials_Email(email).orElseThrow(()->new RuntimeException("Account not found"));
+        temporaryUserRepository.deleteByAccount(a);
+        accountConfirmationTokenRepository.deleteByAccount(a);
+        accessInfoRepository.deleteByAccount(a);
+        accountRepository.delete(a);
+        return email + " deleted";
     }
 }

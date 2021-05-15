@@ -83,4 +83,9 @@ public class AccountServiceImpl implements AccountService {
         ValidationUtils.nonNull(passwordResetRequestDTO.email);
         return accountHelper.recover(passwordResetRequestDTO.email);
     }
+
+    @Override
+    public String delete(String email) {
+        return accountHelper.delete(email);
+    }
 }
