@@ -1,11 +1,14 @@
 package com.bok.parent.controller;
 
-import com.bok.parent.integration.dto.PasswordRecoveryResponseDTO;
+import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
+import com.bok.parent.integration.dto.LoginResponseDTO;
+import com.bok.parent.integration.dto.PasswordResetResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.audit.LoginAudit;
 import com.bok.parent.audit.RegisterAudit;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
+import com.bok.parent.integration.dto.VerificationResponseDTO;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,23 +31,23 @@ public class AuthenticationController {
 
     @LoginAudit
     @PostMapping("/login")
-    public Object login(@RequestBody AccountLoginDTO user, HttpServletRequest request) {
+    public LoginResponseDTO login(@RequestBody AccountLoginDTO user, HttpServletRequest request) {
         return securityService.login(user);
     }
 
     @RegisterAudit
     @PostMapping("/register")
-    public String register(@RequestBody AccountRegistrationDTO accountRegistrationDTO, HttpServletRequest request) {
+    public AccountRegistrationResponseDTO register(@RequestBody AccountRegistrationDTO accountRegistrationDTO, HttpServletRequest request) {
         return accountService.register(accountRegistrationDTO);
     }
 
     @GetMapping("/verify")
-    public String verify(@RequestParam("verificationToken") String verificationToken) {
+    public VerificationResponseDTO verify(@RequestParam("verificationToken") String verificationToken) {
         return accountService.verify(verificationToken);
     }
 
-    @PostMapping
-    public PasswordRecoveryResponseDTO recoverPassword(@RequestBody PasswordResetRequestDTO passwordResetRequestDTO) {
-        return accountService.recover(passwordResetRequestDTO);
+    @PostMapping("/recover")
+    public PasswordResetResponseDTO recoverPassword(@RequestBody PasswordResetRequestDTO passwordResetRequestDTO) {
+        return accountService.resetPassword(passwordResetRequestDTO);
     }
 }

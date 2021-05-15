@@ -1,11 +1,13 @@
 package com.bok.parent.service.implementation;
 
 import com.bok.parent.helper.EmailHelper;
-import com.bok.parent.integration.dto.PasswordRecoveryResponseDTO;
+import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
+import com.bok.parent.integration.dto.PasswordResetResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.helper.AccountHelper;
 import com.bok.parent.helper.JWTAuthenticationHelper;
+import com.bok.parent.integration.dto.VerificationResponseDTO;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.utils.ValidationUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +31,7 @@ public class AccountServiceImpl implements AccountService {
     EmailHelper emailHelper;
 
     @Override
-    public String register(AccountRegistrationDTO registrationDTO) {
+    public AccountRegistrationResponseDTO register(AccountRegistrationDTO registrationDTO) {
         ValidationUtils.nonNull(registrationDTO);
         ValidationUtils.nonNull(registrationDTO.credentials);
         ValidationUtils.nonNull(registrationDTO.credentials.email);
@@ -69,14 +71,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String verify(String verificationToken) {
+    public VerificationResponseDTO verify(String verificationToken) {
         ValidationUtils.nonNull(verificationToken, "Verification token cannot be null");
         log.info("Verifying user with token{}", verificationToken);
         return accountHelper.verify(verificationToken);
     }
 
     @Override
-    public PasswordRecoveryResponseDTO recover(PasswordResetRequestDTO passwordResetRequestDTO) {
-        return null;
+    public PasswordResetResponseDTO resetPassword(PasswordResetRequestDTO passwordResetRequestDTO) {
+        ValidationUtils.nonNull(passwordResetRequestDTO);
+        ValidationUtils.nonNull(passwordResetRequestDTO.email);
+        return accountHelper.recover(passwordResetRequestDTO.email);
     }
 }

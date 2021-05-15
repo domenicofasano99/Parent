@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface AccessInfoRepository extends JpaRepository<AccessInfo, Long> {
 
-    @Query("select f from AccessInfo f where f.timestamp = (select max(ff.timestamp) from AccessInfo ff where ff.account.email = f.account.email)")
+    @Query("select f from AccessInfo f where f.timestamp = (select max(ff.timestamp) from AccessInfo ff where ff.account.email = f.account.email) and f.account.email = :email")
     Optional<AccessInfo> findLastAccessInfoByEmail(String email);
 }

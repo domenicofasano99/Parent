@@ -1,15 +1,17 @@
 package com.bok.parent.service;
 
-import com.bok.parent.integration.dto.PasswordRecoveryResponseDTO;
+import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
+import com.bok.parent.integration.dto.PasswordResetResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
+import com.bok.parent.integration.dto.VerificationResponseDTO;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface AccountService {
-    String register(AccountRegistrationDTO accountRegistrationDTO);
+    AccountRegistrationResponseDTO register(AccountRegistrationDTO accountRegistrationDTO);
 
-    String verify(String verificationToken);
+    VerificationResponseDTO verify(String verificationToken);
 
-    PasswordRecoveryResponseDTO recover(PasswordResetRequestDTO passwordResetRequestDTO);
+    PasswordResetResponseDTO resetPassword(PasswordResetRequestDTO passwordResetRequestDTO);
 }

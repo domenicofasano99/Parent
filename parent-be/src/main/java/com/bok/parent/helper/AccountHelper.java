@@ -1,5 +1,8 @@
 package com.bok.parent.helper;
 
+import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
+import com.bok.parent.integration.dto.PasswordResetResponseDTO;
+import com.bok.parent.integration.dto.VerificationResponseDTO;
 import com.bok.parent.integration.message.AccountCreationMessage;
 import com.bok.parent.integration.message.EmailMessage;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
@@ -23,6 +26,7 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 
 
 @Component
@@ -51,7 +55,7 @@ public class AccountHelper {
     String baseUrl;
 
     @Transactional
-    public String register(AccountRegistrationDTO request) {
+    public AccountRegistrationResponseDTO register(AccountRegistrationDTO request) {
 
         if (accountRepository.existsByEmail(request.credentials.email)) {
             throw new EmailAlreadyExistsException("Account already registered.");
@@ -85,7 +89,7 @@ public class AccountHelper {
 
         saveAccountInformations(accountTemporaryDetails);
         sendAccountConfirmationEmail(account);
-        return "registered";
+        return new AccountRegistrationResponseDTO("registered");
     }
 
     private void sendAccountConfirmationEmail(Account account) {
@@ -127,7 +131,7 @@ public class AccountHelper {
     }
 
     @Transactional
-    public String verify(String accountConfirmationToken) {
+    public VerificationResponseDTO verify(String accountConfirmationToken) {
         ConfirmationToken token = accountConfirmationTokenRepository.findByConfirmationToken(accountConfirmationToken);
         Preconditions.checkArgument(Objects.nonNull(token));
 
@@ -144,7 +148,7 @@ public class AccountHelper {
         accountConfirmationTokenRepository.delete(token);
         notifyServices(account);
 
-        return "Your account has been confirmed, you can now login to the user area.";
+        return new VerificationResponseDTO("Your account has been confirmed, you can now login to the user area.");
     }
 
     private AccountCreationMessage generateAccountCreationMessage(AccountTemporaryDetails userData) {
@@ -169,5 +173,41 @@ public class AccountHelper {
         message.accountId = userData.getAccount().getId();
 
         return message;
+    }
+
+    public PasswordResetResponseDTO recover(String email) {
+
+        Account account = findByEmail(email).orElseThrow(() -> new RuntimeException("Account not found."));
+        String generatedPassword = generatePassword(8);
+        account.setPassword(cryptoUtils.encryptPassword(generatedPassword));
+        accountRepository.save(account);
+        messageHelper.send(generatePasswordResetEmail(account.getEmail(), generatedPassword));
+        return new PasswordResetResponseDTO("Password reset correctly");
+    }
+
+
+    public static String generatePassword(int len) {
+        String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Random rnd = new Random();
+
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        }
+        return sb.toString();
+    }
+
+    public EmailMessage generatePasswordResetEmail(String email, String password) {
+        EmailMessage mail = new EmailMessage();
+        mail.to = email;
+        mail.subject = "BOK account password reset";
+        mail.text = "Hello BOK user, \n " +
+                "your account password has been reset, you can now login using the following credentials:\n" +
+                "email: " + email + "\n" +
+                "password: " + password + "\n" +
+                "we suggest you change this password as soon as possible\n\n" +
+                "best regards\n" +
+                "the bok team";
+        return mail;
     }
 }
