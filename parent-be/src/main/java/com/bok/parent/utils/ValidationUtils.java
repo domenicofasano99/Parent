@@ -61,7 +61,7 @@ public class ValidationUtils {
     }
 
     public static void validateSurname(String surname) {
-        Matcher surnameMatcher = namePatter.matcher(surname);
+        Matcher surnameMatcher = surnamePatter.matcher(surname);
         if (!surnameMatcher.matches()) {
             log.info("Surname {} not accepted", surname);
             throw new IllegalArgumentException("Illegal person Surname");
