@@ -9,12 +9,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokenExpirationResponseDTO {
+public class TokenInfoResponseDTO {
     public Instant expirationDate;
-    public Boolean expired;
-
-    public TokenExpirationResponseDTO(Boolean expired) {
-        this.expired = expired;
-    }
 
 }

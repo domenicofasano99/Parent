@@ -5,8 +5,8 @@ import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveRequestDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
-import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
-import com.bok.parent.integration.dto.TokenExpirationResponseDTO;
+import com.bok.parent.integration.dto.LogoutResponseDTO;
+import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.service.SecurityService;
 import com.bok.parent.utils.ValidationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +31,18 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    public TokenExpirationResponseDTO tokenInfo(TokenExpirationRequestDTO tokenExpirationRequestDTO) {
-        ValidationUtils.nonNull(tokenExpirationRequestDTO.token);
-        return securityHelper.tokenInfo(tokenExpirationRequestDTO);
+    public TokenInfoResponseDTO tokenInfo(String token) {
+        return securityHelper.getTokenInfo(token);
     }
 
     @Override
     public KeepAliveResponseDTO keepAlive(KeepAliveRequestDTO keepAliveRequestDTO) {
         ValidationUtils.nonNull(keepAliveRequestDTO.token);
         return securityHelper.keepAlive();
+    }
+
+    @Override
+    public LogoutResponseDTO logout(String token) {
+         return securityHelper.logout(token);
     }
 }

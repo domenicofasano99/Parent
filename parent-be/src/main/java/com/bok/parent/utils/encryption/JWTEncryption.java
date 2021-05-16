@@ -50,7 +50,7 @@ public class JWTEncryption {
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             return new String(cipher.doFinal(Base64.getDecoder().decode(encryptedToken)));
         } catch (Exception e) {
-            log.error("Error while decrypting: " + e.toString());
+            log.error("Error while decrypting: {}", e);
         }
         return null;
     }

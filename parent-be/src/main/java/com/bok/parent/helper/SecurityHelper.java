@@ -3,12 +3,13 @@ package com.bok.parent.helper;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
-import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
-import com.bok.parent.integration.dto.TokenExpirationResponseDTO;
+import com.bok.parent.integration.dto.LogoutResponseDTO;
+import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.AccessInfo;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,9 @@ public class SecurityHelper {
 
     @Autowired
     JWTAuthenticationHelper jwtAuthenticationHelper;
+
+    @Autowired
+    TokenHelper tokenHelper;
 
     @Autowired
     AuditHelper auditHelper;
@@ -45,11 +49,20 @@ public class SecurityHelper {
         return jwtAuthenticationHelper.extractAccountIdFromToken(token);
     }
 
-    public TokenExpirationResponseDTO tokenInfo(TokenExpirationRequestDTO tokenExpirationRequestDTO) {
-        return jwtAuthenticationHelper.tokenExpirationInfo(tokenExpirationRequestDTO.token);
+    public TokenInfoResponseDTO getTokenInfo(String token) {
+        return tokenHelper.getTokenInfo(token);
     }
 
     public KeepAliveResponseDTO keepAlive() {
         return null;
+    }
+
+    public LogoutResponseDTO logout(String token) {
+        return new LogoutResponseDTO(tokenHelper.invalidateToken(token));
+    }
+
+    @Scheduled(cron = "0 0 * * * *")
+    public void deleteExpiredToken() {
+        tokenHelper.deleteExpiredTokens();
     }
 }

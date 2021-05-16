@@ -1,11 +1,13 @@
 package com.bok.parent;
 
+import com.bok.parent.exception.TokenAuthenticationException;
 import com.bok.parent.exception.WrongCredentialsException;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
+import com.bok.parent.integration.dto.LogoutResponseDTO;
 import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
-import com.bok.parent.integration.dto.TokenExpirationResponseDTO;
+import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.service.AccountService;
@@ -20,9 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.Instant;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest
@@ -96,15 +101,16 @@ public class SecurityServiceTest {
         AccountLoginDTO loginDTO = new AccountLoginDTO();
         loginDTO.email = account.email;
         loginDTO.password = account.password;
-        LoginResponseDTO login = securityService.login(loginDTO);
-        log.debug(login.token);
-        assertNotNull(login.token);
+        LoginResponseDTO loginResponse = securityService.login(loginDTO);
+        log.debug(loginResponse.token);
+        assertNotNull(loginResponse.token);
 
 
         TokenExpirationRequestDTO requestDTO = new TokenExpirationRequestDTO();
-        requestDTO.token = login.token;
-        TokenExpirationResponseDTO response = securityService.tokenInfo(requestDTO);
-        assertFalse(response.expired);
+        requestDTO.token = loginResponse.token;
+        TokenInfoResponseDTO response = securityService.tokenInfo(loginResponse.token);
+        assertTrue(response.expirationDate.isAfter(Instant.now()));
 
     }
+
 }

@@ -4,8 +4,8 @@ import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveRequestDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
-import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
-import com.bok.parent.integration.dto.TokenExpirationResponseDTO;
+import com.bok.parent.integration.dto.LogoutResponseDTO;
+import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,7 +14,9 @@ public interface SecurityService {
 
     Long extractAccountId(String token);
 
-    TokenExpirationResponseDTO tokenInfo(TokenExpirationRequestDTO tokenExpirationRequestDTO);
+    TokenInfoResponseDTO tokenInfo(String token);
 
     KeepAliveResponseDTO keepAlive(KeepAliveRequestDTO keepAliveRequestDTO);
+
+    LogoutResponseDTO logout(String token);
 }

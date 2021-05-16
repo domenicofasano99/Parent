@@ -9,13 +9,14 @@ import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.KeepAliveRequestDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
+import com.bok.parent.integration.dto.LogoutResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
-import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
-import com.bok.parent.integration.dto.TokenExpirationResponseDTO;
+import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.integration.dto.VerificationResponseDTO;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
+import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,8 +49,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/tokenInfo")
-    public TokenExpirationResponseDTO tokenInfo(@RequestBody TokenExpirationRequestDTO tokenExpirationRequestDTO){
-        return securityService.tokenInfo(tokenExpirationRequestDTO);
+    public TokenInfoResponseDTO tokenInfo(HttpServletRequest request) {
+        return securityService.tokenInfo(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
     }
 
     @GetMapping("/verify")
@@ -71,7 +72,12 @@ public class AuthenticationController {
     }
 
     @PostMapping("/keepAlive")
-    public KeepAliveResponseDTO keepAlive(KeepAliveRequestDTO keepAliveRequestDTO){
+    public KeepAliveResponseDTO keepAlive(KeepAliveRequestDTO keepAliveRequestDTO) {
         return securityService.keepAlive(keepAliveRequestDTO);
+    }
+
+    @PostMapping
+    public LogoutResponseDTO logout(HttpServletRequest request) {
+        return securityService.logout(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
     }
 }

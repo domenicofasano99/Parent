@@ -5,6 +5,7 @@ import com.bok.parent.service.SecurityService;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,7 +47,7 @@ public class PreForwardingProcessor extends ZuulFilter {
     public Object run() {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
-        String token = request.getHeader("Authorization").replaceFirst("Bearer ", "");
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION).substring(7);
         Long accountId = securityService.extractAccountId(token);
 
         auditHelper.auditGatewayRequest(request, accountId);
