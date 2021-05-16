@@ -16,14 +16,14 @@ spring:
         - java.lang
     in-memory: true
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
-    username: sa
-    password: sa
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/testing
+    username: testing
+    password: testing
   jpa:
     hibernate:
       ddl-auto: create-drop
-    database: h2
+    database: mysql
 
 security:
   basic:
@@ -35,4 +35,7 @@ security:
     expiration: 86400
     secret: JwtSecretKey
 
-
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
