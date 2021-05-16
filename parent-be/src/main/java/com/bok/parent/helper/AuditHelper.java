@@ -8,6 +8,7 @@ import com.google.common.io.CharStreams;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -54,6 +55,7 @@ public class AuditHelper {
         audit.setIpAddress(remoteAddr);
         audit.setEmail(email);
         audit.setPath("/login");
+        audit.setMethod(HttpMethod.POST.name());
         auditLogRepository.save(audit);
     }
 
@@ -63,6 +65,7 @@ public class AuditHelper {
         audit.setIpAddress(remoteAddr);
         audit.setEmail(email);
         audit.setPath("/register");
+        audit.setMethod(HttpMethod.POST.name());
         auditLogRepository.save(audit);
     }
 
