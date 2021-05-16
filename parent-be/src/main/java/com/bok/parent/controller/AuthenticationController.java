@@ -6,6 +6,8 @@ import com.bok.parent.audit.RegisterAudit;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
+import com.bok.parent.integration.dto.KeepAliveRequestDTO;
+import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
@@ -66,5 +68,10 @@ public class AuthenticationController {
     @DeleteMapping("/delete")
     public String deleteByEmail(@RequestParam("email") String email) {
         return accountService.delete(email);
+    }
+
+    @PostMapping("/keepAlive")
+    public KeepAliveResponseDTO keepAlive(KeepAliveRequestDTO keepAliveRequestDTO){
+        return securityService.keepAlive(keepAliveRequestDTO);
     }
 }

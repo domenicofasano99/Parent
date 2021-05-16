@@ -33,4 +33,14 @@ public class ValidationUtils {
     public static Boolean validateEmail(String email) {
         return EmailValidator.getInstance().isValid(email);
     }
+
+    public static void check(Boolean expression, String message) {
+        if (!expression) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    public static void check(Boolean expression) {
+        check(expression, "Invalid argument.");
+    }
 }

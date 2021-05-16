@@ -9,6 +9,7 @@ import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
 import com.bok.parent.integration.dto.VerificationResponseDTO;
 import com.bok.parent.service.AccountService;
+import com.bok.parent.service.bank.BankService;
 import com.bok.parent.utils.ValidationUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     EmailHelper emailHelper;
+
+    @Autowired
+    BankService bankService;
 
     @Override
     public AccountRegistrationResponseDTO register(AccountRegistrationDTO registrationDTO) {
@@ -66,6 +70,8 @@ public class AccountServiceImpl implements AccountService {
         ValidationUtils.nonNull(registrationDTO.address.county);
         ValidationUtils.nonNull(registrationDTO.address.country);
         ValidationUtils.nonNull(registrationDTO.address.postalCode);
+
+        ValidationUtils.check(bankService.preauthorize(registrationDTO.fiscalCode, registrationDTO.vatNumber, registrationDTO.business));
 
         return accountHelper.register(registrationDTO);
     }

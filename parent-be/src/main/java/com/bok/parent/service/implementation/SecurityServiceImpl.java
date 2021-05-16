@@ -2,6 +2,8 @@ package com.bok.parent.service.implementation;
 
 import com.bok.parent.helper.SecurityHelper;
 import com.bok.parent.integration.dto.AccountLoginDTO;
+import com.bok.parent.integration.dto.KeepAliveRequestDTO;
+import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
 import com.bok.parent.integration.dto.TokenExpirationResponseDTO;
@@ -32,5 +34,11 @@ public class SecurityServiceImpl implements SecurityService {
     public TokenExpirationResponseDTO tokenInfo(TokenExpirationRequestDTO tokenExpirationRequestDTO) {
         ValidationUtils.nonNull(tokenExpirationRequestDTO.token);
         return securityHelper.tokenInfo(tokenExpirationRequestDTO);
+    }
+
+    @Override
+    public KeepAliveResponseDTO keepAlive(KeepAliveRequestDTO keepAliveRequestDTO) {
+        ValidationUtils.nonNull(keepAliveRequestDTO.token);
+        return securityHelper.keepAlive();
     }
 }
