@@ -78,6 +78,9 @@ public class AuditHelper {
     }
 
     public String getRequestParameters(HttpServletRequest request) {
+        if (isNull(request)) {
+            return null;
+        }
         if (isNull(request.getParameterMap())) {
             return null;
         }
