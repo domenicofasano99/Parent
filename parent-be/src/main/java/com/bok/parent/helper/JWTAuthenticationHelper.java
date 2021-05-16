@@ -31,14 +31,14 @@ public class JWTAuthenticationHelper {
         Token token = accountHelper
                 .findByEmailAndEnabled(email)
                 .filter(account -> account.getEnabled() && cryptoUtils.checkPassword(password, account.getCredentials().getPassword()))
-                .map(account -> jwtService.create(email, account.getId()))
+                .map(account -> jwtService.create(account))
                 .orElseThrow(() -> new WrongCredentialsException("Invalid email or password."));
         tokenHelper.saveToken(token);
         return token.tokenString;
     }
 
     public Account authenticateByToken(String token) {
-        String email = jwtService.verify(token).email;
+        String email = jwtService.verify(token).account.getCredentials().getEmail();
         return Optional.ofNullable(email)
                 .flatMap(name -> accountHelper.findByEmail(name))
                 .filter(Account::getEnabled)
@@ -46,6 +46,6 @@ public class JWTAuthenticationHelper {
     }
 
     public Long extractAccountIdFromToken(String token) {
-        return jwtService.verify(token).accountId;
+        return jwtService.verify(token).account.getId();
     }
 }

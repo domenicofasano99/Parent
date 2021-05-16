@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import java.time.Instant;
 
 @Data
@@ -33,22 +34,18 @@ public class Token {
     @Column
     public String issuer;
 
-    @Column
-    public Long accountId;
-
-    @Column
-    public String email;
+    @ManyToOne
+    public Account account;
 
     @Column
     public Boolean expired;
 
-    public Token(String tokenString, Instant issuedAt, Instant expiresAt, String issuer, Long accountId, String email, Boolean expired) {
+    public Token(String tokenString, Instant issuedAt, Instant expiresAt, String issuer, Account account, Boolean expired) {
         this.tokenString = tokenString;
         this.issuedAt = issuedAt;
         this.expiresAt = expiresAt;
         this.issuer = issuer;
-        this.accountId = accountId;
-        this.email = email;
         this.expired = expired;
+        this.account = account;
     }
 }

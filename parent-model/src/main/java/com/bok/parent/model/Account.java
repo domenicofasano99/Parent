@@ -53,6 +53,9 @@ public class Account {
     @OneToOne(orphanRemoval = true)
     private AccountTemporaryDetails accountTemporaryDetails;
 
+    @OneToMany
+    private List<Token> token;
+
     public Account(String email, String password) {
         this.credentials = new Credentials(email, password);
     }

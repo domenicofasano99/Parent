@@ -10,4 +10,6 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
     Optional<Token> findByTokenString(String token);
 
     Integer deleteByExpiredIsTrue();
+
+    Optional<Token> findByAccount_Credentials_EmailAndExpiredIsFalse(String email);
 }

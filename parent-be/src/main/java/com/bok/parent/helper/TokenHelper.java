@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Slf4j
 @Component
 public class TokenHelper {
@@ -38,5 +40,9 @@ public class TokenHelper {
     public TokenInfoResponseDTO getTokenInfo(String token) {
         Token t = findByTokenString(token);
         return new TokenInfoResponseDTO(t.expiresAt);
+    }
+
+    public Optional<Token> getActiveToken(String email) {
+        return tokenRepository.findByAccount_Credentials_EmailAndExpiredIsFalse(email);
     }
 }

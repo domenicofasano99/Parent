@@ -234,4 +234,8 @@ public class AccountHelper {
 
         return email + " deleted";
     }
+
+    public Account findById(Long accountId) {
+        return accountRepository.findById(accountId).orElseThrow(RuntimeException::new);
+    }
 }

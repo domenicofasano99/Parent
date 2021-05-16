@@ -5,7 +5,9 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.bok.parent.exception.TokenAuthenticationException;
+import com.bok.parent.helper.AccountHelper;
 import com.bok.parent.helper.TokenHelper;
+import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,9 @@ public class JWTService {
     @Autowired
     TokenHelper tokenHelper;
 
+    @Autowired
+    AccountHelper accountHelper;
+
 
     public JWTService(
             @Value("${jwt.security.secret}") String secret,
@@ -38,7 +43,7 @@ public class JWTService {
         this.defaultExpiration = defaultExpirationSeconds;
     }
 
-    public Token create(String email, Long accountId) {
+    public Token create(Account account) {
         Instant issuedAt = Instant.now();
         Instant expiresAt = issuedAt.plusSeconds(defaultExpiration);
 
@@ -46,12 +51,12 @@ public class JWTService {
         tokenString = cryptoUtils.encryptToken(JWT.create()
                 .withIssuedAt(Date.from(issuedAt))
                 .withExpiresAt(Date.from(expiresAt))
-                .withClaim(EMAIL, email)
+                .withClaim(EMAIL, account.getCredentials().getEmail())
                 .withClaim(EXPIRATION_INSTANT, issuedAt.toString())
-                .withClaim(ACCOUNT_ID, accountId)
+                .withClaim(ACCOUNT_ID, account.getId())
                 .withIssuer("BOK")
                 .sign(algorithm));
-        return new Token(tokenString, issuedAt, expiresAt, "BOK", accountId, email, false);
+        return new Token(tokenString, issuedAt, expiresAt, "BOK", account, false);
     }
 
     public Token verify(String token) {
@@ -64,10 +69,9 @@ public class JWTService {
             Token tokenInfo = new Token();
             tokenInfo.issuedAt = jwt.getIssuedAt().toInstant();
             tokenInfo.expiresAt = jwt.getExpiresAt().toInstant();
-            tokenInfo.email = jwt.getClaim(EMAIL).asString();
             tokenInfo.expired = jwt.getExpiresAt().toInstant().isBefore(Instant.now());
             tokenInfo.issuer = jwt.getIssuer();
-            tokenInfo.accountId = jwt.getClaim(ACCOUNT_ID).asLong();
+            tokenInfo.account = accountHelper.findById(jwt.getClaim(ACCOUNT_ID).asLong());
 
             return tokenInfo;
         } catch (Exception e) {

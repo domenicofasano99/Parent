@@ -1,12 +1,10 @@
 package com.bok.parent;
 
-import com.bok.parent.exception.TokenAuthenticationException;
 import com.bok.parent.exception.WrongCredentialsException;
 import com.bok.parent.helper.TokenHelper;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
-import com.bok.parent.integration.dto.LogoutResponseDTO;
 import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.Account;
@@ -17,6 +15,7 @@ import com.bok.parent.service.SecurityService;
 import com.bok.parent.utils.ValidationUtils;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.jni.Time;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -26,7 +25,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -119,7 +119,7 @@ public class SecurityServiceTest {
     }
 
     @Test
-    public void testLogout(){
+    public void testLogout() {
         AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
 
         AccountLoginDTO loginDTO = new AccountLoginDTO();
@@ -133,6 +133,47 @@ public class SecurityServiceTest {
         securityService.logout(loginResponse.token);
         Token token = tokenHelper.findByTokenString(loginResponse.token);
         assertTrue(token.expired);
+    }
+
+    @Test
+    public void testDifferentTokensForDifferentLogins() {
+        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
+
+        AccountLoginDTO loginDTO = new AccountLoginDTO();
+        loginDTO.email = account.email;
+        loginDTO.password = account.password;
+        LoginResponseDTO loginResponse = securityService.login(loginDTO);
+        assertNotNull(loginResponse.token);
+
+        Token firstToken = tokenHelper.getActiveToken(loginDTO.email).orElseThrow(RuntimeException::new);
+        firstToken.setExpired(true);
+        tokenHelper.saveToken(firstToken);
+
+        loginResponse = securityService.login(loginDTO);
+        Token secondToken = tokenHelper.getActiveToken(loginDTO.email).orElseThrow(RuntimeException::new);
+
+        assertNotEquals(firstToken.tokenString, secondToken.tokenString);
+
+    }
+
+    @Test
+    public void testSameTokenMultipleLoginWithinTokenValidityTimeframe() throws InterruptedException {
+        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
+        AccountLoginDTO loginDTO = new AccountLoginDTO(account.email, account.password);
+
+        //first login
+        String firstToken = securityService.login(loginDTO).getToken();
+        //wait some time before another login
+        Thread.sleep(500);
+        //second login
+        String secondToken = securityService.login(loginDTO).getToken();
+        //wait some time before another login
+        Thread.sleep(500);
+        //third login
+        String thirdToken = securityService.login(loginDTO).getToken();
+        assertEquals(firstToken, secondToken);
+        assertEquals(firstToken, thirdToken);
+
     }
 
 }
