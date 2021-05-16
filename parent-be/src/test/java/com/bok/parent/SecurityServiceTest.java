@@ -4,6 +4,8 @@ import com.bok.parent.exception.WrongCredentialsException;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
+import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
+import com.bok.parent.integration.dto.TokenExpirationResponseDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.service.AccountService;
@@ -18,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -83,5 +87,25 @@ public class SecurityServiceTest {
         loginDTO.email = credentials.email;
         loginDTO.password = "wrongpassword";
         assertThrows(WrongCredentialsException.class, () -> securityService.login(loginDTO));
+    }
+
+
+    @Test
+    public void checkTokenInfoTest() {
+        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
+
+        AccountLoginDTO loginDTO = new AccountLoginDTO();
+        loginDTO.email = account.email;
+        loginDTO.password = account.password;
+        LoginResponseDTO login = securityService.login(loginDTO);
+        log.debug(login.token);
+        assertNotNull(login.token);
+
+
+        TokenExpirationRequestDTO requestDTO = new TokenExpirationRequestDTO();
+        requestDTO.token = login.token;
+        TokenExpirationResponseDTO response = securityService.tokenInfo(requestDTO);
+        assertFalse(response.expired);
+
     }
 }

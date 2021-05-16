@@ -9,6 +9,8 @@ import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
+import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
+import com.bok.parent.integration.dto.TokenExpirationResponseDTO;
 import com.bok.parent.integration.dto.VerificationResponseDTO;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
@@ -41,6 +43,11 @@ public class AuthenticationController {
     @PostMapping("/register")
     public AccountRegistrationResponseDTO register(@RequestBody AccountRegistrationDTO accountRegistrationDTO, HttpServletRequest request) {
         return accountService.register(accountRegistrationDTO);
+    }
+
+    @PostMapping("/tokenInfo")
+    public TokenExpirationResponseDTO tokenInfo(@RequestBody TokenExpirationRequestDTO tokenExpirationRequestDTO){
+        return securityService.tokenInfo(tokenExpirationRequestDTO);
     }
 
     @GetMapping("/verify")

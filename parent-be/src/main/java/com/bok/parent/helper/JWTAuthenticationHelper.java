@@ -2,16 +2,18 @@ package com.bok.parent.helper;
 
 import com.bok.parent.exception.AccountException;
 import com.bok.parent.exception.WrongCredentialsException;
+import com.bok.parent.integration.dto.TokenExpirationResponseDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.utils.CryptoUtils;
 import com.bok.parent.utils.JWTService;
+import com.bok.parent.utils.encryption.TokenInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-import static com.bok.parent.utils.Constants.EMAIL;
-
+@Slf4j
 @Component
 public class JWTAuthenticationHelper {
     @Autowired
@@ -26,22 +28,31 @@ public class JWTAuthenticationHelper {
     public String login(String email, String password) {
         return accountHelper
                 .findByEmailAndEnabled(email)
-                .filter(user -> user.getEnabled() && cryptoUtils.checkPassword(password, user.getCredentials().getPassword()))
-                .map(user -> jwtService.create(email))
+                .filter(account -> account.getEnabled() && cryptoUtils.checkPassword(password, account.getCredentials().getPassword()))
+                .map(account -> jwtService.create(email, account.getId()))
                 .orElseThrow(() -> new WrongCredentialsException("Invalid email or password."));
     }
 
     public Account authenticateByToken(String token) {
-        Object username = jwtService.verify(token).get(EMAIL);
-        return Optional.ofNullable(username)
-                .flatMap(name -> accountHelper.findByEmail(String.valueOf(name)))
+        String email = jwtService.verify(token).email;
+        return Optional.ofNullable(email)
+                .flatMap(name -> accountHelper.findByEmail(name))
                 .filter(Account::getEnabled)
-                .orElseThrow(() -> new AccountException("Account '" + username + "' not found."));
+                .orElseThrow(() -> new AccountException("Account '" + email + "' not found."));
     }
 
 
     public Long extractAccountIdFromToken(String token) {
-        String email = (String) jwtService.verify(token).get(EMAIL);
-        return accountHelper.findIdByEmail(email);
+        return jwtService.verify(token).accountId;
     }
+
+    public TokenExpirationResponseDTO tokenExpirationInfo(String token) {
+        TokenInfo tokenInfo = jwtService.verify(token);
+        log.info("expiration date: {}", tokenInfo.expiresAt);
+        if (tokenInfo.expired) {
+            return new TokenExpirationResponseDTO(true);
+        }
+        return new TokenExpirationResponseDTO(tokenInfo.expiresAt, false);
+    }
+
 }

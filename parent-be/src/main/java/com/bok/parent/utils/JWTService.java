@@ -5,16 +5,17 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.bok.parent.exception.TokenAuthenticationException;
+import com.bok.parent.utils.encryption.TokenInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Date;
-import java.util.Map;
-import java.util.stream.Collectors;
 
+import static com.bok.parent.utils.Constants.ACCOUNT_ID;
 import static com.bok.parent.utils.Constants.EMAIL;
+import static com.bok.parent.utils.Constants.EXPIRATION_INSTANT;
 
 @Service
 public class JWTService {
@@ -32,27 +33,39 @@ public class JWTService {
         this.defaultExpiration = defaultExpirationSeconds;
     }
 
-    public String create(String email) {
+    public String create(String email, Long accountId) {
         Instant issuedAt = Instant.now();
+        Instant expiresAt = issuedAt.plusSeconds(defaultExpiration);
         return cryptoUtils.encryptToken(JWT.create()
                 .withIssuedAt(Date.from(issuedAt))
-                .withExpiresAt(Date.from(issuedAt.plusSeconds(defaultExpiration)))
+                .withExpiresAt(Date.from(expiresAt))
                 .withClaim(EMAIL, email)
+                .withClaim(EXPIRATION_INSTANT, issuedAt.toString())
+                .withClaim(ACCOUNT_ID, accountId)
+                .withIssuer("BOK")
                 .sign(algorithm));
     }
 
-    public Map<String, Object> verify(String token) {
+    public TokenInfo verify(String token) {
+
         JWTVerifier verifier = JWT.require(algorithm)
                 .build();
         try {
             token = cryptoUtils.decryptToken(token);
             DecodedJWT jwt = verifier.verify(token);
-            return jwt.getClaims()
-                    .entrySet()
-                    .stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().as(Object.class)));
+
+            TokenInfo tokenInfo = new TokenInfo();
+            tokenInfo.issuedAt = jwt.getIssuedAt().toInstant();
+            tokenInfo.expiresAt = jwt.getExpiresAt().toInstant();
+            tokenInfo.email = jwt.getClaim(EMAIL).asString();
+            tokenInfo.expired = jwt.getExpiresAt().toInstant().isBefore(Instant.now());
+            tokenInfo.issuer = jwt.getIssuer();
+            tokenInfo.accountId = jwt.getClaim(ACCOUNT_ID).asLong();
+
+            return tokenInfo;
         } catch (Exception e) {
             throw new TokenAuthenticationException("TOKEN_VERIFICATION_EXCEPTION");
         }
     }
+
 }
