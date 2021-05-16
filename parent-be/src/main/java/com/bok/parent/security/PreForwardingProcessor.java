@@ -48,7 +48,7 @@ public class PreForwardingProcessor extends ZuulFilter {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).substring(7);
-        Long accountId = securityService.extractAccountId(token);
+        Long accountId = securityService.getAccountId(token);
 
         auditHelper.auditGatewayRequest(request, accountId);
 

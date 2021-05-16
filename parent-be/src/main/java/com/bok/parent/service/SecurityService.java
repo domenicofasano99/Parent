@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public interface SecurityService {
     LoginResponseDTO login(AccountLoginDTO accountLoginDTO);
 
-    Long extractAccountId(String token);
+    Long getAccountId(String token);
 
     TokenInfoResponseDTO tokenInfo(String token);
 

@@ -42,7 +42,9 @@ public class AccountServiceImpl implements AccountService {
         ValidationUtils.nonNull(registrationDTO.credentials.password);
         ValidationUtils.checkEmail(registrationDTO.credentials.email, "The given email is not valid!");
         ValidationUtils.nonNull(registrationDTO.name);
+        ValidationUtils.validateName(registrationDTO.name);
         ValidationUtils.nonNull(registrationDTO.surname);
+        ValidationUtils.validateSurname(registrationDTO.surname);
         ValidationUtils.nonNull(registrationDTO.birthdate);
 
         if (registrationDTO.birthdate.after(java.sql.Date.valueOf(LocalDate.now().minus(18L, ChronoUnit.YEARS)))) {

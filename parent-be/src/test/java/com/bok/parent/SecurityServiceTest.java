@@ -2,6 +2,7 @@ package com.bok.parent;
 
 import com.bok.parent.exception.TokenAuthenticationException;
 import com.bok.parent.exception.WrongCredentialsException;
+import com.bok.parent.helper.TokenHelper;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
@@ -9,6 +10,7 @@ import com.bok.parent.integration.dto.LogoutResponseDTO;
 import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.Account;
+import com.bok.parent.model.Token;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
@@ -51,6 +53,9 @@ public class SecurityServiceTest {
 
     @Autowired
     ValidationUtils validationUtils;
+
+    @Autowired
+    TokenHelper tokenHelper;
 
     @Before
     public void setup() {
@@ -111,6 +116,23 @@ public class SecurityServiceTest {
         TokenInfoResponseDTO response = securityService.tokenInfo(loginResponse.token);
         assertTrue(response.expirationDate.isAfter(Instant.now()));
 
+    }
+
+    @Test
+    public void testLogout(){
+        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
+
+        AccountLoginDTO loginDTO = new AccountLoginDTO();
+        loginDTO.email = account.email;
+        loginDTO.password = account.password;
+        LoginResponseDTO loginResponse = securityService.login(loginDTO);
+        log.debug(loginResponse.token);
+        assertNotNull(loginResponse.token);
+
+
+        securityService.logout(loginResponse.token);
+        Token token = tokenHelper.findByTokenString(loginResponse.token);
+        assertTrue(token.expired);
     }
 
 }

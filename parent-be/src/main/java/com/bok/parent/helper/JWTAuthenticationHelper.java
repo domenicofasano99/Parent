@@ -45,7 +45,6 @@ public class JWTAuthenticationHelper {
                 .orElseThrow(() -> new AccountException("Account '" + email + "' not found."));
     }
 
-
     public Long extractAccountIdFromToken(String token) {
         return jwtService.verify(token).accountId;
     }

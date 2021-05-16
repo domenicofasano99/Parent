@@ -32,11 +32,12 @@ public class SecurityHelper {
     public LoginResponseDTO login(AccountLoginDTO accountLoginDTO) {
         Preconditions.checkArgument(Objects.nonNull(accountLoginDTO.password));
         Preconditions.checkArgument(Objects.nonNull(accountLoginDTO.email));
-        String token = jwtAuthenticationHelper.login(accountLoginDTO.email, accountLoginDTO.password);
+        LoginResponseDTO response = new LoginResponseDTO();
+
+        response.token = jwtAuthenticationHelper.login(accountLoginDTO.email, accountLoginDTO.password);
 
         AccessInfo accessInfo = auditHelper.findLastAccessInfo(accountLoginDTO.email);
-        LoginResponseDTO response = new LoginResponseDTO();
-        response.token = token;
+
         if (Objects.nonNull(accessInfo)) {
             response.lastAccessDateTime = LocalDateTime.ofInstant(accessInfo.getTimestamp(), ZoneOffset.UTC);
             response.lastAccessIP = accessInfo.getIpAddress();
@@ -45,7 +46,7 @@ public class SecurityHelper {
         return response;
     }
 
-    public Long extractAccountId(String token) {
+    public Long getAccountId(String token) {
         return jwtAuthenticationHelper.extractAccountIdFromToken(token);
     }
 
