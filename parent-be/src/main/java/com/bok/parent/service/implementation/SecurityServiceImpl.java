@@ -37,9 +37,8 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    public KeepAliveResponseDTO keepAlive(KeepAliveRequestDTO keepAliveRequestDTO) {
-        ValidationUtils.nonNull(keepAliveRequestDTO.token);
-        return securityHelper.keepAlive();
+    public KeepAliveResponseDTO keepAlive(String token) {
+        return securityHelper.keepAlive(token);
     }
 
     @Override

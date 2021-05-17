@@ -17,6 +17,7 @@ import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.integration.dto.VerificationResponseDTO;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
+import io.swagger.annotations.ApiOperation;
 import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,42 +40,48 @@ public class AuthenticationController {
 
     @LoginAudit
     @PostMapping("/login")
+    @ApiOperation(value = "Login method with email and password")
     public LoginResponseDTO login(@RequestBody AccountLoginDTO user, HttpServletRequest request) {
         return securityService.login(user);
     }
 
     @RegisterAudit
     @PostMapping("/register")
+    @ApiOperation(value = "Registration methods")
     public AccountRegistrationResponseDTO register(@RequestBody AccountRegistrationDTO accountRegistrationDTO, HttpServletRequest request) {
         return accountService.register(accountRegistrationDTO);
     }
 
     @PostMapping("/tokenInfo")
+    @ApiOperation(value = "Returns token infos, accessible only after login")
     public TokenInfoResponseDTO tokenInfo(HttpServletRequest request) {
         return securityService.tokenInfo(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
     }
 
     @GetMapping("/verify")
+    @ApiOperation(value = "Used to verify the account with the link sent via email")
     public VerificationResponseDTO verify(@RequestParam("verificationToken") String verificationToken) {
         return accountService.verify(verificationToken);
     }
 
     @PasswordResetAudit
     @PostMapping("/resetPassword")
+    @ApiOperation(value = "Resets the account password and sends a new secure password via email")
     public PasswordResetResponseDTO resetPassword(@RequestBody PasswordResetRequestDTO passwordResetRequestDTO) {
         return accountService.resetPassword(passwordResetRequestDTO);
     }
 
-
     @Deprecated
+    @ApiOperation(value = "Completely deletes an account from the platform, ONLY FOR INTERNAL USE")
     @DeleteMapping("/delete")
     public String deleteByEmail(@RequestParam("email") String email) {
         return accountService.delete(email);
     }
 
     @PostMapping("/keepAlive")
-    public KeepAliveResponseDTO keepAlive(KeepAliveRequestDTO keepAliveRequestDTO) {
-        return securityService.keepAlive(keepAliveRequestDTO);
+    @ApiOperation(value = "Requests a keepAlive to prevent user from being disconnected while using the platform ")
+    public KeepAliveResponseDTO keepAlive(HttpServletRequest request) {
+        return securityService.keepAlive(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
     }
 
     @PostMapping

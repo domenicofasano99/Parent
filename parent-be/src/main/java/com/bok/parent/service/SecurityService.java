@@ -17,7 +17,7 @@ public interface SecurityService {
 
     TokenInfoResponseDTO tokenInfo(String token);
 
-    KeepAliveResponseDTO keepAlive(KeepAliveRequestDTO keepAliveRequestDTO);
+    KeepAliveResponseDTO keepAlive(String token);
 
     LogoutResponseDTO logout(String token);
 

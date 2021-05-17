@@ -4,6 +4,7 @@ import com.bok.parent.exception.TokenNotFoundException;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.Token;
 import com.bok.parent.repository.TokenRepository;
+import com.bok.parent.utils.JWTService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,9 @@ public class TokenHelper {
 
     @Autowired
     TokenRepository tokenRepository;
+
+    @Autowired
+    JWTService jwtService;
 
     public Token findByTokenString(String token) {
         return tokenRepository.findByTokenString(token).orElseThrow(() -> new RuntimeException("Token not found"));
@@ -47,7 +51,18 @@ public class TokenHelper {
         return tokenRepository.findByAccount_Credentials_EmailAndExpiredIsFalse(email);
     }
 
-    public Long getAccountIdByTokenString(String token){
+    public Long getAccountIdByTokenString(String token) {
         return tokenRepository.findByTokenString(token).orElseThrow(TokenNotFoundException::new).getAccount().getId();
+    }
+
+    public Token getTokenByTokenString(String token) {
+        return tokenRepository.findByTokenString(token).orElseThrow(TokenNotFoundException::new);
+    }
+
+    public Token replaceOldToken(Token oldToken) {
+        Token newToken = jwtService.create(oldToken.getAccount());
+        invalidateToken(oldToken.getTokenString());
+        saveToken(newToken);
+        return newToken;
     }
 }

@@ -70,8 +70,13 @@ public class SecurityHelper {
         return tokenHelper.getTokenInfo(token);
     }
 
-    public KeepAliveResponseDTO keepAlive() {
-        return null;
+    public KeepAliveResponseDTO keepAlive(String tokenString) {
+        KeepAliveResponseDTO keepAliveResponse = new KeepAliveResponseDTO();
+        Token token = tokenHelper.getTokenByTokenString(tokenString);
+        if (token.expiresAt.isBefore(Instant.now().plusSeconds(60))) {
+            keepAliveResponse.token = tokenHelper.replaceOldToken(token).getTokenString();
+        }
+        return keepAliveResponse;
     }
 
     public LogoutResponseDTO logout(String token) {
