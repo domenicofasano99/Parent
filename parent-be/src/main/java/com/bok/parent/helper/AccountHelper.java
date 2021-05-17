@@ -1,5 +1,6 @@
 package com.bok.parent.helper;
 
+import com.bok.parent.exception.AccountException;
 import com.bok.parent.exception.EmailAlreadyExistsException;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
@@ -236,6 +237,6 @@ public class AccountHelper {
     }
 
     public Account findById(Long accountId) {
-        return accountRepository.findById(accountId).orElseThrow(RuntimeException::new);
+        return accountRepository.findById(accountId).orElseThrow(() -> new AccountException("Account not found"));
     }
 }

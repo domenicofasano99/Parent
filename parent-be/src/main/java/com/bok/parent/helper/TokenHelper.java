@@ -25,15 +25,25 @@ public class TokenHelper {
         return tokenRepository.findByTokenString(token).orElseThrow(() -> new RuntimeException("Token not found"));
     }
 
+    public Optional<Token> findOptionalByTokenString(String token) {
+        return tokenRepository.findByTokenString(token);
+    }
 
-    public void saveToken(Token token) {
-        tokenRepository.save(token);
+
+    public Token saveToken(Token token) {
+        return tokenRepository.save(token);
     }
 
     public Boolean invalidateToken(String token) {
         Token tokenInfo = findByTokenString(token);
         tokenInfo.expired = true;
         tokenRepository.save(tokenInfo);
+        return true;
+    }
+
+    public Boolean invalidateToken(Token token) {
+        token.expired = true;
+        tokenRepository.save(token);
         return true;
     }
 

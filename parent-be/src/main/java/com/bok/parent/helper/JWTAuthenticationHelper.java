@@ -27,15 +27,6 @@ public class JWTAuthenticationHelper {
     @Autowired
     TokenHelper tokenHelper;
 
-    public String login(Account account, String password) {
-
-        if (!cryptoUtils.checkPassword(password, account.getCredentials().getPassword())) {
-            throw new WrongCredentialsException("Invalid email or password.");
-        }
-        Token token = jwtService.create(account);
-        tokenHelper.saveToken(token);
-        return token.tokenString;
-    }
 
     public Account authenticateByToken(String token) {
         String email = jwtService.verify(token).account.getCredentials().getEmail();

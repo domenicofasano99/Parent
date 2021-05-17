@@ -1,6 +1,7 @@
 package com.bok.parent.helper;
 
 import com.bok.parent.exception.AccountException;
+import com.bok.parent.exception.WrongCredentialsException;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LastAccessInfoDTO;
@@ -10,6 +11,8 @@ import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.AccessInfo;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
+import com.bok.parent.utils.CryptoUtils;
+import com.bok.parent.utils.JWTService;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +22,9 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 @Component
@@ -40,24 +43,34 @@ public class SecurityHelper {
     @Autowired
     AccountHelper accountHelper;
 
+    @Autowired
+    JWTService jwtService;
+
+    @Autowired
+    CryptoUtils cryptoUtils;
+
     public LoginResponseDTO login(AccountLoginDTO accountLoginDTO) {
-        Preconditions.checkArgument(Objects.nonNull(accountLoginDTO.password));
-        Preconditions.checkArgument(Objects.nonNull(accountLoginDTO.email));
-        LoginResponseDTO response = new LoginResponseDTO();
+        Preconditions.checkArgument(nonNull(accountLoginDTO.password));
+        Preconditions.checkArgument(nonNull(accountLoginDTO.email));
 
         Account account = accountHelper.findByEmail(accountLoginDTO.email).orElseThrow(() -> new AccountException("Account not found!"));
         if (isFalse(account.getEnabled())) {
             throw new AccountException("Account has not been verified!");
         }
 
-        Optional<Token> tokenOptional = tokenHelper.getActiveToken(account.getCredentials().getEmail());
-        if (tokenOptional.isPresent()) {
-            response.token = tokenOptional.get().tokenString;
-        } else {
-            response.token = jwtAuthenticationHelper.login(account, accountLoginDTO.password);
+        if (!cryptoUtils.checkPassword(accountLoginDTO.password, account.getCredentials().getPassword())) {
+            throw new WrongCredentialsException("Invalid email or password.");
         }
+        LoginResponseDTO response = new LoginResponseDTO();
 
+        Optional<Token> oldToken = tokenHelper.getActiveToken(account.getCredentials().getEmail());
+        oldToken.ifPresent(value -> tokenHelper.invalidateToken(value));
+        Token token = jwtService.create(account);
+        token = tokenHelper.saveToken(token);
+
+        response.token = token.getTokenString();
         response.lastAccessInfo = getLastAccessInfoByAccountId(account.getId());
+
         log.info("User {} logged in", accountLoginDTO.email);
         return response;
     }
@@ -96,7 +109,7 @@ public class SecurityHelper {
     private LastAccessInfoDTO getLastAccessInfoByAccountId(Long accountId) {
         AccessInfo accessInfo = auditHelper.findLastAccessInfo(accountId);
         LastAccessInfoDTO lastAccessInfo = new LastAccessInfoDTO();
-        if (Objects.nonNull(accessInfo)) {
+        if (nonNull(accessInfo)) {
             lastAccessInfo.lastAccessDateTime = LocalDateTime.ofInstant(accessInfo.getTimestamp(), ZoneOffset.UTC);
             lastAccessInfo.lastAccessIP = accessInfo.getIpAddress();
         } else {

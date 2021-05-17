@@ -22,7 +22,7 @@ public class Token {
     private Long id;
 
     @NaturalId
-    @Column(unique = true, length = 400)
+    @Column(length = 400)
     public String tokenString;
 
     @Column
@@ -31,20 +31,16 @@ public class Token {
     @Column
     public Instant expiresAt;
 
-    @Column
-    public String issuer;
-
     @ManyToOne
     public Account account;
 
     @Column
     public Boolean expired;
 
-    public Token(String tokenString, Instant issuedAt, Instant expiresAt, String issuer, Account account, Boolean expired) {
+    public Token(String tokenString, Instant issuedAt, Instant expiresAt, Account account, Boolean expired) {
         this.tokenString = tokenString;
         this.issuedAt = issuedAt;
         this.expiresAt = expiresAt;
-        this.issuer = issuer;
         this.expired = expired;
         this.account = account;
     }

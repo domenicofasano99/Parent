@@ -12,6 +12,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -53,11 +54,15 @@ public class Account {
     @OneToOne(orphanRemoval = true)
     private AccountTemporaryDetails accountTemporaryDetails;
 
-    @OneToMany
-    private List<Token> token;
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Token> tokens;
 
     public Account(String email, String password) {
         this.credentials = new Credentials(email, password);
+    }
+
+    public Token getActiveToken() {
+        return tokens.stream().filter(t -> !t.expired).findFirst().orElse(null);
     }
 
     public enum Role {

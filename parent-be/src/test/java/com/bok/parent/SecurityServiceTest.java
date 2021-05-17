@@ -29,13 +29,11 @@ import java.time.LocalDateTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static reactor.core.publisher.Mono.when;
 
 @SpringBootTest
 @Slf4j
@@ -147,6 +145,7 @@ public class SecurityServiceTest {
         AccountLoginDTO loginDTO = new AccountLoginDTO();
         loginDTO.email = account.email;
         loginDTO.password = account.password;
+
         LoginResponseDTO loginResponse = securityService.login(loginDTO);
         assertNotNull(loginResponse.token);
 
@@ -176,13 +175,13 @@ public class SecurityServiceTest {
         Thread.sleep(500);
         //third login
         String thirdToken = securityService.login(loginDTO).getToken();
-        assertEquals(firstToken, secondToken);
-        assertEquals(firstToken, thirdToken);
+        assertNotEquals(firstToken, secondToken);
+        assertNotEquals(firstToken, thirdToken);
     }
 
 
     @Test
-    public void testLastAccessInfo(){
+    public void testLastAccessInfo() {
         AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
         AccountLoginDTO loginDTO = new AccountLoginDTO(account.email, account.password);
 
