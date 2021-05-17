@@ -6,6 +6,7 @@ import com.bok.parent.repository.AccessInfoRepository;
 import com.bok.parent.repository.AuditLogRepository;
 import com.google.common.io.CharStreams;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -38,10 +39,7 @@ public class AuditHelper {
         auditLog.setAccountId(accountId);
         auditLog.setMethod(request.getMethod());
         if (request.getMethod().equalsIgnoreCase("get")) {
-            String parameters = getRequestParameters(request);
-            if(StringUtils.isNotBlank(parameters)) {
-                auditLog.setParameters(parameters);
-            }
+            auditLog.setParameters(getRequestParameters(request));
         }
         auditLog.setPayload(getRequestPayload(request));
         auditLog.setPath(getRequestPath(request));
@@ -84,7 +82,7 @@ public class AuditHelper {
     }
 
     public String getRequestParameters(HttpServletRequest request) {
-        if (isNull(request) || isNull(request.getParameterMap()) || request.getParameterMap().isEmpty()) {
+        if (isNull(request) || MapUtils.isEmpty(request.getParameterMap()) || request.getParameterMap().isEmpty()) {
             return null;
         }
         return StringUtils.join(request.getParameterMap());
