@@ -38,7 +38,10 @@ public class AuditHelper {
         auditLog.setAccountId(accountId);
         auditLog.setMethod(request.getMethod());
         if (request.getMethod().equalsIgnoreCase("get")) {
-            auditLog.setParameters(getRequestParameters(request));
+            String parameters = getRequestParameters(request);
+            if(StringUtils.isNotBlank(parameters)) {
+                auditLog.setParameters(parameters);
+            }
         }
         auditLog.setPayload(getRequestPayload(request));
         auditLog.setPath(getRequestPath(request));
