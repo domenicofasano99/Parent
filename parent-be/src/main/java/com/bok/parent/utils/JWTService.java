@@ -59,21 +59,21 @@ public class JWTService {
         return new Token(tokenString, issuedAt, expiresAt, "BOK", account, false);
     }
 
-    public Token verify(String token) {
+    public Token verify(String tokenString) {
 
         JWTVerifier verifier = JWT.require(algorithm).build();
         try {
-            token = cryptoUtils.decryptToken(token);
-            DecodedJWT jwt = verifier.verify(token);
+            tokenString = cryptoUtils.decryptToken(tokenString);
+            DecodedJWT jwt = verifier.verify(tokenString);
 
-            Token tokenInfo = new Token();
-            tokenInfo.issuedAt = jwt.getIssuedAt().toInstant();
-            tokenInfo.expiresAt = jwt.getExpiresAt().toInstant();
-            tokenInfo.expired = jwt.getExpiresAt().toInstant().isBefore(Instant.now());
-            tokenInfo.issuer = jwt.getIssuer();
-            tokenInfo.account = accountHelper.findById(jwt.getClaim(ACCOUNT_ID).asLong());
+            Token token = new Token();
+            token.issuedAt = jwt.getIssuedAt().toInstant();
+            token.expiresAt = jwt.getExpiresAt().toInstant();
+            token.expired = jwt.getExpiresAt().toInstant().isBefore(Instant.now());
+            token.issuer = jwt.getIssuer();
+            token.account = accountHelper.findById(jwt.getClaim(ACCOUNT_ID).asLong());
 
-            return tokenInfo;
+            return token;
         } catch (Exception e) {
             throw new TokenAuthenticationException("TOKEN_VERIFICATION_EXCEPTION");
         }
