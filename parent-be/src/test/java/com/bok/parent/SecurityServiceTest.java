@@ -5,6 +5,7 @@ import com.bok.parent.exception.WrongCredentialsException;
 import com.bok.parent.helper.TokenHelper;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
+import com.bok.parent.integration.dto.LastAccessInfoDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
@@ -24,7 +25,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -173,7 +177,19 @@ public class SecurityServiceTest {
         String thirdToken = securityService.login(loginDTO).getToken();
         assertEquals(firstToken, secondToken);
         assertEquals(firstToken, thirdToken);
+    }
 
+
+    @Test
+    public void testLastAccessInfo(){
+        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
+        AccountLoginDTO loginDTO = new AccountLoginDTO(account.email, account.password);
+
+        String token = securityService.login(loginDTO).getToken();
+
+        LastAccessInfoDTO lastAccessInfo = securityService.lastAccessInfo(token);
+        assertThat(lastAccessInfo.lastAccessIP, is(""));
+        assertTrue(lastAccessInfo.lastAccessDateTime.isBefore(LocalDateTime.now()));
     }
 
 }

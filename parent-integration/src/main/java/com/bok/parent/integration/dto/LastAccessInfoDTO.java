@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginResponseDTO {
-    public String token;
-    public LastAccessInfoDTO lastAccessInfo;
+public class LastAccessInfoDTO {
+    public String lastAccessIP;
+    public LocalDateTime lastAccessDateTime;
 }

@@ -4,6 +4,7 @@ import com.bok.parent.exception.AccountException;
 import com.bok.parent.exception.ApiError;
 import com.bok.parent.exception.EmailAlreadyExistsException;
 import com.bok.parent.exception.TokenAuthenticationException;
+import com.bok.parent.exception.TokenNotFoundException;
 import com.bok.parent.exception.WrongCredentialsException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -80,6 +81,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AccountException.class)
     protected ResponseEntity<Object> handleAccountException(AccountException ex) {
+        ApiError apiError = new ApiError(BAD_REQUEST);
+        apiError.setMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(TokenNotFoundException.class)
+    protected ResponseEntity<Object> handleTokenNotFoundException(TokenNotFoundException ex) {
         ApiError apiError = new ApiError(BAD_REQUEST);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);

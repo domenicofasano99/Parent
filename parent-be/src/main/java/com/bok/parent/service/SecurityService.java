@@ -3,6 +3,7 @@ package com.bok.parent.service;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveRequestDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
+import com.bok.parent.integration.dto.LastAccessInfoDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.LogoutResponseDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
@@ -19,4 +20,6 @@ public interface SecurityService {
     KeepAliveResponseDTO keepAlive(KeepAliveRequestDTO keepAliveRequestDTO);
 
     LogoutResponseDTO logout(String token);
+
+    LastAccessInfoDTO lastAccessInfo(String token);
 }

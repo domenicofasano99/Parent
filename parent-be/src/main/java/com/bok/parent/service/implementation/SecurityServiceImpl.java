@@ -4,6 +4,7 @@ import com.bok.parent.helper.SecurityHelper;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveRequestDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
+import com.bok.parent.integration.dto.LastAccessInfoDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.LogoutResponseDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
@@ -44,5 +45,10 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public LogoutResponseDTO logout(String token) {
          return securityHelper.logout(token);
+    }
+
+    @Override
+    public LastAccessInfoDTO lastAccessInfo(String token) {
+        return securityHelper.lastAccessInfo(token);
     }
 }

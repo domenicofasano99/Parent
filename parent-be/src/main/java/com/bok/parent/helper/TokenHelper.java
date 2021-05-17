@@ -1,5 +1,6 @@
 package com.bok.parent.helper;
 
+import com.bok.parent.exception.TokenNotFoundException;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.Token;
 import com.bok.parent.repository.TokenRepository;
@@ -44,5 +45,9 @@ public class TokenHelper {
 
     public Optional<Token> getActiveToken(String email) {
         return tokenRepository.findByAccount_Credentials_EmailAndExpiredIsFalse(email);
+    }
+
+    public Long getAccountIdByTokenString(String token){
+        return tokenRepository.findByTokenString(token).orElseThrow(TokenNotFoundException::new).getAccount().getId();
     }
 }

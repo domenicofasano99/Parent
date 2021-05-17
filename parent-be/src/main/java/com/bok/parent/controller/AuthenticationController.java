@@ -8,6 +8,7 @@ import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.KeepAliveRequestDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
+import com.bok.parent.integration.dto.LastAccessInfoDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.LogoutResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
@@ -79,5 +80,10 @@ public class AuthenticationController {
     @PostMapping
     public LogoutResponseDTO logout(HttpServletRequest request) {
         return securityService.logout(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
+    }
+
+    @GetMapping
+    public LastAccessInfoDTO lastAccessInfo(HttpServletRequest request){
+        return securityService.lastAccessInfo(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
     }
 }

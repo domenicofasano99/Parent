@@ -3,6 +3,7 @@ package com.bok.parent.helper;
 import com.bok.parent.exception.AccountException;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
+import com.bok.parent.integration.dto.LastAccessInfoDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.LogoutResponseDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
@@ -55,12 +57,7 @@ public class SecurityHelper {
             response.token = jwtAuthenticationHelper.login(account, accountLoginDTO.password);
         }
 
-        AccessInfo accessInfo = auditHelper.findLastAccessInfo(accountLoginDTO.email);
-
-        if (Objects.nonNull(accessInfo)) {
-            response.lastAccessDateTime = LocalDateTime.ofInstant(accessInfo.getTimestamp(), ZoneOffset.UTC);
-            response.lastAccessIP = accessInfo.getIpAddress();
-        }
+        response.lastAccessInfo = getLastAccessInfoByAccountId(account.getId());
         log.info("User {} logged in", accountLoginDTO.email);
         return response;
     }
@@ -84,5 +81,23 @@ public class SecurityHelper {
     @Scheduled(cron = "0 0 * * * *")
     public void deleteExpiredToken() {
         tokenHelper.deleteExpiredTokens();
+    }
+
+    public LastAccessInfoDTO lastAccessInfo(String token) {
+        Long accountId = tokenHelper.getAccountIdByTokenString(token);
+        return getLastAccessInfoByAccountId(accountId);
+    }
+
+    private LastAccessInfoDTO getLastAccessInfoByAccountId(Long accountId) {
+        AccessInfo accessInfo = auditHelper.findLastAccessInfo(accountId);
+        LastAccessInfoDTO lastAccessInfo = new LastAccessInfoDTO();
+        if (Objects.nonNull(accessInfo)) {
+            lastAccessInfo.lastAccessDateTime = LocalDateTime.ofInstant(accessInfo.getTimestamp(), ZoneOffset.UTC);
+            lastAccessInfo.lastAccessIP = accessInfo.getIpAddress();
+        } else {
+            lastAccessInfo.lastAccessDateTime = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+            lastAccessInfo.lastAccessIP = "";
+        }
+        return lastAccessInfo;
     }
 }

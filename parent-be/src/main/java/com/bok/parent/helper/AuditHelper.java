@@ -111,8 +111,8 @@ public class AuditHelper {
         return url.toString();
     }
 
-    public AccessInfo findLastAccessInfo(String email) {
-        Optional<AccessInfo> accessInfo = accessInfoRepository.findLastAccessInfoByEmail(email);
+    public AccessInfo findLastAccessInfo(Long accountId) {
+        Optional<AccessInfo> accessInfo = accessInfoRepository.findLastAccessInfoByAccountId(accountId);
         return accessInfo.orElse(null);
     }
 
