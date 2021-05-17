@@ -1,7 +1,7 @@
 package com.bok.parent.security;
 
 import com.bok.parent.exception.TokenAuthenticationException;
-import com.bok.parent.helper.JWTAuthenticationHelper;
+import com.bok.parent.helper.AuthenticationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
-    JWTAuthenticationHelper jwtAuthenticationHelper;
+    AuthenticationHelper authenticationHelper;
 
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
@@ -28,7 +28,7 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
         Object token = authentication.getCredentials();
         return Optional
                 .ofNullable(token)
-                .flatMap(t -> Optional.of(jwtAuthenticationHelper.authenticateByToken(String.valueOf(t)))
+                .flatMap(t -> Optional.of(authenticationHelper.authenticateByToken(String.valueOf(t)))
                         .map(u -> User.builder()
                                 .username(u.getCredentials().getEmail())
                                 .password(u.getCredentials().getPassword())

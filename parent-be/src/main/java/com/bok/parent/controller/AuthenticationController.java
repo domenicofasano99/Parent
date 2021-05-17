@@ -6,11 +6,12 @@ import com.bok.parent.audit.RegisterAudit;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
-import com.bok.parent.integration.dto.KeepAliveRequestDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LastAccessInfoDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.LogoutResponseDTO;
+import com.bok.parent.integration.dto.PasswordChangeRequestDTO;
+import com.bok.parent.integration.dto.PasswordChangeResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
@@ -84,13 +85,18 @@ public class AuthenticationController {
         return securityService.keepAlive(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
     }
 
-    @PostMapping
+    @PostMapping("/logout")
     public LogoutResponseDTO logout(HttpServletRequest request) {
         return securityService.logout(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
     }
 
-    @GetMapping
-    public LastAccessInfoDTO lastAccessInfo(HttpServletRequest request){
+    @GetMapping("/lastAccessInfo")
+    public LastAccessInfoDTO lastAccessInfo(HttpServletRequest request) {
         return securityService.lastAccessInfo(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
+    }
+
+    @PostMapping("/changePassword")
+    public PasswordChangeResponseDTO changePassword(HttpServletRequest request, @RequestBody PasswordChangeRequestDTO passwordChangeRequestDTO) {
+        return securityService.changePassword(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7), passwordChangeRequestDTO);
     }
 }

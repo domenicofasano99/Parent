@@ -6,10 +6,13 @@ import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LastAccessInfoDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.LogoutResponseDTO;
+import com.bok.parent.integration.dto.PasswordChangeRequestDTO;
+import com.bok.parent.integration.dto.PasswordChangeResponseDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.AccessInfo;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
+import com.bok.parent.utils.CryptoUtils;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +31,7 @@ import static org.apache.commons.lang3.BooleanUtils.isFalse;
 public class SecurityHelper {
 
     @Autowired
-    JWTAuthenticationHelper jwtAuthenticationHelper;
+    AuthenticationHelper authenticationHelper;
 
     @Autowired
     TokenHelper tokenHelper;
@@ -38,6 +41,9 @@ public class SecurityHelper {
 
     @Autowired
     AccountHelper accountHelper;
+
+    @Autowired
+    CryptoUtils cryptoUtils;
 
     public LoginResponseDTO login(AccountLoginDTO accountLoginDTO) {
         Preconditions.checkArgument(nonNull(accountLoginDTO.password));
@@ -49,7 +55,7 @@ public class SecurityHelper {
         }
 
         LoginResponseDTO response = new LoginResponseDTO();
-        response.token = jwtAuthenticationHelper.login(account, accountLoginDTO.password);
+        response.token = authenticationHelper.login(account, accountLoginDTO.password);
         response.lastAccessInfo = getLastAccessInfoByAccountId(account.getId());
 
         log.info("User {} logged in", accountLoginDTO.email);
@@ -57,7 +63,7 @@ public class SecurityHelper {
     }
 
     public Long getAccountId(String token) {
-        return jwtAuthenticationHelper.extractAccountIdFromToken(token);
+        return authenticationHelper.extractAccountIdFromToken(token);
     }
 
     public TokenInfoResponseDTO getTokenInfo(String token) {
@@ -98,5 +104,15 @@ public class SecurityHelper {
             lastAccessInfo.lastAccessIP = "";
         }
         return lastAccessInfo;
+    }
+
+
+    //TODO finish this
+    public PasswordChangeResponseDTO changePassword(String tokenString, PasswordChangeRequestDTO passwordChangeRequestDTO) {
+        Token token = tokenHelper.findByTokenString(tokenString);
+        Account account = token.getAccount();
+        String newHashedPassword = cryptoUtils.encryptPassword(passwordChangeRequestDTO.newPassword);
+        accountHelper.setNewPassword(account, newHashedPassword);
+        return new PasswordChangeResponseDTO(true);
     }
 }

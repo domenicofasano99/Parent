@@ -2,7 +2,7 @@ package com.bok.parent.service.implementation;
 
 import com.bok.parent.helper.AccountHelper;
 import com.bok.parent.helper.EmailHelper;
-import com.bok.parent.helper.JWTAuthenticationHelper;
+import com.bok.parent.helper.AuthenticationHelper;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
@@ -23,7 +23,7 @@ import java.time.temporal.ChronoUnit;
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
-    JWTAuthenticationHelper jwtAuthenticationHelper;
+    AuthenticationHelper authenticationHelper;
 
     @Autowired
     AccountHelper accountHelper;

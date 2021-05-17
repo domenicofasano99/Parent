@@ -239,4 +239,11 @@ public class AccountHelper {
     public Account findById(Long accountId) {
         return accountRepository.findById(accountId).orElseThrow(() -> new AccountException("Account not found"));
     }
+
+    public Boolean setNewPassword(Account account, String newHashedPassword) {
+        Credentials newCredentials = new Credentials(account.getCredentials().getEmail(), newHashedPassword);
+        account.setCredentials(newCredentials);
+        accountRepository.save(account);
+        return true;
+    }
 }

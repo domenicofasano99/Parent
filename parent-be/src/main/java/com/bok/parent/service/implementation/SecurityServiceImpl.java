@@ -2,11 +2,12 @@ package com.bok.parent.service.implementation;
 
 import com.bok.parent.helper.SecurityHelper;
 import com.bok.parent.integration.dto.AccountLoginDTO;
-import com.bok.parent.integration.dto.KeepAliveRequestDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LastAccessInfoDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.LogoutResponseDTO;
+import com.bok.parent.integration.dto.PasswordChangeRequestDTO;
+import com.bok.parent.integration.dto.PasswordChangeResponseDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.service.SecurityService;
 import com.bok.parent.utils.ValidationUtils;
@@ -49,5 +50,10 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public LastAccessInfoDTO lastAccessInfo(String token) {
         return securityHelper.lastAccessInfo(token);
+    }
+
+    @Override
+    public PasswordChangeResponseDTO changePassword(String token, PasswordChangeRequestDTO passwordChangeRequestDTO) {
+        return securityHelper.changePassword(token, passwordChangeRequestDTO);
     }
 }

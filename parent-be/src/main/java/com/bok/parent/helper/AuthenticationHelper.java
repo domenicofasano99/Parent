@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-public class JWTAuthenticationHelper {
+public class AuthenticationHelper {
     @Autowired
     AccountHelper accountHelper;
 

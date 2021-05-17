@@ -208,7 +208,6 @@ public class SecurityServiceTest {
             assertThat(tokenList, not(containsInAnyOrder(Collections.singletonList(token))));
             tokenList.add(token);
         }
-
     }
 
 }
