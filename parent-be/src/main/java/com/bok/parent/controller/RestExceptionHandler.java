@@ -1,5 +1,6 @@
 package com.bok.parent.controller;
 
+import com.bok.parent.exception.AccountException;
 import com.bok.parent.exception.ApiError;
 import com.bok.parent.exception.EmailAlreadyExistsException;
 import com.bok.parent.exception.TokenAuthenticationException;
@@ -72,6 +73,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     protected ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ApiError apiError = new ApiError(BAD_REQUEST);
+        apiError.setMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(AccountException.class)
+    protected ResponseEntity<Object> handleAccountException(AccountException ex) {
         ApiError apiError = new ApiError(BAD_REQUEST);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
