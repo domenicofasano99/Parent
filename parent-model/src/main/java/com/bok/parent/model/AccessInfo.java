@@ -10,7 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import java.time.Instant;
 
 @Getter
@@ -24,7 +24,7 @@ public class AccessInfo {
     @GeneratedValue
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     private Account account;
 
     @Column

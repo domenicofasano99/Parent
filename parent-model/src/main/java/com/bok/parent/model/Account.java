@@ -48,13 +48,13 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(orphanRemoval = true, mappedBy = "id")
     private List<AccessInfo> accessInfo;
 
     @OneToOne(orphanRemoval = true)
     private AccountTemporaryDetails accountTemporaryDetails;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
     private List<Token> tokens;
 
     public Account(String email, String password) {

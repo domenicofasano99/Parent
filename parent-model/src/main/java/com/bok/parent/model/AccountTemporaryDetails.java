@@ -10,7 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import java.util.Date;
 
@@ -59,8 +58,7 @@ public class AccountTemporaryDetails {
     @Column
     private String gender;
 
-    @OneToOne(targetEntity = Account.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "account_id")
+    @OneToOne(fetch = FetchType.EAGER)
     private Account account;
 
     public AccountTemporaryDetails(String name, String middleName, String surname, String email, Date birthdate, Boolean business, String fiscalCode, String vatNumber, String icc, String mobile, String houseNumber, String street, String city, String county, String country, String postalCode, String gender, Account account) {

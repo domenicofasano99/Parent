@@ -1,6 +1,7 @@
 package com.bok.parent.service.bank;
 
 import com.bok.bank.integration.dto.BankCheckRequestDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service

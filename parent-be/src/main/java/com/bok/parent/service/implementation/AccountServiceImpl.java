@@ -1,8 +1,8 @@
 package com.bok.parent.service.implementation;
 
 import com.bok.parent.helper.AccountHelper;
-import com.bok.parent.helper.EmailHelper;
 import com.bok.parent.helper.AuthenticationHelper;
+import com.bok.parent.helper.EmailHelper;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
@@ -59,6 +59,10 @@ public class AccountServiceImpl implements AccountService {
         } else {
             ValidationUtils.nonNull(registrationDTO.gender);
             ValidationUtils.nonNull(registrationDTO.fiscalCode);
+        }
+
+        if (!bankService.preauthorize(registrationDTO.fiscalCode, registrationDTO.vatNumber, registrationDTO.business)) {
+            throw new RuntimeException("Found duplicate account in bank system");
         }
 
         ValidationUtils.nonNull(registrationDTO.mobile);

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
+
 @Slf4j
 @Component
 public class AuthenticationHelper {
@@ -25,7 +27,7 @@ public class AuthenticationHelper {
     public String login(Account account, String password) {
         checkPassword(account, password);
 
-        Optional<Token> oldToken = tokenHelper.getActiveToken(account.getCredentials().getEmail());
+        Optional<Token> oldToken = ofNullable(account.getActiveToken());
         oldToken.ifPresent(value -> tokenHelper.invalidateToken(value));
         Token token = tokenHelper.create(account);
         token = tokenHelper.saveToken(token);
@@ -36,7 +38,7 @@ public class AuthenticationHelper {
 
     public Account authenticateByToken(String token) {
         String email = tokenHelper.verify(token).account.getCredentials().getEmail();
-        return Optional.ofNullable(email)
+        return ofNullable(email)
                 .flatMap(name -> accountHelper.findByEmail(name))
                 .filter(Account::getEnabled)
                 .orElseThrow(() -> new AccountException("Account '" + email + "' not found."));
