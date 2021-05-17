@@ -1,7 +1,6 @@
 package com.bok.parent.helper;
 
 import com.bok.parent.exception.AccountException;
-import com.bok.parent.exception.WrongCredentialsException;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LastAccessInfoDTO;
@@ -11,8 +10,6 @@ import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.AccessInfo;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
-import com.bok.parent.utils.CryptoUtils;
-import com.bok.parent.utils.JWTService;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
@@ -43,12 +39,6 @@ public class SecurityHelper {
     @Autowired
     AccountHelper accountHelper;
 
-    @Autowired
-    JWTService jwtService;
-
-    @Autowired
-    CryptoUtils cryptoUtils;
-
     public LoginResponseDTO login(AccountLoginDTO accountLoginDTO) {
         Preconditions.checkArgument(nonNull(accountLoginDTO.password));
         Preconditions.checkArgument(nonNull(accountLoginDTO.email));
@@ -58,17 +48,8 @@ public class SecurityHelper {
             throw new AccountException("Account has not been verified!");
         }
 
-        if (!cryptoUtils.checkPassword(accountLoginDTO.password, account.getCredentials().getPassword())) {
-            throw new WrongCredentialsException("Invalid email or password.");
-        }
         LoginResponseDTO response = new LoginResponseDTO();
-
-        Optional<Token> oldToken = tokenHelper.getActiveToken(account.getCredentials().getEmail());
-        oldToken.ifPresent(value -> tokenHelper.invalidateToken(value));
-        Token token = jwtService.create(account);
-        token = tokenHelper.saveToken(token);
-
-        response.token = token.getTokenString();
+        response.token = jwtAuthenticationHelper.login(account, accountLoginDTO.password);
         response.lastAccessInfo = getLastAccessInfoByAccountId(account.getId());
 
         log.info("User {} logged in", accountLoginDTO.email);

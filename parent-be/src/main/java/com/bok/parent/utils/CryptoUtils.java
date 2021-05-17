@@ -1,5 +1,6 @@
 package com.bok.parent.utils;
 
+import com.bok.parent.exception.WrongCredentialsException;
 import com.bok.parent.utils.encryption.JWTEncryption;
 import com.bok.parent.utils.encryption.PasswordEncryption;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +33,15 @@ public class CryptoUtils {
         }
     }
 
-    public boolean checkPassword(String plainPassword, String hashedPassword) {
+    public void checkPassword(String plainPassword, String hashedPassword) {
+        boolean correct = false;
         try {
-            return passwordEncryption.validatePassword(plainPassword, hashedPassword);
+            correct = passwordEncryption.validatePassword(plainPassword, hashedPassword);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             log.error("Password check error {0}", e);
-            return false;
+        }
+        if (!correct) {
+            throw new WrongCredentialsException("Invalid email or password.");
         }
     }
 

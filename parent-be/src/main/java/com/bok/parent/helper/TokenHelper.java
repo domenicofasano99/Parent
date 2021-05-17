@@ -2,6 +2,7 @@ package com.bok.parent.helper;
 
 import com.bok.parent.exception.TokenNotFoundException;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
+import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import com.bok.parent.repository.TokenRepository;
 import com.bok.parent.utils.JWTService;
@@ -41,10 +42,9 @@ public class TokenHelper {
         return true;
     }
 
-    public Boolean invalidateToken(Token token) {
+    public void invalidateToken(Token token) {
         token.expired = true;
         tokenRepository.save(token);
-        return true;
     }
 
     public void deleteExpiredTokens() {
@@ -74,5 +74,13 @@ public class TokenHelper {
         invalidateToken(oldToken.getTokenString());
         saveToken(newToken);
         return newToken;
+    }
+
+    public Token create(Account account) {
+        return jwtService.create(account);
+    }
+
+    public Token verify(String token) {
+        return jwtService.verify(token);
     }
 }

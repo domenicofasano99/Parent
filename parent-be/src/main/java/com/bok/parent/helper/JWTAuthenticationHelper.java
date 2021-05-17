@@ -1,11 +1,9 @@
 package com.bok.parent.helper;
 
 import com.bok.parent.exception.AccountException;
-import com.bok.parent.exception.WrongCredentialsException;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import com.bok.parent.utils.CryptoUtils;
-import com.bok.parent.utils.JWTService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,17 +17,25 @@ public class JWTAuthenticationHelper {
     AccountHelper accountHelper;
 
     @Autowired
-    JWTService jwtService;
-
-    @Autowired
     CryptoUtils cryptoUtils;
 
     @Autowired
     TokenHelper tokenHelper;
 
+    public String login(Account account, String password) {
+        checkPassword(account, password);
+
+        Optional<Token> oldToken = tokenHelper.getActiveToken(account.getCredentials().getEmail());
+        oldToken.ifPresent(value -> tokenHelper.invalidateToken(value));
+        Token token = tokenHelper.create(account);
+        token = tokenHelper.saveToken(token);
+
+        return token.getTokenString();
+    }
+
 
     public Account authenticateByToken(String token) {
-        String email = jwtService.verify(token).account.getCredentials().getEmail();
+        String email = tokenHelper.verify(token).account.getCredentials().getEmail();
         return Optional.ofNullable(email)
                 .flatMap(name -> accountHelper.findByEmail(name))
                 .filter(Account::getEnabled)
@@ -37,6 +43,10 @@ public class JWTAuthenticationHelper {
     }
 
     public Long extractAccountIdFromToken(String token) {
-        return jwtService.verify(token).account.getId();
+        return tokenHelper.verify(token).account.getId();
+    }
+
+    private void checkPassword(Account account, String password) {
+        cryptoUtils.checkPassword(password, account.getCredentials().getPassword());
     }
 }

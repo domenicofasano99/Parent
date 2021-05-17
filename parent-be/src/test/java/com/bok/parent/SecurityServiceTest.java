@@ -26,9 +26,14 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
@@ -161,7 +166,7 @@ public class SecurityServiceTest {
     }
 
     @Test
-    public void testSameTokenMultipleLoginWithinTokenValidityTimeframe() throws InterruptedException {
+    public void testMultipleTokensAreDifferent() throws InterruptedException {
         AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
         AccountLoginDTO loginDTO = new AccountLoginDTO(account.email, account.password);
 
@@ -190,6 +195,20 @@ public class SecurityServiceTest {
         LastAccessInfoDTO lastAccessInfo = securityService.lastAccessInfo(token);
         assertThat(lastAccessInfo.lastAccessIP, is(""));
         assertTrue(lastAccessInfo.lastAccessDateTime.isBefore(LocalDateTime.now()));
+    }
+
+    @Test
+    public void testMultipleLogins() {
+        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
+        AccountLoginDTO loginDTO = new AccountLoginDTO(account.email, account.password);
+
+        List<String> tokenList = new ArrayList<>();
+        for (int c = 0; c < 100; c++) {
+            String token = securityService.login(loginDTO).token;
+            assertThat(tokenList, not(containsInAnyOrder(Collections.singletonList(token))));
+            tokenList.add(token);
+        }
+
     }
 
 }

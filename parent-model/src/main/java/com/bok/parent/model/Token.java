@@ -22,7 +22,7 @@ public class Token {
     private Long id;
 
     @NaturalId
-    @Column(length = 400)
+    @Column
     public String tokenString;
 
     @Column
