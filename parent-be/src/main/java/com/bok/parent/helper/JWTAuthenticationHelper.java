@@ -27,12 +27,12 @@ public class JWTAuthenticationHelper {
     @Autowired
     TokenHelper tokenHelper;
 
-    public String login(String email, String password) {
-        Token token = accountHelper
-                .findByEmailAndEnabled(email)
-                .filter(account -> account.getEnabled() && cryptoUtils.checkPassword(password, account.getCredentials().getPassword()))
-                .map(account -> jwtService.create(account))
-                .orElseThrow(() -> new WrongCredentialsException("Invalid email or password."));
+    public String login(Account account, String password) {
+
+        if (!cryptoUtils.checkPassword(password, account.getCredentials().getPassword())) {
+            throw new WrongCredentialsException("Invalid email or password.");
+        }
+        Token token = jwtService.create(account);
         tokenHelper.saveToken(token);
         return token.tokenString;
     }

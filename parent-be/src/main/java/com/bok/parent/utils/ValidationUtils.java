@@ -17,8 +17,7 @@ public class ValidationUtils {
     @Autowired
     EmailHelper emailHelper;
 
-    final static Pattern namePatter = Pattern.compile("^[a-zA-Z\\s]+");
-    final static Pattern surnamePatter = Pattern.compile("[a-zA-z]+([ '-][a-zA-Z]+)*");
+    final static Pattern namePatter = Pattern.compile("[a-zA-z]+([ '-][a-zA-Z]+)*");
 
 
     public static void nonNull(Object o) {
@@ -61,7 +60,7 @@ public class ValidationUtils {
     }
 
     public static void validateSurname(String surname) {
-        Matcher surnameMatcher = surnamePatter.matcher(surname);
+        Matcher surnameMatcher = namePatter.matcher(surname);
         if (!surnameMatcher.matches()) {
             log.info("Surname {} not accepted", surname);
             throw new IllegalArgumentException("Illegal person Surname");

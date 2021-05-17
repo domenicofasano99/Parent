@@ -1,5 +1,6 @@
 package com.bok.parent;
 
+import com.bok.parent.exception.AccountException;
 import com.bok.parent.exception.WrongCredentialsException;
 import com.bok.parent.helper.TokenHelper;
 import com.bok.parent.integration.dto.AccountLoginDTO;
@@ -15,7 +16,6 @@ import com.bok.parent.service.SecurityService;
 import com.bok.parent.utils.ValidationUtils;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.jni.Time;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -95,7 +95,7 @@ public class SecurityServiceTest {
         AccountLoginDTO loginDTO = new AccountLoginDTO();
         loginDTO.email = credentials.email;
         loginDTO.password = "wrongpassword";
-        assertThrows(WrongCredentialsException.class, () -> securityService.login(loginDTO));
+        assertThrows(AccountException.class, () -> securityService.login(loginDTO));
     }
 
 

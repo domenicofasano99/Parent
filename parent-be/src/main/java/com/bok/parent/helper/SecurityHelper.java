@@ -1,11 +1,13 @@
 package com.bok.parent.helper;
 
+import com.bok.parent.exception.AccountException;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.LogoutResponseDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.AccessInfo;
+import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.Optional;
+
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 @Component
 @Slf4j
@@ -31,16 +35,24 @@ public class SecurityHelper {
     @Autowired
     AuditHelper auditHelper;
 
+    @Autowired
+    AccountHelper accountHelper;
+
     public LoginResponseDTO login(AccountLoginDTO accountLoginDTO) {
         Preconditions.checkArgument(Objects.nonNull(accountLoginDTO.password));
         Preconditions.checkArgument(Objects.nonNull(accountLoginDTO.email));
         LoginResponseDTO response = new LoginResponseDTO();
 
-        Optional<Token> tokenOptional = tokenHelper.getActiveToken(accountLoginDTO.email);
+        Account account = accountHelper.findByEmail(accountLoginDTO.email).orElseThrow(() -> new AccountException("Account not found!"));
+        if (isFalse(account.getEnabled())) {
+            throw new AccountException("Account has not been verified!");
+        }
+
+        Optional<Token> tokenOptional = tokenHelper.getActiveToken(account.getCredentials().getEmail());
         if (tokenOptional.isPresent()) {
             response.token = tokenOptional.get().tokenString;
         } else {
-            response.token = jwtAuthenticationHelper.login(accountLoginDTO.email, accountLoginDTO.password);
+            response.token = jwtAuthenticationHelper.login(account, accountLoginDTO.password);
         }
 
         AccessInfo accessInfo = auditHelper.findLastAccessInfo(accountLoginDTO.email);

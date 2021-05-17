@@ -41,11 +41,9 @@ public class ModelTestUtil {
     }
 
     public AccountRegistrationDTO createRegistrationDTO() {
-        String email = faker.internet().emailAddress();
-        String password = faker.internet().password();
         AccountRegistrationDTO registrationDTO = new AccountRegistrationDTO();
-        registrationDTO.name = faker.name().name();
-        registrationDTO.surname = faker.name().lastName();
+        registrationDTO.name = faker.name().name().replace(".","");
+        registrationDTO.surname = faker.name().lastName().replace(".","");
         registrationDTO.birthdate = faker.date().birthday();
         registrationDTO.fiscalCode = "FFFFFF99F99F999F";
         registrationDTO.gender = faker.demographic().sex();
