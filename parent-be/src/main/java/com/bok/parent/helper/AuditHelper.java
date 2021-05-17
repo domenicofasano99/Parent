@@ -38,9 +38,6 @@ public class AuditHelper {
         auditLog.setIpAddress(request.getRemoteAddr());
         auditLog.setAccountId(accountId);
         auditLog.setMethod(request.getMethod());
-        if (request.getMethod().equalsIgnoreCase("get")) {
-            auditLog.setParameters(getRequestParameters(request));
-        }
         auditLog.setPayload(getRequestPayload(request));
         auditLog.setPath(getRequestPath(request));
         auditLogRepository.save(auditLog);
