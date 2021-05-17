@@ -79,7 +79,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/keepAlive")
-    @ApiOperation(value = "Requests a keepAlive to prevent user from being disconnected while using the platform ")
+    @ApiOperation(value = "Requests a keepAlive to prevent user from being disconnected while using the platform, a new token will be issue only 1 minute before the expiration of the old one, otherwise null will be returned.")
     public KeepAliveResponseDTO keepAlive(HttpServletRequest request) {
         return securityService.keepAlive(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
     }

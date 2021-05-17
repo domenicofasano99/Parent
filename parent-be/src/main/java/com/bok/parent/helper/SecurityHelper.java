@@ -73,7 +73,7 @@ public class SecurityHelper {
     public KeepAliveResponseDTO keepAlive(String tokenString) {
         KeepAliveResponseDTO keepAliveResponse = new KeepAliveResponseDTO();
         Token token = tokenHelper.getTokenByTokenString(tokenString);
-        if (token.expiresAt.isBefore(Instant.now().plusSeconds(60))) {
+        if (token.expiresAt.isBefore(Instant.now().plusSeconds(120))) {
             keepAliveResponse.token = tokenHelper.replaceOldToken(token).getTokenString();
         }
         return keepAliveResponse;
