@@ -27,8 +27,7 @@ public class AuthenticationHelper {
     public String login(Account account, String password) {
         checkPassword(account, password);
 
-        Optional<Token> oldToken = ofNullable(account.getActiveToken());
-        oldToken.ifPresent(value -> tokenHelper.invalidateToken(value));
+        ofNullable(account.getActiveToken()).ifPresent(t -> tokenHelper.invalidateToken(t));
         Token token = tokenHelper.create(account);
         token = tokenHelper.saveToken(token);
 
