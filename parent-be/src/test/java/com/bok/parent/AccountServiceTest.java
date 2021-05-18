@@ -1,5 +1,6 @@
 package com.bok.parent;
 
+import com.bok.bank.integration.dto.BankCheckRequestDTO;
 import com.bok.parent.helper.MessageHelper;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
@@ -10,13 +11,17 @@ import com.bok.parent.repository.AccountTemporaryDetailsRepository;
 import com.bok.parent.repository.ConfirmationTokenRepository;
 import com.bok.parent.service.AccountService;
 import com.bok.parent.service.SecurityService;
+import com.bok.parent.service.bank.BankClient;
+import com.bok.parent.service.bank.BankService;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -24,6 +29,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 
 @SpringBootTest
 @Slf4j
@@ -56,9 +63,16 @@ public class AccountServiceTest {
     @Autowired
     MessageHelper messageHelper;
 
+    @Autowired
+    BankService bankService;
+
     @BeforeEach
     public void setup() {
         modelTestUtil.clearAll();
+        BankClient bankClient = mock(BankClient.class);
+        Mockito.when(bankClient.checkCreation(any(BankCheckRequestDTO.class))).thenReturn(true);
+
+        ReflectionTestUtils.setField(bankService, "bankClient", bankClient);
     }
 
     @Test

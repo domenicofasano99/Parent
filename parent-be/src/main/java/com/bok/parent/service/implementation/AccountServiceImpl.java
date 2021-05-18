@@ -1,5 +1,6 @@
 package com.bok.parent.service.implementation;
 
+import com.bok.bank.integration.dto.BankCheckRequestDTO;
 import com.bok.parent.helper.AccountHelper;
 import com.bok.parent.helper.AuthenticationHelper;
 import com.bok.parent.helper.EmailHelper;
@@ -61,10 +62,6 @@ public class AccountServiceImpl implements AccountService {
             ValidationUtils.nonNull(registrationDTO.fiscalCode);
         }
 
-        if (!bankService.preauthorize(registrationDTO.fiscalCode, registrationDTO.vatNumber, registrationDTO.business)) {
-            throw new RuntimeException("Found duplicate account in bank system");
-        }
-
         ValidationUtils.nonNull(registrationDTO.mobile);
         ValidationUtils.nonNull(registrationDTO.mobile.icc);
         ValidationUtils.nonNull(registrationDTO.mobile.number);
@@ -77,7 +74,10 @@ public class AccountServiceImpl implements AccountService {
         ValidationUtils.nonNull(registrationDTO.address.country);
         ValidationUtils.nonNull(registrationDTO.address.postalCode);
 
-        ValidationUtils.check(bankService.preauthorize(registrationDTO.fiscalCode, registrationDTO.vatNumber, registrationDTO.business));
+        BankCheckRequestDTO bankCheckRequest = new BankCheckRequestDTO(registrationDTO.fiscalCode, registrationDTO.vatNumber, registrationDTO.business);
+        if (!bankService.checkCreation(bankCheckRequest)) {
+            throw new RuntimeException("Found duplicate account in bank system");
+        }
 
         return accountHelper.register(registrationDTO);
     }

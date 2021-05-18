@@ -17,6 +17,5 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableAsync
 @EnableScheduling
 @Configuration
-@EnableFeignClients
 public class ParentApplicationSetup {
 }
