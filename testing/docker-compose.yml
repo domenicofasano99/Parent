@@ -1,0 +1,52 @@
+# Use root/example as user/password credentials
+version: '3.1'
+
+services:
+
+  db:
+    container_name: mariadb_testing
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password4testing
+      MYSQL_DATABASE: testing
+      MYSQL_USER: testing
+      MYSQL_PASSWORD: testing
+    ports:
+      - 3306:3306
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25
+          memory: 512M
+        reservations:
+          memory: 256M
+
+
+  eureka:
+    container_name: eureka_testing
+    build: ../../eureka
+    ports:
+      - 8761:8761
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  activemq:
+    container_name: activemq_testing
+    image: rmohr/activemq
+    ports:
+      - 61616:61616
+      - 8161:8161
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25
+          memory: 512M
+        reservations:
+          memory: 256M
+
