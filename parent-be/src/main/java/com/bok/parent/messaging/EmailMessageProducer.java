@@ -19,7 +19,7 @@ public class EmailMessageProducer {
 
     public void send(EmailMessage emailMessage) {
         try {
-            log.info("Attempt to send account creation message to queue: " + emailsQueue);
+            log.info("Sending email to mailServer queue");
             jmsTemplate.convertAndSend(emailsQueue, emailMessage);
         } catch (Exception e) {
             log.error("Received Exception during send Message: ", e);
