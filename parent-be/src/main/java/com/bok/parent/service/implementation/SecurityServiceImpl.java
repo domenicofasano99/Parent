@@ -44,7 +44,7 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public LogoutResponseDTO logout(String token) {
-         return securityHelper.logout(token);
+        return securityHelper.logout(token);
     }
 
     @Override

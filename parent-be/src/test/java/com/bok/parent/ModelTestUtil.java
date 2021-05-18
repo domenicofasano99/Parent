@@ -42,8 +42,8 @@ public class ModelTestUtil {
 
     public AccountRegistrationDTO createRegistrationDTO() {
         AccountRegistrationDTO registrationDTO = new AccountRegistrationDTO();
-        registrationDTO.name = faker.name().name().replace(".","");
-        registrationDTO.surname = faker.name().lastName().replace(".","");
+        registrationDTO.name = faker.name().name().replace(".", "");
+        registrationDTO.surname = faker.name().lastName().replace(".", "");
         registrationDTO.birthdate = faker.date().birthday();
         registrationDTO.fiscalCode = "FFFFFF99F99F999F";
         registrationDTO.gender = faker.demographic().sex();

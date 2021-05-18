@@ -41,7 +41,8 @@ public class AuditHelper {
         if (request.getMethod().equalsIgnoreCase("get")) {
             try {
                 auditLog.setParameters(getRequestParameters(request));
-            } catch (NullPointerException ignored){ }
+            } catch (NullPointerException ignored) {
+            }
         }
         auditLog.setPayload(getRequestPayload(request));
         auditLog.setPath(getRequestPath(request));
