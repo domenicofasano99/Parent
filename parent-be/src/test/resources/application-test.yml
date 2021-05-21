@@ -2,6 +2,7 @@ active-mq:
   users: users
   broker-url: tcp://localhost:61616
   bank-account-deletion: bank-account-deletion
+  reports: reports
 
 spring:
   activemq:
@@ -39,3 +40,8 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka
+
+minio:
+  endpoint: http://localhost
+  accessKey: developer
+  secretKey: password4testing

@@ -1,4 +1,4 @@
-package com.bok.parent.security;
+package com.bok.parent.gateway;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.exception.ZuulException;

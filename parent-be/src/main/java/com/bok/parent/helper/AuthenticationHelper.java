@@ -32,6 +32,9 @@ public class AuthenticationHelper {
         return token.getTokenString();
     }
 
+    public void checkTokenValidity(String token){
+        tokenHelper.verify(token);
+    }
 
     public Account authenticateByToken(String token) {
         String email = tokenHelper.verify(token).account.getCredentials().getEmail();

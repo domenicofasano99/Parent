@@ -25,6 +25,7 @@
         <module>parent-model</module>
         <module>parent-mail</module>
         <module>parent-integration</module>
+        <module>parent-report</module>
     </modules>
 
     <dependencies>

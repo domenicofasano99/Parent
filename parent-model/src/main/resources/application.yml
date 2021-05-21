@@ -9,6 +9,7 @@ active-mq:
   emails: emails
   bank-account-deletion: bank-account-deletion
   krypto-account-deletion: krypto-account-deletion
+  reports: reports
 spring:
   application:
     name: parent
@@ -58,6 +59,11 @@ jwt:
     secret: j3H5Ld5nYmGWyULy6xwpOgfSH++NgKXnJMq20vpfd+8=t
     expiration: 3600
     issuer: bok
+
+minio:
+  endpoint: http://s3server
+  accessKey: developer
+  secretKey: password4testing
 
 management:
   endpoints:

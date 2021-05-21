@@ -25,4 +25,6 @@ public interface SecurityService {
     LastAccessInfoDTO lastAccessInfo(String token);
 
     PasswordChangeResponseDTO changePassword(String token, PasswordChangeRequestDTO passwordChangeRequestDTO);
+
+    void checkTokenValidity(String token);
 }

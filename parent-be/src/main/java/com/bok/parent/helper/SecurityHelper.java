@@ -115,4 +115,8 @@ public class SecurityHelper {
         accountHelper.setNewPassword(account, newHashedPassword);
         return new PasswordChangeResponseDTO(true);
     }
+
+    public void checkTokenValidity(String token) {
+        authenticationHelper.checkTokenValidity(token);
+    }
 }

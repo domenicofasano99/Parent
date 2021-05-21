@@ -179,6 +179,17 @@
             <artifactId>mockito-all</artifactId>
             <version>1.10.19</version>
         </dependency>
+        <dependency>
+            <groupId>com.bok</groupId>
+            <artifactId>parent-report</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.2.1</version>
+        </dependency>
 
 
     </dependencies>

@@ -1,4 +1,4 @@
-package com.bok.parent.security;
+package com.bok.parent.gateway;
 
 import com.bok.parent.helper.AuditHelper;
 import com.bok.parent.service.SecurityService;
@@ -47,7 +47,9 @@ public class PreForwardingProcessor extends ZuulFilter {
     public Object run() {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
+
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).substring(7);
+        securityService.checkTokenValidity(token);
         Long accountId = securityService.getAccountId(token);
 
         auditHelper.auditGatewayRequest(request, accountId);

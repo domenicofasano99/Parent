@@ -56,4 +56,9 @@ public class SecurityServiceImpl implements SecurityService {
     public PasswordChangeResponseDTO changePassword(String token, PasswordChangeRequestDTO passwordChangeRequestDTO) {
         return securityHelper.changePassword(token, passwordChangeRequestDTO);
     }
+
+    @Override
+    public void checkTokenValidity(String token) {
+        securityHelper.checkTokenValidity(token);
+    }
 }
