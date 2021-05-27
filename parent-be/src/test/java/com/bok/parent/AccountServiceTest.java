@@ -1,7 +1,7 @@
 package com.bok.parent;
 
 import com.bok.bank.integration.dto.BankCheckRequestDTO;
-import com.bok.parent.helper.MessageHelper;
+import com.bok.parent.be.helper.MessageHelper;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.model.Account;
@@ -9,10 +9,10 @@ import com.bok.parent.repository.AccessInfoRepository;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.AccountTemporaryDetailsRepository;
 import com.bok.parent.repository.ConfirmationTokenRepository;
-import com.bok.parent.service.AccountService;
-import com.bok.parent.service.SecurityService;
-import com.bok.parent.service.bank.BankClient;
-import com.bok.parent.service.bank.BankService;
+import com.bok.parent.be.service.AccountService;
+import com.bok.parent.be.service.SecurityService;
+import com.bok.parent.be.service.bank.BankClient;
+import com.bok.parent.be.service.bank.BankService;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;

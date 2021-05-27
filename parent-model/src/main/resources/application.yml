@@ -2,6 +2,10 @@ server:
   port: 8080
   baseUrl: http://dev.faraone.ovh:81
 
+
+geolocalization:
+  databasePath: geolocalization/geolite2-city.mmdb
+
 active-mq:
   krypto-users: krypto-accounts
   bank-users: bank-accounts
@@ -61,7 +65,9 @@ jwt:
     issuer: bok
 
 minio:
-  endpoint: http://s3server
+  endpoint: s3server
+  port: 9000
+  secure: false
   accessKey: developer
   secretKey: password4testing
 

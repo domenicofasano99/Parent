@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@EnableJpaRepositories("com.bok.parent.repository")
+@EnableJpaRepositories({"com.bok.parent.repository", "com.bok.parent.geolocalization.repository"})
 @EnableSwagger2
 @EnableEurekaClient
 @EnableZuulProxy

@@ -1,0 +1,54 @@
+package com.bok.parent.be.helper;
+
+import com.bok.parent.be.exception.AccountException;
+import com.bok.parent.model.Account;
+import com.bok.parent.model.Token;
+import com.bok.parent.be.utils.CryptoUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import static java.util.Optional.ofNullable;
+
+@Slf4j
+@Component
+public class AuthenticationHelper {
+    @Autowired
+    AccountHelper accountHelper;
+
+    @Autowired
+    CryptoUtils cryptoUtils;
+
+    @Autowired
+    TokenHelper tokenHelper;
+
+    public String login(Account account, String password) {
+        checkPassword(account, password);
+
+        ofNullable(account.getActiveToken()).ifPresent(t -> tokenHelper.invalidateToken(t));
+        Token token = tokenHelper.create(account);
+        token = tokenHelper.saveToken(token);
+
+        return token.getTokenString();
+    }
+
+    public void checkTokenValidity(String token){
+        tokenHelper.verify(token);
+    }
+
+    public Account authenticateByToken(String token) {
+        String email = tokenHelper.verify(token).account.getCredentials().getEmail();
+        return ofNullable(email)
+                .flatMap(name -> accountHelper.findByEmail(name))
+                .filter(Account::getEnabled)
+                .orElseThrow(() -> new AccountException("Account '" + email + "' not found."));
+    }
+
+    public Long extractAccountIdFromToken(String token) {
+        return tokenHelper.verify(token).account.getId();
+    }
+
+    private void checkPassword(Account account, String password) {
+        cryptoUtils.checkPassword(password, account.getCredentials().getPassword());
+    }
+}

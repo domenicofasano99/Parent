@@ -1,5 +1,6 @@
 package com.bok.parent.model;
 
+import com.bok.parent.geolocalization.model.GeographicalInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import java.time.Instant;
 
 @Getter
@@ -27,6 +29,9 @@ public class AuditLog {
 
     @Column
     private String ipAddress;
+
+    @OneToOne
+    private GeographicalInfo geographicalInfo;
 
     @Column
     private Long accountId;

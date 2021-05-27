@@ -1,7 +1,7 @@
 package com.bok.parent.gateway;
 
-import com.bok.parent.helper.AuditHelper;
-import com.bok.parent.service.SecurityService;
+import com.bok.parent.be.helper.AuditHelper;
+import com.bok.parent.be.service.SecurityService;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import lombok.extern.slf4j.Slf4j;

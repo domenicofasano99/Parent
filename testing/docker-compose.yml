@@ -50,3 +50,17 @@ services:
         reservations:
           memory: 256M
 
+  s3server:
+    container_name: s3server_testing
+    image: minio/minio:latest
+    ports:
+      - 8088:8000
+      - 8090:9000
+    volumes:
+      - data:/data
+    environment:
+      - MINIO_ROOT_USER=developer
+      - MINIO_ROOT_PASSWORD=password4testing
+    command: server /data
+volumes:
+  data:

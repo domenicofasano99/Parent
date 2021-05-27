@@ -1,8 +1,8 @@
 package com.bok.parent;
 
-import com.bok.parent.exception.AccountException;
-import com.bok.parent.exception.WrongCredentialsException;
-import com.bok.parent.helper.TokenHelper;
+import com.bok.parent.be.exception.AccountException;
+import com.bok.parent.be.exception.WrongCredentialsException;
+import com.bok.parent.be.helper.TokenHelper;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.LastAccessInfoDTO;
@@ -12,9 +12,9 @@ import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import com.bok.parent.repository.AccountRepository;
-import com.bok.parent.service.AccountService;
-import com.bok.parent.service.SecurityService;
-import com.bok.parent.utils.ValidationUtils;
+import com.bok.parent.be.service.AccountService;
+import com.bok.parent.be.service.SecurityService;
+import com.bok.parent.be.utils.ValidationUtils;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;

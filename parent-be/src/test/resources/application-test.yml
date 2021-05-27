@@ -4,6 +4,8 @@ active-mq:
   bank-account-deletion: bank-account-deletion
   reports: reports
 
+geolocalization:
+  databasePath: geolocalization/geolite2-city.mmdb
 spring:
   activemq:
     packages:
@@ -42,6 +44,8 @@ eureka:
       defaultZone: http://localhost:8761/eureka
 
 minio:
-  endpoint: http://localhost
+  endpoint: localhost
+  port: 8090
+  secure: false
   accessKey: developer
   secretKey: password4testing
