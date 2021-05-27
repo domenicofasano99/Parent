@@ -12,7 +12,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -34,11 +33,11 @@ public class GeographicalLocalizer {
     GeographicalInfoRepository geographicalInfoRepository;
 
     @PostConstruct
-    public void initialize() throws IOException {
+    public void initialize() {
         log.info("GeoIP2 database path:{}", databasePath);
-        File database = new ClassPathResource(databasePath).getFile();
         try {
-            this.database = new DatabaseReader.Builder(database).build();
+            this.database = new DatabaseReader.Builder(new ClassPathResource(databasePath).getInputStream()).build();
+            log.info("GeoIP2 Database initialized");
         } catch (IOException ioe) {
             this.database = null;
             log.warn("Problems encountered while initializing IP localization database, skipping resolutions");

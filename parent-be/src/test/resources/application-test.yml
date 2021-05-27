@@ -5,7 +5,7 @@ active-mq:
   reports: reports
 
 geolocalization:
-  databasePath: geolocalization/geolite2-city.mmdb
+  databasePath: classpath:*geolite2-city.mmdb
 spring:
   activemq:
     packages:
