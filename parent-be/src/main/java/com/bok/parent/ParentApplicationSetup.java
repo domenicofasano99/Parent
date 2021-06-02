@@ -1,6 +1,8 @@
 package com.bok.parent;
 
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.annotation.Configuration;
@@ -16,5 +18,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableAsync
 @EnableScheduling
 @Configuration
+@EnableAutoConfiguration(exclude = {ErrorMvcAutoConfiguration.class})
 public class ParentApplicationSetup {
 }
