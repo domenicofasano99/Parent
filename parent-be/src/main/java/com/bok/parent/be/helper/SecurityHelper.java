@@ -1,6 +1,7 @@
 package com.bok.parent.be.helper;
 
 import com.bok.parent.be.exception.AccountException;
+import com.bok.parent.be.utils.CryptoUtils;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LastAccessInfoDTO;
@@ -12,7 +13,7 @@ import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.AccessInfo;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
-import com.bok.parent.be.utils.CryptoUtils;
+import com.bok.parent.repository.AccessInfoRepository;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,9 @@ public class SecurityHelper {
 
     @Autowired
     AccountHelper accountHelper;
+
+    @Autowired
+    AccessInfoRepository accessInfoRepository;
 
     @Autowired
     CryptoUtils cryptoUtils;
@@ -118,5 +122,13 @@ public class SecurityHelper {
 
     public void checkTokenValidity(String token) {
         authenticationHelper.checkTokenValidity(token);
+    }
+
+    public void checkIpAddress(Long accountId, String remoteAddr) {
+        AccessInfo accessInfo = accessInfoRepository.findLastAccessInfoByAccountId(accountId).orElseThrow(() -> new RuntimeException("Error while authenticating by token"));
+        if (!accessInfo.getIpAddress().equalsIgnoreCase(remoteAddr)) {
+            tokenHelper.revokeTokenByAccountId(accountId);
+            throw new RuntimeException("Hacking attempt or user IP address changed, revoking access token for security reasons.");
+        }
     }
 }

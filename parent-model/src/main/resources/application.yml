@@ -2,6 +2,9 @@ server:
   port: 8080
   baseUrl: http://dev.faraone.ovh:81
 
+grpc:
+  server:
+    port: 3030
 
 geolocalization:
   databasePath: geolite2-city.mmdb

@@ -27,4 +27,6 @@ public interface SecurityService {
     PasswordChangeResponseDTO changePassword(String token, PasswordChangeRequestDTO passwordChangeRequestDTO);
 
     void checkTokenValidity(String token);
+
+    void checkIpAddress(Long accountId, String remoteAddr);
 }

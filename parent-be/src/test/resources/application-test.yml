@@ -4,6 +4,10 @@ active-mq:
   bank-account-deletion: bank-account-deletion
   reports: reports
 
+grpc:
+  server:
+    port: 3030
+
 geolocalization:
   databasePath: classpath:*geolite2-city.mmdb
 spring:

@@ -29,6 +29,7 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public Long getAccountId(String token) {
+        ValidationUtils.nonNull(token);
         return securityHelper.getAccountId(token);
     }
 
@@ -60,5 +61,10 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public void checkTokenValidity(String token) {
         securityHelper.checkTokenValidity(token);
+    }
+
+    @Override
+    public void checkIpAddress(Long accountId, String remoteAddr) {
+        securityHelper.checkIpAddress(accountId, remoteAddr);
     }
 }

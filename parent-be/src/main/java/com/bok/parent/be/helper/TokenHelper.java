@@ -1,11 +1,11 @@
 package com.bok.parent.be.helper;
 
 import com.bok.parent.be.exception.TokenNotFoundException;
+import com.bok.parent.be.utils.JWTService;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import com.bok.parent.repository.TokenRepository;
-import com.bok.parent.be.utils.JWTService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -82,5 +82,10 @@ public class TokenHelper {
 
     public Token verify(String token) {
         return jwtService.verify(token);
+    }
+
+    public void revokeTokenByAccountId(Long accountId) {
+        Token t = tokenRepository.findByAccount_Id(accountId).orElseThrow(RuntimeException::new);
+        tokenRepository.delete(t);
     }
 }
