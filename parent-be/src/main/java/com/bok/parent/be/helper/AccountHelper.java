@@ -2,6 +2,9 @@ package com.bok.parent.be.helper;
 
 import com.bok.parent.be.exception.AccountException;
 import com.bok.parent.be.exception.EmailAlreadyExistsException;
+import com.bok.parent.be.utils.Constants;
+import com.bok.parent.be.utils.CryptoUtils;
+import com.bok.parent.be.utils.ValidationUtils;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
@@ -17,9 +20,6 @@ import com.bok.parent.repository.AccessInfoRepository;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.AccountTemporaryDetailsRepository;
 import com.bok.parent.repository.ConfirmationTokenRepository;
-import com.bok.parent.be.utils.Constants;
-import com.bok.parent.be.utils.CryptoUtils;
-import com.bok.parent.be.utils.ValidationUtils;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +60,17 @@ public class AccountHelper {
 
     @Value("${server.baseUrl}")
     String baseUrl;
+
+    public static String generatePassword(int len) {
+        String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Random rnd = new Random();
+
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        }
+        return sb.toString();
+    }
 
     @Transactional
     public AccountRegistrationResponseDTO register(AccountRegistrationDTO request) {
@@ -191,18 +202,6 @@ public class AccountHelper {
         accountRepository.save(account);
         messageHelper.send(generatePasswordResetEmail(account.getCredentials().getEmail(), generatedPassword));
         return new PasswordResetResponseDTO("Password reset correctly");
-    }
-
-
-    public static String generatePassword(int len) {
-        String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        Random rnd = new Random();
-
-        StringBuilder sb = new StringBuilder(len);
-        for (int i = 0; i < len; i++) {
-            sb.append(AB.charAt(rnd.nextInt(AB.length())));
-        }
-        return sb.toString();
     }
 
     public EmailMessage generatePasswordResetEmail(String email, String password) {

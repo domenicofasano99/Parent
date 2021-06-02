@@ -20,7 +20,7 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 
 @Component
 @Slf4j
-public class PreForwardingProcessor extends ZuulFilter {
+public class PreForwardFilter extends ZuulFilter {
 
     @Autowired
     SecurityService securityService;

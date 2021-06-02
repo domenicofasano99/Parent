@@ -15,6 +15,16 @@ public final class ParentProto {
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_AccountId_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_AccountId_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_Boolean_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_Boolean_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_EmailRequest_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -33,24 +43,39 @@ public final class ParentProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\014parent.proto\"!\n\014EmailRequest\022\021\n\taccoun" +
-      "tId\030\001 \001(\004\"\036\n\rEmailResponse\022\r\n\005email\030\001 \001(" +
-      "\t23\n\006Parent\022)\n\010GetEmail\022\r.EmailRequest\032\016" +
-      ".EmailResponseB0\n\037com.bok.parent.integra" +
-      "tion.grpcB\013ParentProtoP\001b\006proto3"
+      "\n\014parent.proto\"\036\n\tAccountId\022\021\n\taccountId" +
+      "\030\001 \001(\004\"\030\n\007Boolean\022\r\n\005value\030\001 \001(\010\"!\n\014Emai" +
+      "lRequest\022\021\n\taccountId\030\001 \001(\004\"\036\n\rEmailResp" +
+      "onse\022\r\n\005email\030\001 \001(\t2W\n\006Parent\022)\n\010GetEmai" +
+      "l\022\r.EmailRequest\032\016.EmailResponse\022\"\n\nExis" +
+      "tsById\022\n.AccountId\032\010.BooleanB0\n\037com.bok." +
+      "parent.integration.grpcB\013ParentProtoP\001b\006" +
+      "proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         });
-    internal_static_EmailRequest_descriptor =
+    internal_static_AccountId_descriptor =
       getDescriptor().getMessageTypes().get(0);
+    internal_static_AccountId_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_AccountId_descriptor,
+        new java.lang.String[] { "AccountId", });
+    internal_static_Boolean_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_Boolean_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_Boolean_descriptor,
+        new java.lang.String[] { "Value", });
+    internal_static_EmailRequest_descriptor =
+      getDescriptor().getMessageTypes().get(2);
     internal_static_EmailRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_EmailRequest_descriptor,
         new java.lang.String[] { "AccountId", });
     internal_static_EmailResponse_descriptor =
-      getDescriptor().getMessageTypes().get(1);
+      getDescriptor().getMessageTypes().get(3);
     internal_static_EmailResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_EmailResponse_descriptor,

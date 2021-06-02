@@ -38,44 +38,16 @@ import java.util.Date;
 @Slf4j
 public class S3HelperTest {
 
-    @Autowired
-    FileAttachmentHelper fileAttachmentHelper;
-
-    @Autowired
-    S3Helper s3Helper;
-
-    @Autowired
-    ModelTestUtil modelTestUtil;
-
-    @BeforeEach
-    public void before() {
-        modelTestUtil.clearAll();
-    }
-
     private static Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
     private static Font redFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.RED);
     private static Font subFont = new Font(Font.FontFamily.TIMES_ROMAN, 16, Font.BOLD);
     private static Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
-
-    @Test
-    public void testUploadFile() {
-        ByteArrayOutputStream arrayStream = new ByteArrayOutputStream();
-        try {
-            Document document = new Document();
-            PdfWriter.getInstance(document, arrayStream);
-            document.open();
-            addMetaData(document);
-            addTitlePage(document);
-            addContent(document);
-            document.close();
-
-            Path p = fileAttachmentHelper.createTemporaryFile(arrayStream.toByteArray(), "ok", "pdf");
-            s3Helper.upload(1L, p);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
+    @Autowired
+    FileAttachmentHelper fileAttachmentHelper;
+    @Autowired
+    S3Helper s3Helper;
+    @Autowired
+    ModelTestUtil modelTestUtil;
 
     private static void addMetaData(Document document) {
         document.addTitle("My first PDF");
@@ -203,6 +175,30 @@ public class S3HelperTest {
     private static void addEmptyLine(Paragraph paragraph, int number) {
         for (int i = 0; i < number; i++) {
             paragraph.add(new Paragraph(" "));
+        }
+    }
+
+    @BeforeEach
+    public void before() {
+        modelTestUtil.clearAll();
+    }
+
+    @Test
+    public void testUploadFile() {
+        ByteArrayOutputStream arrayStream = new ByteArrayOutputStream();
+        try {
+            Document document = new Document();
+            PdfWriter.getInstance(document, arrayStream);
+            document.open();
+            addMetaData(document);
+            addTitlePage(document);
+            addContent(document);
+            document.close();
+
+            Path p = fileAttachmentHelper.createTemporaryFile(arrayStream.toByteArray(), "ok", "pdf");
+            s3Helper.upload(1L, p);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -1,9 +1,9 @@
 package com.bok.parent.be.helper;
 
 import com.bok.parent.be.exception.AccountException;
+import com.bok.parent.be.utils.CryptoUtils;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
-import com.bok.parent.be.utils.CryptoUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,7 +32,7 @@ public class AuthenticationHelper {
         return token.getTokenString();
     }
 
-    public void checkTokenValidity(String token){
+    public void checkTokenValidity(String token) {
         tokenHelper.verify(token);
     }
 

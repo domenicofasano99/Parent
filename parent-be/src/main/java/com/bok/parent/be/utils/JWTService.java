@@ -25,17 +25,13 @@ public class JWTService {
 
     private final Algorithm algorithm;
     private final int defaultExpiration;
-
+    private final Random random = new Random();
     @Autowired
     CryptoUtils cryptoUtils;
-
     @Autowired
     TokenHelper tokenHelper;
-
     @Autowired
     AccountHelper accountHelper;
-
-    private final Random random = new Random();
 
 
     public JWTService(

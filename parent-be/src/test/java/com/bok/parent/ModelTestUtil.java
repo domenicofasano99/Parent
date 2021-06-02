@@ -2,8 +2,8 @@ package com.bok.parent;
 
 import com.bok.parent.be.helper.AccountHelper;
 import com.bok.parent.be.service.AccountService;
-import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.geolocalization.repository.GeographicalInfoRepository;
+import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.AccountTemporaryDetailsRepository;

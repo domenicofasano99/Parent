@@ -9,7 +9,7 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 
 @Component
 @Slf4j
-public class PostForwardingProcessor extends ZuulFilter {
+public class PostForwardFilter extends ZuulFilter {
     @Override
     public String filterType() {
         return POST_TYPE;

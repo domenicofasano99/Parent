@@ -10,6 +10,13 @@ service Parent {
 
 }
 
+message AccountId{
+  uint64 accountId = 1;
+}
+
+message Boolean{
+  bool value = 1;
+}
 
 
 message EmailRequest{

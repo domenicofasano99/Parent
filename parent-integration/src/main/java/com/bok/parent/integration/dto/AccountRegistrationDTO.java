@@ -20,12 +20,6 @@ public class AccountRegistrationDTO {
     public MobileDTO mobile;
     public AddressDTO address;
 
-
-    public enum Gender {
-        M,
-        F
-    }
-
     public static Gender genderOf(String gender) {
         if (gender.equalsIgnoreCase("m")) {
             return Gender.M;
@@ -34,6 +28,11 @@ public class AccountRegistrationDTO {
             return Gender.F;
         }
         return null;
+    }
+
+    public enum Gender {
+        M,
+        F
     }
 
     @Data

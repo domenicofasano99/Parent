@@ -24,13 +24,11 @@ import static java.util.Optional.ofNullable;
 @Component
 public class GeographicalLocalizer {
 
-    @Value("${geolocalization.databasePath}")
-    private String databasePath;
-
-    private DatabaseReader database;
-
     @Autowired
     GeographicalInfoRepository geographicalInfoRepository;
+    @Value("${geolocalization.databasePath}")
+    private String databasePath;
+    private DatabaseReader database;
 
     @PostConstruct
     public void initialize() {

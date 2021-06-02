@@ -14,11 +14,9 @@ import java.util.regex.Pattern;
 @Slf4j
 public class ValidationUtils {
 
+    final static Pattern namePatter = Pattern.compile("[a-zA-z]+([ '-][a-zA-Z]+)*");
     @Autowired
     EmailHelper emailHelper;
-
-    final static Pattern namePatter = Pattern.compile("[a-zA-z]+([ '-][a-zA-Z]+)*");
-
 
     public static void nonNull(Object o) {
         nonNull(o, "Parameter cannot be null");

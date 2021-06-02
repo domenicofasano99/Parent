@@ -1,11 +1,11 @@
 package com.bok.parent.be.helper;
 
-import com.bok.parent.integration.message.AccountCreationMessage;
-import com.bok.parent.integration.message.AccountDeletionMessage;
-import com.bok.parent.integration.message.EmailMessage;
 import com.bok.parent.be.messaging.BankUserMessageProducer;
 import com.bok.parent.be.messaging.EmailMessageProducer;
 import com.bok.parent.be.messaging.KryptoUserMessageProducer;
+import com.bok.parent.integration.message.AccountCreationMessage;
+import com.bok.parent.integration.message.AccountDeletionMessage;
+import com.bok.parent.integration.message.EmailMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
