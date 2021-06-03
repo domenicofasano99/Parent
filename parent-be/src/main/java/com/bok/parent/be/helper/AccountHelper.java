@@ -1,5 +1,6 @@
 package com.bok.parent.be.helper;
 
+import com.bok.bank.integration.grpc.BankGrpc;
 import com.bok.parent.be.exception.AccountException;
 import com.bok.parent.be.exception.EmailAlreadyExistsException;
 import com.bok.parent.be.utils.Constants;
@@ -22,6 +23,7 @@ import com.bok.parent.repository.AccountTemporaryDetailsRepository;
 import com.bok.parent.repository.ConfirmationTokenRepository;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -57,6 +59,12 @@ public class AccountHelper {
 
     @Autowired
     AccessInfoRepository accessInfoRepository;
+
+    @GrpcClient("bank:3030")
+    BankGrpc.BankBlockingStub bankBlockingStub;
+
+    @GrpcClient("bank:3030")
+    BankGrpc.BankFutureStub bankFutureStub;
 
     @Value("${server.baseUrl}")
     String baseUrl;

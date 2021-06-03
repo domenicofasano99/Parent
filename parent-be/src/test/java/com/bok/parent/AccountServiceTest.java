@@ -1,10 +1,8 @@
 package com.bok.parent;
 
-import com.bok.bank.integration.dto.BankCheckRequestDTO;
 import com.bok.parent.be.helper.MessageHelper;
 import com.bok.parent.be.service.AccountService;
 import com.bok.parent.be.service.SecurityService;
-import com.bok.parent.be.service.bank.BankClient;
 import com.bok.parent.be.service.bank.BankService;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
@@ -21,7 +19,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,7 +26,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 
 @SpringBootTest
@@ -69,10 +67,10 @@ public class AccountServiceTest {
     @BeforeEach
     public void setup() {
         modelTestUtil.clearAll();
-        BankClient bankClient = mock(BankClient.class);
-        Mockito.when(bankClient.checkCreation(any(BankCheckRequestDTO.class))).thenReturn(true);
+        BankService bankService = mock(BankService.class);
+        Mockito.when(bankService.checkCreation(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
-        ReflectionTestUtils.setField(bankService, "bankClient", bankClient);
+        this.bankService = bankService;
     }
 
     @Test

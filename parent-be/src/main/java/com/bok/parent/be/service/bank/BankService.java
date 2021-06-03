@@ -1,8 +1,6 @@
 package com.bok.parent.be.service.bank;
 
-import com.bok.bank.integration.dto.AccountInfoDTO;
-import com.bok.bank.integration.dto.BankCheckRequestDTO;
-import feign.FeignException;
+import com.bok.parent.be.grpc.client.BankGrcpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,20 +10,9 @@ import org.springframework.stereotype.Service;
 public class BankService {
 
     @Autowired
-    BankClient bankClient;
+    BankGrcpClient bankGrcpClient;
 
-    public Boolean checkCreation(BankCheckRequestDTO bankCheckRequestDTO) {
-        try {
-            return bankClient.checkCreation(bankCheckRequestDTO);
-        } catch (FeignException ex) {
-            log.error("Error while communicating with bank");
-        } catch (Exception e) {
-            log.error("Error in request to bank: {} ", e.getMessage());
-        }
-        return Boolean.TRUE;
-    }
-
-    public AccountInfoDTO profileInfo(Long accountId) {
-        return null;
+    public boolean checkCreation(String fiscalCode, String vatNumber, boolean business) {
+        return bankGrcpClient.checkCreation(fiscalCode, vatNumber, business);
     }
 }
