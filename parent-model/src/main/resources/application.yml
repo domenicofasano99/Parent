@@ -1,14 +1,15 @@
 server:
   port: 8080
   baseUrl: http://dev.faraone.ovh:81
+
 grpc:
   server:
     port: 3030
   client:
     bank:
-      address: discovery:///bank:3030
+      address: bank:3030
     krypto:
-      address: discovery:///krypto:3030
+      address: krypto:3030
 
 geolocalization:
   databasePath: geolite2-city.mmdb
