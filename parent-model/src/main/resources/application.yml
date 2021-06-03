@@ -8,8 +8,10 @@ grpc:
   client:
     bank:
       address: dns:///bank:3030
+      negotiationType: PLAINTEXT
     krypto:
       address: dns:///krypto:3030
+      negotiationType: PLAINTEXT
 
 geolocalization:
   databasePath: geolite2-city.mmdb
