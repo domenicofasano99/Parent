@@ -13,10 +13,10 @@ import static java.util.Objects.isNull;
 @Component
 public class BankGrcpClient {
 
-    @GrpcClient("bank:3030")
+    @GrpcClient("bank")
     BankGrpc.BankBlockingStub bankBlockingStub;
 
-    @GrpcClient("bank:3030")
+    @GrpcClient("bank")
     BankGrpc.BankFutureStub bankFutureStub;
 
 

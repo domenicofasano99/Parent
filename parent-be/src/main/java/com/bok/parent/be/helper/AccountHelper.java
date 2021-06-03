@@ -60,10 +60,10 @@ public class AccountHelper {
     @Autowired
     AccessInfoRepository accessInfoRepository;
 
-    @GrpcClient("bank:3030")
+    @GrpcClient("bank")
     BankGrpc.BankBlockingStub bankBlockingStub;
 
-    @GrpcClient("bank:3030")
+    @GrpcClient("bank")
     BankGrpc.BankFutureStub bankFutureStub;
 
     @Value("${server.baseUrl}")
