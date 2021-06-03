@@ -10,6 +10,7 @@ grpc:
     krypto:
       address: discovery:///krypto
 
+geolocalization:
   databasePath: geolite2-city.mmdb
 
 active-mq:
