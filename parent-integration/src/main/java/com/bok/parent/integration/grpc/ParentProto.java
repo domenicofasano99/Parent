@@ -46,11 +46,10 @@ public final class ParentProto {
       "\n\014parent.proto\"\036\n\tAccountId\022\021\n\taccountId" +
       "\030\001 \001(\004\"\030\n\007Boolean\022\r\n\005value\030\001 \001(\010\"!\n\014Emai" +
       "lRequest\022\021\n\taccountId\030\001 \001(\004\"\036\n\rEmailResp" +
-      "onse\022\r\n\005email\030\001 \001(\t2W\n\006Parent\022)\n\010GetEmai" +
-      "l\022\r.EmailRequest\032\016.EmailResponse\022\"\n\nExis" +
-      "tsById\022\n.AccountId\032\010.BooleanB0\n\037com.bok." +
-      "parent.integration.grpcB\013ParentProtoP\001b\006" +
-      "proto3"
+      "onse\022\r\n\005email\030\001 \001(\t23\n\006Parent\022)\n\010GetEmai" +
+      "l\022\r.EmailRequest\032\016.EmailResponseB0\n\037com." +
+      "bok.parent.integration.grpcB\013ParentProto" +
+      "P\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

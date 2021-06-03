@@ -59,38 +59,6 @@ public final class ParentGrpc {
      return getGetEmailMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<com.bok.parent.integration.grpc.AccountId,
-      com.bok.parent.integration.grpc.Boolean> getExistsByIdMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "ExistsById",
-      requestType = com.bok.parent.integration.grpc.AccountId.class,
-      responseType = com.bok.parent.integration.grpc.Boolean.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<com.bok.parent.integration.grpc.AccountId,
-      com.bok.parent.integration.grpc.Boolean> getExistsByIdMethod() {
-    io.grpc.MethodDescriptor<com.bok.parent.integration.grpc.AccountId, com.bok.parent.integration.grpc.Boolean> getExistsByIdMethod;
-    if ((getExistsByIdMethod = ParentGrpc.getExistsByIdMethod) == null) {
-      synchronized (ParentGrpc.class) {
-        if ((getExistsByIdMethod = ParentGrpc.getExistsByIdMethod) == null) {
-          ParentGrpc.getExistsByIdMethod = getExistsByIdMethod = 
-              io.grpc.MethodDescriptor.<com.bok.parent.integration.grpc.AccountId, com.bok.parent.integration.grpc.Boolean>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(
-                  "Parent", "ExistsById"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.bok.parent.integration.grpc.AccountId.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.bok.parent.integration.grpc.Boolean.getDefaultInstance()))
-                  .setSchemaDescriptor(new ParentMethodDescriptorSupplier("ExistsById"))
-                  .build();
-          }
-        }
-     }
-     return getExistsByIdMethod;
-  }
-
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -125,13 +93,6 @@ public final class ParentGrpc {
       asyncUnimplementedUnaryCall(getGetEmailMethod(), responseObserver);
     }
 
-    /**
-     */
-    public void existsById(com.bok.parent.integration.grpc.AccountId request,
-        io.grpc.stub.StreamObserver<com.bok.parent.integration.grpc.Boolean> responseObserver) {
-      asyncUnimplementedUnaryCall(getExistsByIdMethod(), responseObserver);
-    }
-
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -141,13 +102,6 @@ public final class ParentGrpc {
                 com.bok.parent.integration.grpc.EmailRequest,
                 com.bok.parent.integration.grpc.EmailResponse>(
                   this, METHODID_GET_EMAIL)))
-          .addMethod(
-            getExistsByIdMethod(),
-            asyncUnaryCall(
-              new MethodHandlers<
-                com.bok.parent.integration.grpc.AccountId,
-                com.bok.parent.integration.grpc.Boolean>(
-                  this, METHODID_EXISTS_BY_ID)))
           .build();
     }
   }
@@ -177,14 +131,6 @@ public final class ParentGrpc {
       asyncUnaryCall(
           getChannel().newCall(getGetEmailMethod(), getCallOptions()), request, responseObserver);
     }
-
-    /**
-     */
-    public void existsById(com.bok.parent.integration.grpc.AccountId request,
-        io.grpc.stub.StreamObserver<com.bok.parent.integration.grpc.Boolean> responseObserver) {
-      asyncUnaryCall(
-          getChannel().newCall(getExistsByIdMethod(), getCallOptions()), request, responseObserver);
-    }
   }
 
   /**
@@ -210,13 +156,6 @@ public final class ParentGrpc {
     public com.bok.parent.integration.grpc.EmailResponse getEmail(com.bok.parent.integration.grpc.EmailRequest request) {
       return blockingUnaryCall(
           getChannel(), getGetEmailMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public com.bok.parent.integration.grpc.Boolean existsById(com.bok.parent.integration.grpc.AccountId request) {
-      return blockingUnaryCall(
-          getChannel(), getExistsByIdMethod(), getCallOptions(), request);
     }
   }
 
@@ -245,18 +184,9 @@ public final class ParentGrpc {
       return futureUnaryCall(
           getChannel().newCall(getGetEmailMethod(), getCallOptions()), request);
     }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<com.bok.parent.integration.grpc.Boolean> existsById(
-        com.bok.parent.integration.grpc.AccountId request) {
-      return futureUnaryCall(
-          getChannel().newCall(getExistsByIdMethod(), getCallOptions()), request);
-    }
   }
 
   private static final int METHODID_GET_EMAIL = 0;
-  private static final int METHODID_EXISTS_BY_ID = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -278,10 +208,6 @@ public final class ParentGrpc {
         case METHODID_GET_EMAIL:
           serviceImpl.getEmail((com.bok.parent.integration.grpc.EmailRequest) request,
               (io.grpc.stub.StreamObserver<com.bok.parent.integration.grpc.EmailResponse>) responseObserver);
-          break;
-        case METHODID_EXISTS_BY_ID:
-          serviceImpl.existsById((com.bok.parent.integration.grpc.AccountId) request,
-              (io.grpc.stub.StreamObserver<com.bok.parent.integration.grpc.Boolean>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -345,7 +271,6 @@ public final class ParentGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new ParentFileDescriptorSupplier())
               .addMethod(getGetEmailMethod())
-              .addMethod(getExistsByIdMethod())
               .build();
         }
       }
