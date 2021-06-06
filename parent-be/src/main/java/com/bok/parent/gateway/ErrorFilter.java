@@ -36,13 +36,13 @@ public class ErrorFilter extends ZuulFilter {
 
         if (throwable instanceof ZuulException) {
             final ZuulException zuulException = (ZuulException) throwable;
-            log.error("Zuul failure detected: {}", zuulException.getMessage());
+            log.error("Zuul failure detected, cause {} stacktrace {}", zuulException.getCause(), zuulException.getStackTrace());
 
             // remove error code to prevent further error handling in follow up filters
             context.remove(THROWABLE_KEY);
 
             // populate context with new response values
-            context.setResponseBody("Overriding Zuul Exception Body");
+            context.setResponseBody(zuulException.errorCause);
             context.getResponse().setContentType("application/json");
             // can set any error code as excepted
             context.setResponseStatusCode(503);
