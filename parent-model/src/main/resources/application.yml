@@ -16,7 +16,7 @@ grpc:
 geolocalization:
   databasePath: geolite2-city.mmdb
 
-active-mq:
+queues:
   krypto-users: krypto-accounts
   bank-users: bank-accounts
   broker-url: tcp://activemq:61616
@@ -24,6 +24,7 @@ active-mq:
   bank-account-deletion: bank-account-deletion
   krypto-account-deletion: krypto-account-deletion
   reports: reports
+
 spring:
   application:
     name: parent

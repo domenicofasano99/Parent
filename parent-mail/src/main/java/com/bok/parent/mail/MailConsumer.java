@@ -15,7 +15,7 @@ public class MailConsumer {
     @Autowired
     EmailService emailService;
 
-    @JmsListener(destination = "${active-mq.emails}")
+    @JmsListener(destination = "${queues.emails}")
     public void onSendEmailMessage(EmailMessage emailMessage) {
         log.info("Received Message: " + emailMessage.toString());
         emailService.sendEmail(emailMessage);

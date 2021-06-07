@@ -15,7 +15,7 @@ public class ReportMessageConsumer {
     @Autowired
     FileAttachmentHelper fileAttachmentHelper;
 
-    @JmsListener(destination = "${active-mq.reports}")
+    @JmsListener(destination = "${queues.reports}")
     public void accountCreationListener(FileMessage message) {
         log.info("Received message from parent: " + message.toString());
         fileAttachmentHelper.handle(message);

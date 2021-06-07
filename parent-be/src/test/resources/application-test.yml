@@ -1,4 +1,4 @@
-active-mq:
+queues:
   users: users
   broker-url: tcp://localhost:61616
   bank-account-deletion: bank-account-deletion
@@ -23,14 +23,19 @@ spring:
         - java.lang
     in-memory: true
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/testing
-    username: testing
-    password: testing
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    url: jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    database: mysql
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.HSQLDialect
+    show-sql: false
+    database: hsql
 
 security:
   basic:
@@ -46,6 +51,9 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka
+    enabled: false
+  instance:
+    lease-renewal-interval-in-seconds: 30
 
 minio:
   endpoint: localhost

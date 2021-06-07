@@ -12,7 +12,7 @@ import javax.jms.ConnectionFactory;
 @Configuration
 public class ActiveMQBrokerConfig {
 
-    @Value("${active-mq.broker-url}")
+    @Value("${queues.broker-url}")
     private String brokerUrl;
 
     @Bean

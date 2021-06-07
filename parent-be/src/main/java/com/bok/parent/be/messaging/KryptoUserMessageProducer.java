@@ -15,10 +15,10 @@ public class KryptoUserMessageProducer {
     @Autowired
     JmsTemplate jmsTemplate;
 
-    @Value("${active-mq.krypto-users}")
+    @Value("${queues.krypto-users}")
     private String usersQueue;
 
-    @Value("${active-mq.krypto-account-deletion}")
+    @Value("${queues.krypto-account-deletion}")
     private String accountDeletionQueue;
 
 

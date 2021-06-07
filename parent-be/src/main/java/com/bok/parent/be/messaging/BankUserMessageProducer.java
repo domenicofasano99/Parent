@@ -15,10 +15,10 @@ public class BankUserMessageProducer {
     @Autowired
     JmsTemplate jmsTemplate;
 
-    @Value("${active-mq.bank-users}")
+    @Value("${queues.bank-users}")
     private String usersQueue;
 
-    @Value("${active-mq.bank-account-deletion}")
+    @Value("${queues.bank-account-deletion}")
     private String accountDeletionQueue;
 
 
