@@ -15,15 +15,17 @@ import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import com.bok.parent.repository.AccountRepository;
-import com.github.javafaker.Faker;
+import com.google.common.hash.Hashing;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,18 +36,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest
 @Slf4j
 @ActiveProfiles("test")
 public class SecurityServiceTest {
-
-    public static final Faker faker = new Faker();
 
     @Autowired
     ModelTestUtil modelTestUtil;
@@ -80,7 +78,7 @@ public class SecurityServiceTest {
         loginDTO.password = account.password;
         LoginResponseDTO login = securityService.login(loginDTO);
         log.debug(login.token);
-        assertNotNull(login.token);
+        Assertions.assertNotNull(login.token);
     }
 
     @Test
@@ -116,13 +114,13 @@ public class SecurityServiceTest {
         loginDTO.password = account.password;
         LoginResponseDTO loginResponse = securityService.login(loginDTO);
         log.debug(loginResponse.token);
-        assertNotNull(loginResponse.token);
+        Assertions.assertNotNull(loginResponse.token);
 
 
         TokenExpirationRequestDTO requestDTO = new TokenExpirationRequestDTO();
         requestDTO.token = loginResponse.token;
         TokenInfoResponseDTO response = securityService.tokenInfo(loginResponse.token);
-        assertTrue(response.expirationDate.isAfter(Instant.now()));
+        Assertions.assertTrue(response.expirationDate.isAfter(Instant.now()));
 
     }
 
@@ -135,12 +133,12 @@ public class SecurityServiceTest {
         loginDTO.password = account.password;
         LoginResponseDTO loginResponse = securityService.login(loginDTO);
         log.debug(loginResponse.token);
-        assertNotNull(loginResponse.token);
+        Assertions.assertNotNull(loginResponse.token);
 
 
         securityService.logout(loginResponse.token);
         Token token = tokenHelper.findByTokenString(loginResponse.token);
-        assertTrue(token.expired);
+        Assertions.assertTrue(token.expired);
     }
 
     @Test
@@ -152,7 +150,7 @@ public class SecurityServiceTest {
         loginDTO.password = account.password;
 
         LoginResponseDTO loginResponse = securityService.login(loginDTO);
-        assertNotNull(loginResponse.token);
+        Assertions.assertNotNull(loginResponse.token);
 
         Token firstToken = tokenHelper.getActiveToken(loginDTO.email).orElseThrow(RuntimeException::new);
         firstToken.setExpired(true);
@@ -161,7 +159,7 @@ public class SecurityServiceTest {
         loginResponse = securityService.login(loginDTO);
         Token secondToken = tokenHelper.getActiveToken(loginDTO.email).orElseThrow(RuntimeException::new);
 
-        assertNotEquals(firstToken.tokenString, secondToken.tokenString);
+        Assertions.assertNotEquals(firstToken.tokenString, secondToken.tokenString);
 
     }
 
@@ -180,8 +178,8 @@ public class SecurityServiceTest {
         Thread.sleep(500);
         //third login
         String thirdToken = securityService.login(loginDTO).getToken();
-        assertNotEquals(firstToken, secondToken);
-        assertNotEquals(firstToken, thirdToken);
+        Assertions.assertNotEquals(firstToken, secondToken);
+        Assertions.assertNotEquals(firstToken, thirdToken);
     }
 
 
@@ -194,7 +192,7 @@ public class SecurityServiceTest {
 
         LastAccessInfoDTO lastAccessInfo = securityService.lastAccessInfo(token);
         assertThat(lastAccessInfo.lastAccessIP, is(""));
-        assertTrue(lastAccessInfo.lastAccessDateTime.isBefore(LocalDateTime.now()));
+        Assertions.assertTrue(lastAccessInfo.lastAccessDateTime.isBefore(LocalDateTime.now()));
     }
 
     @Test
@@ -208,6 +206,14 @@ public class SecurityServiceTest {
             assertThat(tokenList, not(containsInAnyOrder(Collections.singletonList(token))));
             tokenList.add(token);
         }
+    }
+
+    @Test
+    public void passwordHashTest() {
+        String password = "password";
+        String hashedPassword = "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8";
+        String sha256hex = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
+        Assertions.assertEquals(hashedPassword, sha256hex);
     }
 
 }

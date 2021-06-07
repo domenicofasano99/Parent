@@ -13,6 +13,8 @@ import com.github.javafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static com.bok.parent.be.utils.CryptoUtils.sha256;
+
 @Component
 public class ModelTestUtil {
 
@@ -55,7 +57,7 @@ public class ModelTestUtil {
 
         AccountRegistrationDTO.CredentialsDTO credentials = new AccountRegistrationDTO.CredentialsDTO();
         credentials.email = faker.internet().emailAddress();
-        credentials.password = faker.internet().password();
+        credentials.password = sha256(faker.internet().password());
         registrationDTO.credentials = credentials;
 
         AccountRegistrationDTO.AddressDTO address = new AccountRegistrationDTO.AddressDTO();

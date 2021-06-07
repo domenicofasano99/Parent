@@ -34,6 +34,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
+import static com.bok.parent.be.utils.CryptoUtils.sha256;
+
 
 @Component
 @Slf4j
@@ -205,7 +207,7 @@ public class AccountHelper {
 
         Account account = findByEmail(email).orElseThrow(() -> new RuntimeException("Account not found."));
         String generatedPassword = generatePassword(8);
-        Credentials credentials = new Credentials(email, cryptoUtils.encryptPassword(generatedPassword));
+        Credentials credentials = new Credentials(email, cryptoUtils.encryptPassword(sha256(generatedPassword)));
         account.setCredentials(credentials);
         accountRepository.save(account);
         messageHelper.send(generatePasswordResetEmail(account.getCredentials().getEmail(), generatedPassword));
