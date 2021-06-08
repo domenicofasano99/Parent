@@ -55,8 +55,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         // We don't need CSRF for this example
         httpSecurity
-                .csrf()
-                .disable()
                 .authorizeRequests()
                 .antMatchers("/login")
                 .permitAll()
@@ -78,12 +76,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
 
         httpSecurity
-                .authorizeRequests()
-                .antMatchers("/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
                 .csrf()
                 .disable()
                 .cors()
