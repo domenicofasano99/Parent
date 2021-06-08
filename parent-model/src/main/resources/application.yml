@@ -34,7 +34,14 @@ spring:
         enabled: false
   activemq:
     packages:
-      trusted: com.bok.krypto.model
+      trusted:
+      - com.bok.parent
+      - com.bok.krypto
+      - com.bok.bank
+      - java.lang
+    broker-url: activemq
+    in-memory: false
+
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
