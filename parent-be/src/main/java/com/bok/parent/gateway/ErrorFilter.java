@@ -1,9 +1,11 @@
 package com.bok.parent.gateway;
 
 import com.bok.parent.be.exception.ApiError;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,7 @@ public class ErrorFilter extends ZuulFilter {
     private static final String FILTER_TYPE = "error";
     private static final String THROWABLE_KEY = "throwable";
     private static final int FILTER_ORDER = -1;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public String filterType() {
@@ -31,6 +34,7 @@ public class ErrorFilter extends ZuulFilter {
         return true;
     }
 
+    @SneakyThrows
     @Override
     public Object run() throws ZuulException {
         final RequestContext context = RequestContext.getCurrentContext();
@@ -45,7 +49,8 @@ public class ErrorFilter extends ZuulFilter {
 
             // populate context with new response values
             ApiError error = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, zuulException.errorCause, null);
-            context.setResponseBody(error.toString());
+            context.setResponseBody(objectMapper.writeValueAsString(error));
+
             context.getResponse().setContentType("application/json");
             // can set any error code as excepted
             context.setResponseStatusCode(error.getStatus().value());
