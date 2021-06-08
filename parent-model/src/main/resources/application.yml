@@ -39,7 +39,7 @@ spring:
       - com.bok.krypto
       - com.bok.bank
       - java.lang
-    broker-url: activemq
+    broker-url: tcp://activemq:61616
     in-memory: false
 
 
