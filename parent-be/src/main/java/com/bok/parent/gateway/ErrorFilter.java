@@ -1,9 +1,11 @@
 package com.bok.parent.gateway;
 
+import com.bok.parent.be.exception.ApiError;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -42,10 +44,11 @@ public class ErrorFilter extends ZuulFilter {
             context.remove(THROWABLE_KEY);
 
             // populate context with new response values
-            context.setResponseBody(zuulException.errorCause);
+            ApiError error = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, zuulException.errorCause, null);
+            context.setResponseBody(error.toString());
             context.getResponse().setContentType("application/json");
             // can set any error code as excepted
-            context.setResponseStatusCode(503);
+            context.setResponseStatusCode(error.getStatus().value());
         }
         return null;
     }

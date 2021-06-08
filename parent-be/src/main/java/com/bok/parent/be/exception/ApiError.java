@@ -20,6 +20,7 @@ public class ApiError {
     private LocalDateTime timestamp;
     private String message;
 
+
     private ApiError() {
         timestamp = LocalDateTime.now();
     }
