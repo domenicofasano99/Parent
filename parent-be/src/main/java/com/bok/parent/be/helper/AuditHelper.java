@@ -123,7 +123,7 @@ public class AuditHelper {
     @Async
     public void saveAccessInfo(String remoteAddr, String email) {
         AccessInfo accessInfo = new AccessInfo();
-        accessInfo.setAccount(accountHelper.findByEmail(email).orElseThrow(() -> new RuntimeException("Couldn't find associated account with email " + email)));
+        accessInfo.setAccount(accountHelper.findByEmail(email));
         accessInfo.setIpAddress(remoteAddr);
         accessInfoRepository.save(accessInfo);
     }

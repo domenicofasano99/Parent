@@ -11,6 +11,10 @@ grpc:
 geolocalization:
   databasePath: classpath:*geolite2-city.mmdb
 spring:
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
   activemq:
     packages:
       trusted:
@@ -37,15 +41,13 @@ spring:
     show-sql: false
     database: hsql
 
-security:
-  basic:
-    enable: false
-  jwt:
-    uri: /auth/**
-    header: Authorization
-    prefix: Bearer
-    expiration: 86400
-    secret: JwtSecretKey
+
+jwt:
+  uri: /auth/**
+  header: Authorization
+  prefix: Bearer
+  expiration: 86400
+  secret: JwtSecretKey
 
 eureka:
   client:

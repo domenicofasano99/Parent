@@ -1,14 +1,19 @@
 package com.bok.parent.be.helper;
 
-import com.bok.parent.be.exception.AccountException;
-import com.bok.parent.be.utils.CryptoUtils;
+import com.bok.parent.be.exception.InvalidCredentialsException;
+import com.bok.parent.be.exception.UserNotEnabledException;
+import com.bok.parent.be.security.JwtTokenUtil;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
-
-import static java.util.Optional.ofNullable;
 
 @Slf4j
 @Component
@@ -17,38 +22,50 @@ public class AuthenticationHelper {
     AccountHelper accountHelper;
 
     @Autowired
-    CryptoUtils cryptoUtils;
+    UserDetailsService userDetailsService;
+
+    @Autowired
+    JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
 
     @Autowired
     TokenHelper tokenHelper;
 
-    public String login(Account account, String password) {
-        checkPassword(account, password);
+    public Token login(Account account, String password) {
+        String email = account.getCredentials().getEmail();
 
-        ofNullable(account.getActiveToken()).ifPresent(t -> tokenHelper.invalidateToken(t));
-        Token token = tokenHelper.create(account);
-        token = tokenHelper.saveToken(token);
+        authenticate(email, password);
+        final Token token = jwtTokenUtil.generateToken(account);
+        return tokenHelper.saveToken(token);
+    }
 
-        return token.getTokenString();
+    public Token loginNoPassword(String email) {
+        final Account account = accountHelper.findByEmail(email);
+        final Token token = jwtTokenUtil.generateToken(account);
+
+        return tokenHelper.saveToken(token);
     }
 
     public void checkTokenValidity(String token) {
-        tokenHelper.verify(token);
-    }
-
-    public Account authenticateByToken(String token) {
-        String email = tokenHelper.verify(token).account.getCredentials().getEmail();
-        return ofNullable(email)
-                .flatMap(name -> accountHelper.findByEmail(name))
-                .filter(Account::getEnabled)
-                .orElseThrow(() -> new AccountException("Account '" + email + "' not found."));
+        String email = jwtTokenUtil.getUsernameFromToken(token);
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        jwtTokenUtil.validateToken(token, userDetails);
     }
 
     public Long extractAccountIdFromToken(String token) {
-        return tokenHelper.verify(token).account.getId();
+        String email = jwtTokenUtil.getUsernameFromToken(token);
+        return accountHelper.getAccountIdByEmail(email);
     }
 
-    private void checkPassword(Account account, String password) {
-        cryptoUtils.checkPassword(password, account.getCredentials().getPassword());
+    private void authenticate(String username, String password) {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        } catch (DisabledException e) {
+            throw new UserNotEnabledException("USER_DISABLED");
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("INVALID_CREDENTIALS");
+        }
     }
 }

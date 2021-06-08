@@ -1,7 +1,7 @@
 package com.bok.parent;
 
 import com.bok.parent.be.exception.AccountException;
-import com.bok.parent.be.exception.WrongCredentialsException;
+import com.bok.parent.be.exception.InvalidCredentialsException;
 import com.bok.parent.be.helper.TokenHelper;
 import com.bok.parent.be.service.AccountService;
 import com.bok.parent.be.service.SecurityService;
@@ -15,7 +15,6 @@ import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import com.bok.parent.repository.AccountRepository;
-import com.google.common.hash.Hashing;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
@@ -25,18 +24,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
+import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -88,7 +87,7 @@ public class SecurityServiceTest {
         AccountLoginDTO loginDTO = new AccountLoginDTO();
         loginDTO.email = account.email;
         loginDTO.password = "wrongpassword";
-        assertThrows(WrongCredentialsException.class, () -> securityService.login(loginDTO));
+        assertThrows(InvalidCredentialsException.class, () -> securityService.login(loginDTO));
     }
 
     @Test
@@ -138,7 +137,7 @@ public class SecurityServiceTest {
 
         securityService.logout(loginResponse.token);
         Token token = tokenHelper.findByTokenString(loginResponse.token);
-        Assertions.assertTrue(token.expired);
+        Assertions.assertTrue(token.getExpired());
     }
 
     @Test
@@ -159,7 +158,7 @@ public class SecurityServiceTest {
         loginResponse = securityService.login(loginDTO);
         Token secondToken = tokenHelper.getActiveToken(loginDTO.email).orElseThrow(RuntimeException::new);
 
-        Assertions.assertNotEquals(firstToken.tokenString, secondToken.tokenString);
+        Assertions.assertNotEquals(firstToken.getTokenString(), secondToken.getTokenString());
 
     }
 
@@ -196,13 +195,15 @@ public class SecurityServiceTest {
     }
 
     @Test
-    public void testMultipleLogins() {
+    public void testMultipleLogins() throws InterruptedException {
         AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
         AccountLoginDTO loginDTO = new AccountLoginDTO(account.email, account.password);
 
+        Random random = new Random();
         List<String> tokenList = new ArrayList<>();
         for (int c = 0; c < 100; c++) {
             String token = securityService.login(loginDTO).token;
+            Thread.sleep(random.nextInt(100));
             assertThat(tokenList, not(containsInAnyOrder(Collections.singletonList(token))));
             tokenList.add(token);
         }
@@ -212,7 +213,7 @@ public class SecurityServiceTest {
     public void passwordHashTest() {
         String password = "password";
         String hashedPassword = "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8";
-        String sha256hex = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
+        String sha256hex = sha256Hex(password);
         Assertions.assertEquals(hashedPassword, sha256hex);
     }
 

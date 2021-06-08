@@ -3,8 +3,7 @@ package com.bok.parent.be.helper;
 import com.bok.bank.integration.grpc.BankGrpc;
 import com.bok.parent.be.exception.AccountException;
 import com.bok.parent.be.exception.EmailAlreadyExistsException;
-import com.bok.parent.be.utils.Constants;
-import com.bok.parent.be.utils.CryptoUtils;
+import com.bok.parent.be.security.CustomPasswordEncoder;
 import com.bok.parent.be.utils.ValidationUtils;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
@@ -26,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -34,8 +33,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
-import static com.bok.parent.be.utils.CryptoUtils.sha256;
-
+import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 
 @Component
 @Slf4j
@@ -49,9 +47,6 @@ public class AccountHelper {
 
     @Autowired
     AccountTemporaryDetailsRepository accountTemporaryDetailsRepository;
-
-    @Autowired
-    CryptoUtils cryptoUtils;
 
     @Autowired
     MessageHelper messageHelper;
@@ -71,6 +66,8 @@ public class AccountHelper {
     @Value("${server.baseUrl}")
     String baseUrl;
 
+    PasswordEncoder passwordEncoder = new CustomPasswordEncoder();
+
     public static String generatePassword(int len) {
         String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         Random rnd = new Random();
@@ -82,6 +79,10 @@ public class AccountHelper {
         return sb.toString();
     }
 
+    public Long getAccountIdByEmail(String email) {
+        return accountRepository.findAccountIdByEmail(email);
+    }
+
     @Transactional
     public AccountRegistrationResponseDTO register(AccountRegistrationDTO request) {
 
@@ -89,7 +90,7 @@ public class AccountHelper {
             throw new EmailAlreadyExistsException("Account already registered.");
         }
         Account account = new Account();
-        account.setCredentials(new Credentials(request.credentials.email, cryptoUtils.encryptPassword(request.credentials.password)));
+        account.setCredentials(new Credentials(request.credentials.email, passwordEncoder.encode(request.credentials.password)));
         account.setEnabled(false);
         account.setRole(Account.Role.USER);
         account = accountRepository.save(account);
@@ -138,17 +139,12 @@ public class AccountHelper {
         accountTemporaryDetailsRepository.save(accountTemporaryDetails);
     }
 
-    public Optional<Account> findByEmail(String email) {
-        return accountRepository.findByCredentials_Email(email);
+    public Account findByEmail(String email) {
+        return accountRepository.findByCredentials_Email(email).orElseThrow(() -> new AccountException("Account not found"));
     }
 
     public Optional<Account> findByEmailAndEnabled(String email) {
         return accountRepository.findByCredentials_EmailAndEnabledIsTrue(email);
-    }
-
-    @Cacheable(value = Constants.IDS, unless = "#result == null")
-    public Long findIdByEmail(String email) {
-        return accountRepository.findIdByEmail(email);
     }
 
     private void notifyServices(Account account) {
@@ -159,7 +155,7 @@ public class AccountHelper {
     }
 
     @Transactional
-    public VerificationResponseDTO verify(String accountConfirmationToken) {
+    public VerificationResponseDTO verify(String accountConfirmationToken) throws RuntimeException {
         ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(accountConfirmationToken);
         Preconditions.checkArgument(Objects.nonNull(token));
 
@@ -205,9 +201,9 @@ public class AccountHelper {
 
     public PasswordResetResponseDTO recover(String email) {
 
-        Account account = findByEmail(email).orElseThrow(() -> new RuntimeException("Account not found."));
+        Account account = findByEmail(email);
         String generatedPassword = generatePassword(8);
-        Credentials credentials = new Credentials(email, cryptoUtils.encryptPassword(sha256(generatedPassword)));
+        Credentials credentials = new Credentials(email, passwordEncoder.encode(sha256Hex(generatedPassword)));
         account.setCredentials(credentials);
         accountRepository.save(account);
         messageHelper.send(generatePasswordResetEmail(account.getCredentials().getEmail(), generatedPassword));

@@ -17,25 +17,25 @@ import java.time.Instant;
 @AllArgsConstructor
 @Entity
 public class Token {
-    @NaturalId
-    @Column
-    public String tokenString;
-    @Column
-    public Instant issuedAt;
-    @Column
-    public Instant expiresAt;
-    @ManyToOne
-    public Account account;
     @Column
     public Boolean expired;
+    @NaturalId
+    @Column
+    private String tokenString;
+    @Column
+    private Instant issuedAt;
+    @Column
+    private Instant expiration;
+    @ManyToOne
+    private Account account;
     @Id
     @GeneratedValue
     private Long id;
 
-    public Token(String tokenString, Instant issuedAt, Instant expiresAt, Account account, Boolean expired) {
+    public Token(String tokenString, Instant issuedAt, Instant expiration, Account account, Boolean expired) {
         this.tokenString = tokenString;
         this.issuedAt = issuedAt;
-        this.expiresAt = expiresAt;
+        this.expiration = expiration;
         this.expired = expired;
         this.account = account;
     }

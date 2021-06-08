@@ -1,6 +1,7 @@
 package com.bok.parent.be.utils.encryption;
 
-import org.springframework.stereotype.Service;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -9,25 +10,53 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
-@Service
-public class PasswordEncryption {
+import static java.util.Objects.isNull;
 
-    private static byte[] getSalt() throws NoSuchAlgorithmException {
-        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-        byte[] salt = new byte[16];
-        sr.nextBytes(salt);
-        return salt;
+@Slf4j
+public class CustomEncryption {
+    private static CustomEncryption instance;
+    private static SecretKeyFactory skf;
+
+    @SneakyThrows
+    private CustomEncryption() {
+        skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
     }
 
-    public String generatePasswordHash(String plainPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public static CustomEncryption getInstance() {
+        if (isNull(instance)) {
+            instance = new CustomEncryption();
+        }
+        return instance;
+    }
+
+
+    private byte[] getSalt() {
+        try {
+            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+            byte[] salt = new byte[16];
+            sr.nextBytes(salt);
+            return salt;
+        } catch (NoSuchAlgorithmException ex) {
+            log.error("Error in getSalt method : {}", ex.getCause());
+            throw new RuntimeException("Error");
+        }
+
+    }
+
+    public String encrypt(String plainPassword) {
         int iterations = 1000;
         char[] chars = plainPassword.toCharArray();
         byte[] salt = getSalt();
 
         PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
-        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        byte[] hash = skf.generateSecret(spec).getEncoded();
-        return iterations + ":" + toHex(salt) + ":" + toHex(hash);
+        try {
+            byte[] hash = skf.generateSecret(spec).getEncoded();
+            return iterations + ":" + toHex(salt) + ":" + toHex(hash);
+        } catch (InvalidKeySpecException ex) {
+            log.error("Error while encrypting");
+            throw new RuntimeException();
+        }
+
     }
 
     private String toHex(byte[] array) {
@@ -41,7 +70,7 @@ public class PasswordEncryption {
         }
     }
 
-    public boolean validatePassword(String plainPassword, String hashedPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public boolean validate(String plainPassword, String hashedPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
         String[] parts = hashedPassword.split(":");
         int iterations = Integer.parseInt(parts[0]);
         byte[] salt = fromHex(parts[1]);

@@ -1,7 +1,7 @@
 package com.bok.parent.be.helper;
 
 import com.bok.parent.be.exception.AccountException;
-import com.bok.parent.be.utils.CryptoUtils;
+import com.bok.parent.be.utils.encryption.CustomEncryption;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LastAccessInfoDTO;
@@ -46,23 +46,20 @@ public class SecurityHelper {
     @Autowired
     AccessInfoRepository accessInfoRepository;
 
-    @Autowired
-    CryptoUtils cryptoUtils;
+    public LoginResponseDTO login(AccountLoginDTO request) {
+        Preconditions.checkArgument(nonNull(request.password));
+        Preconditions.checkArgument(nonNull(request.email));
 
-    public LoginResponseDTO login(AccountLoginDTO accountLoginDTO) {
-        Preconditions.checkArgument(nonNull(accountLoginDTO.password));
-        Preconditions.checkArgument(nonNull(accountLoginDTO.email));
-
-        Account account = accountHelper.findByEmail(accountLoginDTO.email).orElseThrow(() -> new AccountException("Account not found!"));
+        Account account = accountHelper.findByEmail(request.email);
         if (isFalse(account.getEnabled())) {
             throw new AccountException("Account has not been verified!");
         }
 
         LoginResponseDTO response = new LoginResponseDTO();
-        response.token = authenticationHelper.login(account, accountLoginDTO.password);
+        Token token = authenticationHelper.login(account, request.password);
         response.lastAccessInfo = getLastAccessInfoByAccountId(account.getId());
-
-        log.info("User {} logged in", accountLoginDTO.email);
+        response.token = token.getTokenString();
+        log.info("User {} logged in", request.email);
         return response;
     }
 
@@ -77,7 +74,7 @@ public class SecurityHelper {
     public KeepAliveResponseDTO keepAlive(String tokenString) {
         KeepAliveResponseDTO keepAliveResponse = new KeepAliveResponseDTO();
         Token token = tokenHelper.getTokenByTokenString(tokenString);
-        if (token.expiresAt.isBefore(Instant.now().plusSeconds(120))) {
+        if (token.getExpiration().isBefore(Instant.now().plusSeconds(120))) {
             keepAliveResponse.token = tokenHelper.replaceOldToken(token).getTokenString();
         }
         return keepAliveResponse;
@@ -111,13 +108,14 @@ public class SecurityHelper {
     }
 
 
-    //TODO finish this
     public PasswordChangeResponseDTO changePassword(String tokenString, PasswordChangeRequestDTO passwordChangeRequestDTO) {
         Token token = tokenHelper.findByTokenString(tokenString);
         Account account = token.getAccount();
-        String newHashedPassword = cryptoUtils.encryptPassword(passwordChangeRequestDTO.newPassword);
-        accountHelper.setNewPassword(account, newHashedPassword);
-        return new PasswordChangeResponseDTO(true);
+        String newHashedPassword;
+        newHashedPassword = CustomEncryption.getInstance().encrypt(passwordChangeRequestDTO.newPassword);
+
+        boolean changed = accountHelper.setNewPassword(account, newHashedPassword);
+        return new PasswordChangeResponseDTO(changed);
     }
 
     public void checkTokenValidity(String token) {

@@ -3,9 +3,11 @@ package com.bok.parent.be.controller;
 import com.bok.parent.be.exception.AccountException;
 import com.bok.parent.be.exception.ApiError;
 import com.bok.parent.be.exception.EmailAlreadyExistsException;
+import com.bok.parent.be.exception.InvalidCredentialsException;
 import com.bok.parent.be.exception.TokenAuthenticationException;
 import com.bok.parent.be.exception.TokenNotFoundException;
-import com.bok.parent.be.exception.WrongCredentialsException;
+import com.fasterxml.jackson.core.JsonParseException;
+import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import reactor.util.annotation.NonNull;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -58,8 +61,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
-    @ExceptionHandler(WrongCredentialsException.class)
-    protected ResponseEntity<Object> badCredentialsHandler(WrongCredentialsException ex) {
+    @ExceptionHandler(InvalidCredentialsException.class)
+    protected ResponseEntity<Object> badCredentialsHandler(InvalidCredentialsException ex) {
         ApiError apiError = new ApiError(BAD_REQUEST);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);

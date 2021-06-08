@@ -1,9 +1,7 @@
 package com.bok.parent.be.helper;
 
 import com.bok.parent.be.exception.TokenNotFoundException;
-import com.bok.parent.be.utils.JWTService;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
-import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import com.bok.parent.repository.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -20,16 +18,11 @@ public class TokenHelper {
     TokenRepository tokenRepository;
 
     @Autowired
-    JWTService jwtService;
+    AuthenticationHelper authenticationHelper;
 
     public Token findByTokenString(String token) {
         return tokenRepository.findByTokenString(token).orElseThrow(() -> new RuntimeException("Token not found"));
     }
-
-    public Optional<Token> findOptionalByTokenString(String token) {
-        return tokenRepository.findByTokenString(token);
-    }
-
 
     public Token saveToken(Token token) {
         return tokenRepository.save(token);
@@ -54,7 +47,7 @@ public class TokenHelper {
 
     public TokenInfoResponseDTO getTokenInfo(String token) {
         Token t = findByTokenString(token);
-        return new TokenInfoResponseDTO(t.expiresAt);
+        return new TokenInfoResponseDTO(t.getExpiration());
     }
 
     public Optional<Token> getActiveToken(String email) {
@@ -70,18 +63,10 @@ public class TokenHelper {
     }
 
     public Token replaceOldToken(Token oldToken) {
-        Token newToken = jwtService.create(oldToken.getAccount());
+        oldToken.getAccount().getCredentials().getEmail();
+        Token newToken = authenticationHelper.loginNoPassword(oldToken.getAccount().getCredentials().getEmail());
         invalidateToken(oldToken.getTokenString());
-        saveToken(newToken);
-        return newToken;
-    }
-
-    public Token create(Account account) {
-        return jwtService.create(account);
-    }
-
-    public Token verify(String token) {
-        return jwtService.verify(token);
+        return saveToken(newToken);
     }
 
     public void revokeTokenByAccountId(Long accountId) {

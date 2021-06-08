@@ -18,6 +18,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Boolean existsByCredentials_Email(String email);
 
     @Query("SELECT a.id FROM Account a WHERE a.credentials.email=:email")
-    Long findIdByEmail(@Param("email") String email);
+    Long findAccountIdByEmail(@Param("email") String email);
 
 }

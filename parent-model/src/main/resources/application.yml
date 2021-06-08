@@ -28,7 +28,10 @@ queues:
 spring:
   application:
     name: parent
-
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
   activemq:
     packages:
       trusted: com.bok.krypto.model
@@ -53,6 +56,7 @@ spring:
     password: reenterb43{
     from: bok@faraone.ovh
 
+
 zuul:
   routes:
     bank:
@@ -70,10 +74,9 @@ eureka:
     lease-renewal-interval-in-seconds: 30
 
 jwt:
-  security:
-    secret: j3H5Ld5nYmGWyULy6xwpOgfSH++NgKXnJMq20vpfd+8=t
-    expiration: 3600
-    issuer: bok
+  secret: j3H5Ld5nYmGWyULy6xwpOgfSH++NgKXnJMq20vpfd+8=t
+  expiration: 3600
+  issuer: bok
 
 minio:
   endpoint: s3server
