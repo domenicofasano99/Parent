@@ -1,6 +1,5 @@
 package com.bok.parent.be.helper;
 
-import com.bok.parent.be.geolocalization.GeographicalLocalizer;
 import com.bok.parent.model.AccessInfo;
 import com.bok.parent.model.AuditLog;
 import com.bok.parent.repository.AccessInfoRepository;
@@ -33,9 +32,6 @@ public class AuditHelper {
     @Autowired
     AccountHelper accountHelper;
 
-    @Autowired
-    GeographicalLocalizer geographicalLocalizer;
-
     @Async
     public void auditGatewayRequest(HttpServletRequest request, Long accountId) {
         AuditLog auditLog = new AuditLog();
@@ -64,7 +60,6 @@ public class AuditHelper {
         audit.setEmail(email);
         audit.setPath("/login");
         audit.setMethod(HttpMethod.POST.name());
-        audit.setGeographicalInfo(geographicalLocalizer.localize(remoteAddr));
         auditLogRepository.save(audit);
     }
 
@@ -75,7 +70,6 @@ public class AuditHelper {
         audit.setEmail(email);
         audit.setPath("/register");
         audit.setMethod(HttpMethod.POST.name());
-        audit.setGeographicalInfo(geographicalLocalizer.localize(remoteAddr));
         auditLogRepository.save(audit);
     }
 

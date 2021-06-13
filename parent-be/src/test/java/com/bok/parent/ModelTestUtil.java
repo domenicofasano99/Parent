@@ -2,7 +2,6 @@ package com.bok.parent;
 
 import com.bok.parent.be.helper.AccountHelper;
 import com.bok.parent.be.service.AccountService;
-import com.bok.parent.geolocalization.repository.GeographicalInfoRepository;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.repository.AccountRepository;
@@ -37,9 +36,6 @@ public class ModelTestUtil {
 
     @Autowired
     AccountTemporaryDetailsRepository accountTemporaryDetailsRepository;
-
-    @Autowired
-    GeographicalInfoRepository geographicalInfoRepository;
 
     public Account enableAccount(Account account) {
         account.setEnabled(true);
@@ -88,7 +84,6 @@ public class ModelTestUtil {
     }
 
     public void clearAll() {
-        geographicalInfoRepository.deleteAll();
         auditLogRepository.deleteAll();
         confirmationTokenRepository.deleteAll();
         accountTemporaryDetailsRepository.deleteAll();
