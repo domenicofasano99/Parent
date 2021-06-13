@@ -3,7 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
+parent-integration/src/main/java/com/bok/parent/integration/grpc/
 ### STS ###
 .apt_generated
 .classpath
