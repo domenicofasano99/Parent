@@ -50,10 +50,6 @@ public class AuditHelper {
     }
 
     @Async
-    public void auditGatewayResponse() {
-    }
-
-    @Async
     public void auditLoginRequest(String remoteAddr, String email) {
         AuditLog audit = new AuditLog();
         audit.setIpAddress(remoteAddr);

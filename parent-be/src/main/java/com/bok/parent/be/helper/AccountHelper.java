@@ -13,25 +13,26 @@ import com.bok.parent.integration.message.AccountCreationMessage;
 import com.bok.parent.integration.message.AccountDeletionMessage;
 import com.bok.parent.integration.message.EmailMessage;
 import com.bok.parent.model.Account;
-import com.bok.parent.model.AccountTemporaryDetails;
-import com.bok.parent.model.ConfirmationToken;
 import com.bok.parent.model.Credentials;
+import com.bok.parent.model.TemporaryAccount;
 import com.bok.parent.repository.AccessInfoRepository;
 import com.bok.parent.repository.AccountRepository;
-import com.bok.parent.repository.AccountTemporaryDetailsRepository;
-import com.bok.parent.repository.ConfirmationTokenRepository;
-import com.google.common.base.Preconditions;
+import com.bok.parent.repository.TemporaryAccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.util.Objects;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 
@@ -43,10 +44,7 @@ public class AccountHelper {
     AccountRepository accountRepository;
 
     @Autowired
-    ConfirmationTokenRepository confirmationTokenRepository;
-
-    @Autowired
-    AccountTemporaryDetailsRepository accountTemporaryDetailsRepository;
+    TemporaryAccountRepository temporaryAccountRepository;
 
     @Autowired
     MessageHelper messageHelper;
@@ -89,13 +87,8 @@ public class AccountHelper {
         if (accountRepository.existsByCredentials_Email(request.credentials.email)) {
             throw new EmailAlreadyExistsException("Account already registered.");
         }
-        Account account = new Account();
-        account.setCredentials(new Credentials(request.credentials.email, passwordEncoder.encode(request.credentials.password)));
-        account.setEnabled(false);
-        account.setRole(Account.Role.USER);
-        account = accountRepository.save(account);
 
-        AccountTemporaryDetails accountTemporaryDetails = new AccountTemporaryDetails(request.name,
+        TemporaryAccount temporaryAccount = new TemporaryAccount(request.name,
                 request.middleName,
                 request.surname,
                 request.credentials.email,
@@ -111,32 +104,30 @@ public class AccountHelper {
                 request.address.county,
                 request.address.country,
                 request.address.postalCode,
-                request.gender,
-                account);
+                request.gender);
 
 
-        saveAccountInformations(accountTemporaryDetails);
-        sendAccountConfirmationEmail(account);
+        saveTemporaryAccount(temporaryAccount);
+        sendTemporaryAccountConfirmationEmail(temporaryAccount);
         log.info("User {} registered", request.credentials.email);
         return new AccountRegistrationResponseDTO("registered");
     }
 
-    private void sendAccountConfirmationEmail(Account account) {
-        ConfirmationToken confirmationToken = new ConfirmationToken(account);
-        confirmationTokenRepository.save(confirmationToken);
+    private void sendTemporaryAccountConfirmationEmail(TemporaryAccount account) {
         EmailMessage emailMessage = new EmailMessage();
-        emailMessage.to = account.getCredentials().getEmail();
+        emailMessage.to = account.getEmail();
         emailMessage.subject = "BOK Account Verification";
         emailMessage.body = "Click on the link to verify your BOK account: \n" +
-                baseUrl + "/verify?verificationToken=" + confirmationToken.getConfirmationToken() +
+                baseUrl + "/verify?verificationToken=" + account.getConfirmationToken() +
+                "\nThis link will expire in 24 hours; after that you will have to create another account from scratch." +
                 "\n\nThe BOK Team.";
 
         messageHelper.send(emailMessage);
     }
 
     @Transactional
-    public void saveAccountInformations(AccountTemporaryDetails accountTemporaryDetails) {
-        accountTemporaryDetailsRepository.save(accountTemporaryDetails);
+    public void saveTemporaryAccount(TemporaryAccount temporaryAccount) {
+        temporaryAccountRepository.save(temporaryAccount);
     }
 
     public Account findByEmail(String email) {
@@ -147,35 +138,33 @@ public class AccountHelper {
         return accountRepository.findByCredentials_EmailAndEnabledIsTrue(email);
     }
 
-    private void notifyServices(Account account) {
-        log.info("Notifying services about the account {} creation", account);
-        AccountTemporaryDetails accountTemporaryDetails = accountTemporaryDetailsRepository.findByAccount(account).orElseThrow(() -> new RuntimeException("Couldn't find account " + account.getId()));
-        messageHelper.send(generateAccountCreationMessage(accountTemporaryDetails));
-        accountTemporaryDetailsRepository.deleteByAccount_Id(account.getId());
+    private void notifyServices(TemporaryAccount temporaryAccount, Long accountId) {
+        log.info("Notifying services about the account {} creation", temporaryAccount);
+        messageHelper.send(generateAccountCreationMessage(temporaryAccount, accountId));
+        temporaryAccountRepository.delete(temporaryAccount);
     }
 
     @Transactional
     public VerificationResponseDTO verify(String accountConfirmationToken) throws RuntimeException {
-        ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(accountConfirmationToken);
-        Preconditions.checkArgument(Objects.nonNull(token));
 
-        Optional<Account> accountOptional = accountRepository.findByCredentials_Email(token.getAccount().getCredentials().getEmail());
-        if (!accountOptional.isPresent()) {
-            log.warn("Couldn't find token {} related account.", accountConfirmationToken);
-            confirmationTokenRepository.delete(token);
-            throw new RuntimeException("Error while activating you account, try registering again or contact customer care.");
-        }
-        Account account = accountOptional.get();
+        TemporaryAccount ta = temporaryAccountRepository.findByConfirmationToken(UUID.fromString(accountConfirmationToken))
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        Account account = new Account();
+        String generatedPlainPassword = generatePassword(8);
+        String hashedPassword = sha256Hex(generatedPlainPassword);
+        account.setCredentials(new Credentials(ta.getEmail(), passwordEncoder.encode(hashedPassword)));
         account.setEnabled(true);
-        accountRepository.save(account);
-        log.info("Account {} successfully verified!", account.getCredentials().getEmail());
-        confirmationTokenRepository.delete(token);
-        notifyServices(account);
+        account.setRole(Account.Role.USER);
+        account = accountRepository.save(account);
 
+        log.info("Account {} successfully verified!", account.getCredentials().getEmail());
+        notifyServices(ta, account.getId());
+        sendWelcomeEmail(account.getCredentials().getEmail(), ta.getName(), generatedPlainPassword);
         return new VerificationResponseDTO("Your account has been confirmed, you can now login to the user area.");
     }
 
-    private AccountCreationMessage generateAccountCreationMessage(AccountTemporaryDetails userData) {
+    private AccountCreationMessage generateAccountCreationMessage(TemporaryAccount userData, Long accountId) {
         AccountCreationMessage message = new AccountCreationMessage();
         message.name = userData.getName();
         message.middleName = userData.getMiddleName();
@@ -194,7 +183,7 @@ public class AccountHelper {
         message.country = userData.getCountry();
         message.postalCode = userData.getPostalCode();
         message.gender = userData.getGender();
-        message.accountId = userData.getAccount().getId();
+        message.accountId = accountId;
 
         return message;
     }
@@ -224,10 +213,23 @@ public class AccountHelper {
         return mail;
     }
 
+    private void sendWelcomeEmail(String email, String firstName, String generatedPlainPassword) {
+        EmailMessage mail = new EmailMessage();
+        mail.to = email;
+        mail.subject = firstName + " welcome to BOK!";
+        mail.body = "Hello " + firstName + ", \n " +
+                "Thanks for verifying your account, you can now login using the following credentials:\n" +
+                "email: " + email + "\n" +
+                "password: " + generatedPlainPassword + "\n" +
+                "we suggest you change this password as soon as possible\n\n" +
+                "best regards\n" +
+                "the bok team";
+        messageHelper.send(mail);
+    }
+
     public String delete(String email) {
         Account a = accountRepository.findByCredentials_Email(email).orElseThrow(() -> new RuntimeException("Account not found"));
-        accountTemporaryDetailsRepository.deleteByAccount(a);
-        confirmationTokenRepository.deleteByAccount(a);
+        temporaryAccountRepository.deleteByEmail(email);
         accessInfoRepository.deleteByAccount(a);
         accountRepository.delete(a);
         messageHelper.send(new AccountDeletionMessage(a.getId()));
@@ -251,4 +253,18 @@ public class AccountHelper {
         accountRepository.save(account);
         return true;
     }
+
+    @Scheduled(cron = "0 */5 * * * *")
+    public void deleteUnconfirmedAccounts() {
+        List<TemporaryAccount> temporaryAccounts = temporaryAccountRepository.findAll();
+        List<TemporaryAccount> toDelete = new ArrayList<>();
+        for (TemporaryAccount ta : temporaryAccounts) {
+            if (ta.getCreationTimestamp().isBefore(ta.getCreationTimestamp().minus(1, ChronoUnit.DAYS))) {
+                toDelete.add(ta);
+            }
+        }
+        temporaryAccountRepository.deleteAll(toDelete);
+        log.info("Deleted {} unconfirmed accounts", toDelete.size());
+    }
+
 }

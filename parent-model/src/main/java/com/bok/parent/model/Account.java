@@ -52,7 +52,7 @@ public class Account {
     private List<AccessInfo> accessInfo;
 
     @OneToOne(orphanRemoval = true)
-    private AccountTemporaryDetails accountTemporaryDetails;
+    private TemporaryAccount temporaryAccount;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
     private List<Token> tokens;

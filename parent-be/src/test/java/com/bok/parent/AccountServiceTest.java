@@ -9,8 +9,7 @@ import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.repository.AccessInfoRepository;
 import com.bok.parent.repository.AccountRepository;
-import com.bok.parent.repository.AccountTemporaryDetailsRepository;
-import com.bok.parent.repository.ConfirmationTokenRepository;
+import com.bok.parent.repository.TemporaryAccountRepository;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,13 +46,10 @@ public class AccountServiceTest {
     AccountRepository accountRepository;
 
     @Autowired
-    AccountTemporaryDetailsRepository accountTemporaryDetailsRepository;
+    TemporaryAccountRepository temporaryAccountRepository;
 
     @Autowired
     AccessInfoRepository accessInfoRepository;
-
-    @Autowired
-    ConfirmationTokenRepository confirmationTokenRepository;
 
     @Autowired
     SecurityService securityService;
@@ -140,15 +136,4 @@ public class AccountServiceTest {
         assertNotEquals(a.getCredentials().getPassword(), aa.getCredentials().getPassword());
     }
 
-    @Test
-    public void testAccountDeletion() {
-        AccountRegistrationDTO.CredentialsDTO credentials = modelTestUtil.createAccountWithCredentials();
-        String email = credentials.email;
-
-        accountService.delete(email);
-        Account account = accountRepository.findByCredentials_Email(email).orElse(null);
-        assertFalse(confirmationTokenRepository.findByAccount(account).isPresent());
-        assertFalse(accountTemporaryDetailsRepository.findByAccount(account).isPresent());
-        assertTrue(accessInfoRepository.findByAccount(account).isEmpty());
-    }
 }

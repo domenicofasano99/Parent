@@ -25,7 +25,7 @@ spring:
         - java.math
         - java.util
         - java.lang
-    in-memory: true
+    broker-url: vm://localhost?broker.persistent=false
 
   datasource:
     driver-class-name: org.hsqldb.jdbc.JDBCDriver
