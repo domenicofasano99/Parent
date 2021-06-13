@@ -1,6 +1,8 @@
 package com.bok.parent.integration.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Date;
@@ -11,7 +13,7 @@ public class AccountRegistrationDTO {
     public String middleName;
     public String surname;
     public Date birthdate;
-    public Boolean business;
+    public boolean business;
     public String fiscalCode;
     public String vatNumber;
     public String gender;
@@ -36,6 +38,8 @@ public class AccountRegistrationDTO {
     }
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class MobileDTO {
         public String icc;
         public String number;
@@ -43,6 +47,8 @@ public class AccountRegistrationDTO {
     }
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class AddressDTO {
         public String houseNumber;
         public String street;
@@ -53,6 +59,8 @@ public class AccountRegistrationDTO {
     }
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class CredentialsDTO {
         public String email;
         @ToString.Exclude

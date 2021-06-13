@@ -5,7 +5,9 @@ import com.bok.parent.be.service.AccountService;
 import com.bok.parent.be.service.SecurityService;
 import com.bok.parent.be.service.bank.BankService;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
+import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
+import com.bok.parent.integration.dto.VerificationResponseDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.TemporaryAccount;
 import com.bok.parent.repository.AccessInfoRepository;
@@ -19,6 +21,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.time.ZonedDateTime;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -109,6 +114,28 @@ public class AccountServiceTest {
     }
 
     @Test
+    public void createAccountUsingService() {
+        AccountRegistrationDTO request = new AccountRegistrationDTO();
+        request.birthdate = Date.from(ZonedDateTime.now().minusYears(20).toInstant());
+        request.name = "Christian";
+        request.middleName = "Gennaro";
+        request.surname = "Faraone";
+        request.fiscalCode = "FFFFFF99F99F999F";
+        request.gender = "M";
+        request.mobile = new AccountRegistrationDTO.MobileDTO("+39", "3334445599");
+        request.address = new AccountRegistrationDTO.AddressDTO("1", "Via delle vie", "Gioia Tauro", "Reggio Calabria", "Italia", "89029");
+        request.credentials = new AccountRegistrationDTO.CredentialsDTO("ciao@ciao.com", "password");
+        request.business = false;
+
+        AccountRegistrationResponseDTO response = accountService.register(request);
+        assertEquals("registered", response.status);
+
+        TemporaryAccount ta = temporaryAccountRepository.findByEmail("ciao@ciao.com").orElseThrow(RuntimeException::new);
+        VerificationResponseDTO verificationResponse = accountService.verify(ta.getConfirmationToken());
+        assertTrue(verificationResponse.verified);
+    }
+
+    @Test
     public void accountWithFakeNameAttempt() {
         AccountRegistrationDTO registrationDTO = modelTestUtil.createRegistrationDTO();
         registrationDTO.name = "Aless34andro";
@@ -138,7 +165,7 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void UUIDQueryTest(){
+    public void UUIDQueryTest() {
         TemporaryAccount t = new TemporaryAccount();
         temporaryAccountRepository.save(t);
 

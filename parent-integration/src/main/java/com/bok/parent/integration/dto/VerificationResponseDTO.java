@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class VerificationResponseDTO {
     public String message;
 
+    public boolean verified;
 }

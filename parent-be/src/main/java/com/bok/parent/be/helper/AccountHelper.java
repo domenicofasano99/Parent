@@ -158,7 +158,7 @@ public class AccountHelper {
         log.info("Account {} successfully verified!", account.getCredentials().getEmail());
         notifyServices(ta, account.getId());
         sendWelcomeEmail(account.getCredentials().getEmail(), ta.getName(), generatedPlainPassword);
-        return new VerificationResponseDTO("Your account has been confirmed, you can now login to the user area.");
+        return new VerificationResponseDTO("Your account has been confirmed, you can now login to the user area.", true);
     }
 
     private AccountCreationMessage generateAccountCreationMessage(TemporaryAccount userData, Long accountId) {
