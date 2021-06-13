@@ -30,7 +30,6 @@ import javax.transaction.Transactional;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -110,35 +109,30 @@ public class AccountHelper {
                 request.gender);
 
 
-        saveTemporaryAccount(temporaryAccount);
+        temporaryAccount = saveOrUpdate(temporaryAccount);
         sendTemporaryAccountConfirmationEmail(temporaryAccount);
         log.info("User {} registered", request.credentials.email);
         return new AccountRegistrationResponseDTO("registered");
     }
 
-    private void sendTemporaryAccountConfirmationEmail(TemporaryAccount account) {
+    private void sendTemporaryAccountConfirmationEmail(TemporaryAccount temporaryAccount) {
         EmailMessage emailMessage = new EmailMessage();
-        emailMessage.to = account.getEmail();
+        emailMessage.to = temporaryAccount.getEmail();
         emailMessage.subject = "BOK Account Verification";
         emailMessage.body = "Click on the link to verify your BOK account: \n" +
-                baseUrl + "/verify?verificationToken=" + account.getConfirmationToken() +
+                baseUrl + "/verify?verificationToken=" + temporaryAccount.getConfirmationToken() +
                 "\nThis link will expire in 24 hours; after that you will have to create another account from scratch." +
                 "\n\nThe BOK Team.";
 
         messageHelper.send(emailMessage);
     }
 
-    @Transactional
-    public void saveTemporaryAccount(TemporaryAccount temporaryAccount) {
-        temporaryAccountRepository.save(temporaryAccount);
+    public TemporaryAccount saveOrUpdate(TemporaryAccount temporaryAccount) {
+        return temporaryAccountRepository.save(temporaryAccount);
     }
 
     public Account findByEmail(String email) {
         return accountRepository.findByCredentials_Email(email).orElseThrow(() -> new AccountException("Account not found"));
-    }
-
-    public Optional<Account> findByEmailAndEnabled(String email) {
-        return accountRepository.findByCredentials_EmailAndEnabledIsTrue(email);
     }
 
     private void notifyServices(TemporaryAccount temporaryAccount, Long accountId) {
@@ -148,9 +142,9 @@ public class AccountHelper {
     }
 
     @Transactional
-    public VerificationResponseDTO verify(String accountConfirmationToken) throws RuntimeException {
-
-        TemporaryAccount ta = temporaryAccountRepository.findByConfirmationToken(UUID.fromString(accountConfirmationToken))
+    public VerificationResponseDTO verify(UUID confirmationToken) throws RuntimeException {
+        log.info("Verifying account with confirmation token: {}", confirmationToken);
+        TemporaryAccount ta = temporaryAccountRepository.findByConfirmationToken(confirmationToken)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         Account account = new Account();

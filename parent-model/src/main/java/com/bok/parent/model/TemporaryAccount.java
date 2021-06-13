@@ -1,8 +1,6 @@
 package com.bok.parent.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -16,8 +14,6 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 public class TemporaryAccount {
 
@@ -25,7 +21,7 @@ public class TemporaryAccount {
     @GeneratedValue
     private Long id;
     @Column
-    private UUID confirmationToken;
+    private UUID confirmationToken = UUID.randomUUID();
     @Column
     private String name;
     @Column
@@ -63,6 +59,9 @@ public class TemporaryAccount {
     @CreationTimestamp
     private Instant creationTimestamp;
 
+    public TemporaryAccount() {
+    }
+
     public TemporaryAccount(String name, String middleName, String surname, String email, Date birthdate, Boolean business, String fiscalCode, String vatNumber, String icc, String mobile, String houseNumber, String street, String city, String county, String country, String postalCode, String gender) {
         this.name = name;
         this.middleName = middleName;
@@ -81,6 +80,5 @@ public class TemporaryAccount {
         this.country = country;
         this.postalCode = postalCode;
         this.gender = gender;
-        this.confirmationToken = UUID.randomUUID();
     }
 }

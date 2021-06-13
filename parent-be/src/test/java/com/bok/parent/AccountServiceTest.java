@@ -7,6 +7,7 @@ import com.bok.parent.be.service.bank.BankService;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.model.Account;
+import com.bok.parent.model.TemporaryAccount;
 import com.bok.parent.repository.AccessInfoRepository;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.TemporaryAccountRepository;
@@ -136,4 +137,11 @@ public class AccountServiceTest {
         assertNotEquals(a.getCredentials().getPassword(), aa.getCredentials().getPassword());
     }
 
+    @Test
+    public void UUIDQueryTest(){
+        TemporaryAccount t = new TemporaryAccount();
+        temporaryAccountRepository.save(t);
+
+        accountService.verify(t.getConfirmationToken());
+    }
 }
