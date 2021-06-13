@@ -78,11 +78,14 @@ zuul:
 
 eureka:
   client:
+    register-with-eureka: false
     serviceUrl:
       defaultZone: http://eureka:8761/eureka
   instance:
     lease-renewal-interval-in-seconds: 30
 
+
+  register-with-eureka=false
 jwt:
   secret: j3H5Ld5nYmGWyULy6xwpOgfSH++NgKXnJMq20vpfd+8=t
   expiration: 3600
