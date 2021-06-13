@@ -49,6 +49,9 @@ public class GeographicalLocalizer {
             log.warn("Attempted to resolve an IP location with database problems, skipping.");
             return null;
         }
+        if (isNull(ipAddressString)) {
+            log.info("No IP provided for request geo-localization");
+        }
         try {
             InetAddress ipAddress = InetAddress.getByName(ipAddressString);
             Optional<CityResponse> response = ofNullable(database.city(ipAddress));
@@ -74,6 +77,8 @@ public class GeographicalLocalizer {
         } catch (GeoIp2Exception gip2e) {
             log.error("GeoIP error, {}", gip2e.getCause().toString());
 
+        } catch (Exception e) {
+            log.error("IP localization error: {}", e.getCause().toString());
         }
         return geoInfo;
 

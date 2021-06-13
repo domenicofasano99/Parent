@@ -26,6 +26,10 @@ spring:
         - java.util
         - java.lang
     in-memory: true
+  artemis:
+    embedded:
+      enabled: true
+
   datasource:
     driver-class-name: org.hsqldb.jdbc.JDBCDriver
     url: jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1

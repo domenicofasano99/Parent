@@ -19,7 +19,6 @@ geolocalization:
 queues:
   krypto-users: krypto-accounts
   bank-users: bank-accounts
-  broker-url: tcp://activemq:61616
   emails: emails
   bank-account-deletion: bank-account-deletion
   krypto-account-deletion: krypto-account-deletion
@@ -39,8 +38,12 @@ spring:
         - com.bok.krypto
         - com.bok.bank
         - java.lang
-    broker-url: tcp://activemq:61616
-    in-memory: false
+  artemis:
+    user: developer
+    password: password4testing
+    host: tcp://activemq:61616
+    embedded:
+      enabled: false
 
 
   datasource:
@@ -58,11 +61,15 @@ spring:
     open-in-view: false
 
   mail:
-    host: mail.faraone.ovh
-    username: bok@faraone.ovh
-    password: reenterb43{
-    from: bok@faraone.ovh
-
+    host: smtp.yandex.com
+    username: bokdev
+    password: ysoccbcojrkafyvt
+    from: bokdev@yandex.com
+    port: 465
+    properties.mail.smtp:
+      ssl.enable: true
+      auth: true
+      starttls.enable: true
 
 zuul:
   routes:
