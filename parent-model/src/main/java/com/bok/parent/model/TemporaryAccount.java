@@ -21,7 +21,7 @@ public class TemporaryAccount {
     @GeneratedValue
     private Long id;
     @Column
-    private UUID confirmationToken = UUID.randomUUID();
+    private UUID confirmationToken;
     @Column
     private String name;
     @Column
@@ -60,6 +60,7 @@ public class TemporaryAccount {
     private Instant creationTimestamp;
 
     public TemporaryAccount() {
+        //hibernate
     }
 
     public TemporaryAccount(String name, String middleName, String surname, String email, Date birthdate, Boolean business, String fiscalCode, String vatNumber, String icc, String mobile, String houseNumber, String street, String city, String county, String country, String postalCode, String gender) {
@@ -80,5 +81,6 @@ public class TemporaryAccount {
         this.country = country;
         this.postalCode = postalCode;
         this.gender = gender;
+        this.confirmationToken = UUID.randomUUID();
     }
 }
