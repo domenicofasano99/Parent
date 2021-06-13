@@ -21,7 +21,7 @@ public class TemporaryAccount {
     @GeneratedValue
     private Long id;
     @Column
-    private UUID confirmationToken;
+    private String confirmationToken;
     @Column
     private String name;
     @Column
@@ -81,6 +81,6 @@ public class TemporaryAccount {
         this.country = country;
         this.postalCode = postalCode;
         this.gender = gender;
-        this.confirmationToken = UUID.randomUUID();
+        this.confirmationToken = UUID.randomUUID().toString();
     }
 }

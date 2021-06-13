@@ -7,13 +7,11 @@ import com.bok.parent.integration.dto.PasswordResetResponseDTO;
 import com.bok.parent.integration.dto.VerificationResponseDTO;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 public interface AccountService {
     AccountRegistrationResponseDTO register(AccountRegistrationDTO accountRegistrationDTO);
 
-    VerificationResponseDTO verify(UUID confirmationToken);
+    VerificationResponseDTO verify(String confirmationToken);
 
     PasswordResetResponseDTO resetPassword(PasswordResetRequestDTO passwordResetRequestDTO);
 

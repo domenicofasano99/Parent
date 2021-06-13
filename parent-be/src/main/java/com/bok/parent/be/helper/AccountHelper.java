@@ -31,7 +31,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 
@@ -142,7 +141,7 @@ public class AccountHelper {
     }
 
     @Transactional
-    public VerificationResponseDTO verify(UUID confirmationToken) throws RuntimeException {
+    public VerificationResponseDTO verify(String confirmationToken) throws RuntimeException {
         log.info("Verifying account with confirmation token: {}", confirmationToken);
         TemporaryAccount ta = temporaryAccountRepository.findByConfirmationToken(confirmationToken)
                 .orElseThrow(() -> new RuntimeException("Account not found"));

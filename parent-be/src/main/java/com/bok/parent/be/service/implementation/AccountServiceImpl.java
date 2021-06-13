@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -82,7 +81,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public VerificationResponseDTO verify(UUID confirmationToken) {
+    public VerificationResponseDTO verify(String confirmationToken) {
         ValidationUtils.nonNull(confirmationToken, "Verification token cannot be null");
         return accountHelper.verify(confirmationToken);
     }
