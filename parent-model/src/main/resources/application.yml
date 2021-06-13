@@ -27,10 +27,6 @@ queues:
 spring:
   application:
     name: parent
-  cloud:
-    loadbalancer:
-      ribbon:
-        enabled: false
   activemq:
     packages:
       trusted:
