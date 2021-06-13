@@ -81,5 +81,6 @@ public class TemporaryAccount {
         this.country = country;
         this.postalCode = postalCode;
         this.gender = gender;
+        this.confirmationToken = UUID.randomUUID();
     }
 }
