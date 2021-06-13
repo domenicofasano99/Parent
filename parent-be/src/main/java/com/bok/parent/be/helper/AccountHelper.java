@@ -87,6 +87,9 @@ public class AccountHelper {
         if (accountRepository.existsByCredentials_Email(request.credentials.email)) {
             throw new EmailAlreadyExistsException("Account already registered.");
         }
+        if (temporaryAccountRepository.existsByEmail(request.credentials.email)) {
+            throw new RuntimeException("An account request is pending for this email, check your inbox!");
+        }
 
         TemporaryAccount temporaryAccount = new TemporaryAccount(request.name,
                 request.middleName,
