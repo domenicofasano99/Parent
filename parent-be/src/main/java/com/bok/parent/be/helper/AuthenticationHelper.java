@@ -44,13 +44,11 @@ public class AuthenticationHelper {
 
     public LoginResponseDTO login(Account account, String password) {
         String email = account.getCredentials().getEmail();
-        if (!account.getTokens().isEmpty()) {
-            tokenHelper.revokeTokens(account);
-        }
+        tokenHelper.revokeTokens(account);
 
         authenticate(email, password);
         Token token = tokenHelper.generate(account);
-
+        accountHelper.addTokenToAccount(account, token);
         LoginResponseDTO response = new LoginResponseDTO();
         response.lastAccessInfo = getLastAccessInfoByAccountId(account.getId());
         response.token = token.getTokenString();

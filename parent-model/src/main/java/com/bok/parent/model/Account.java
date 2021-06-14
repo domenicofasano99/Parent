@@ -58,6 +58,10 @@ public class Account {
         this.credentials = new Credentials(email, password, true);
     }
 
+    public void addToken(Token token) {
+        this.tokens.add(token);
+    }
+
     public enum Role {
         USER
     }

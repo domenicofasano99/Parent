@@ -14,7 +14,6 @@ import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -67,11 +66,6 @@ public class SecurityHelper {
 
     public LogoutResponseDTO logout(String token) {
         return new LogoutResponseDTO(tokenHelper.revoke(token));
-    }
-
-    @Scheduled(cron = "0 0 * * * *")
-    public void deleteExpiredToken() {
-        tokenHelper.deleteExpiredTokens();
     }
 
     public LastAccessInfoDTO lastAccessInfo(String tokenString) {

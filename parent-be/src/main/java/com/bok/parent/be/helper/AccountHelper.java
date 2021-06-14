@@ -16,6 +16,7 @@ import com.bok.parent.integration.message.EmailMessage;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Credentials;
 import com.bok.parent.model.TemporaryAccount;
+import com.bok.parent.model.Token;
 import com.bok.parent.repository.AccessInfoRepository;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.TemporaryAccountRepository;
@@ -24,6 +25,7 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -267,4 +269,9 @@ public class AccountHelper {
         return true;
     }
 
+    @Async
+    public void addTokenToAccount(Account account, Token token) {
+        account.addToken(token);
+        accountRepository.save(account);
+    }
 }

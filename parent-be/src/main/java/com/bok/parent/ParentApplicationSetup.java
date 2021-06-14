@@ -1,6 +1,7 @@
 package com.bok.parent;
 
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableZuulProxy
 @EnableAsync
 @EnableScheduling
+@EnableCaching
 @Configuration
 public class ParentApplicationSetup {
 }

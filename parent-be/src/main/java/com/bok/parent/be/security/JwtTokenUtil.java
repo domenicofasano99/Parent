@@ -66,18 +66,18 @@ public class JwtTokenUtil implements Serializable {
     //3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
     //   compaction of the JWT to a URL-safe string
     private Token doGenerateToken(Map<String, Object> claims, Account account) {
-        Token t = new Token();
-        t.setAccount(account);
-        t.setIssuedAt(Instant.now());
-        t.setExpiration(Instant.now().plusMillis(JWT_TOKEN_VALIDITY * 1000));
-        t.setTokenString(Jwts.builder()
+        Token token = new Token();
+        token.setAccount(account);
+        token.setIssuedAt(Instant.now());
+        token.setExpiration(Instant.now().plusMillis(JWT_TOKEN_VALIDITY * 1000));
+        token.setTokenString(Jwts.builder()
                 .setClaims(claims)
                 .setSubject(account.getCredentials().getEmail())
-                .setIssuedAt(Date.from(t.getIssuedAt()))
-                .setExpiration(Date.from(t.getExpiration()))
+                .setIssuedAt(Date.from(token.getIssuedAt()))
+                .setExpiration(Date.from(token.getExpiration()))
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact());
-        return t;
+        return token;
     }
 
     //validate token

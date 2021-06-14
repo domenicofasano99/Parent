@@ -8,11 +8,15 @@ import com.bok.parent.model.Token;
 import com.bok.parent.repository.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -38,6 +42,7 @@ public class TokenHelper {
         return tokenRepository.save(token);
     }
 
+    @Scheduled(cron = "0 */5 * * * *")
     public void deleteExpiredTokens() {
         Integer deletedTokens = tokenRepository.deleteByExpirationBefore(Instant.now());
         log.info("Deleted {} expired tokens", deletedTokens);
@@ -58,8 +63,10 @@ public class TokenHelper {
         tokenRepository.delete(token);
     }
 
+    @Async
+    @Transactional
     public void revokeTokens(Account account) {
-        tokenRepository.deleteAll(account.getTokens());
+        tokenRepository.deleteAll(account.getTokens().stream().filter(t -> t.getIssuedAt().isBefore(Instant.now())).collect(Collectors.toList()));
     }
 
     public Token generate(Account account) {
