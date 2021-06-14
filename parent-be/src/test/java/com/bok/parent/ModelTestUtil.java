@@ -3,7 +3,12 @@ package com.bok.parent;
 import com.bok.parent.be.helper.AccountHelper;
 import com.bok.parent.be.service.AccountService;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
-import com.bok.parent.model.Account;
+import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
+import com.bok.parent.integration.dto.PasswordResetRequestDTO;
+import com.bok.parent.integration.dto.PasswordResetResponseDTO;
+import com.bok.parent.integration.dto.VerificationResponseDTO;
+import com.bok.parent.model.Credentials;
+import com.bok.parent.model.TemporaryAccount;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.AuditLogRepository;
 import com.bok.parent.repository.TemporaryAccountRepository;
@@ -33,12 +38,7 @@ public class ModelTestUtil {
     @Autowired
     TemporaryAccountRepository temporaryAccountRepository;
 
-    public Account enableAccount(Account account) {
-        account.setEnabled(true);
-        return accountRepository.save(account);
-    }
-
-    public AccountRegistrationDTO createRegistrationDTO() {
+    private AccountRegistrationDTO createRegistrationDTO() {
         AccountRegistrationDTO registrationDTO = new AccountRegistrationDTO();
         registrationDTO.name = faker.name().name().replace(".", "");
         registrationDTO.surname = faker.name().lastName().replace(".", "");
@@ -69,14 +69,18 @@ public class ModelTestUtil {
         return registrationDTO;
     }
 
-    public AccountRegistrationDTO.CredentialsDTO createAccountWithCredentials() {
+    public Credentials createAccountWithCredentials() {
 
         AccountRegistrationDTO registrationDTO = createRegistrationDTO();
 
-        accountService.register(registrationDTO);
-        Account account = accountRepository.findByCredentials_Email(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
-        enableAccount(account);
-        return registrationDTO.credentials;
+        AccountRegistrationResponseDTO response = accountService.register(registrationDTO);
+
+        TemporaryAccount ta = temporaryAccountRepository.findByEmail(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
+        VerificationResponseDTO verificationResponse = accountService.verify(ta.getConfirmationToken());
+        PasswordResetRequestDTO resetRequest = new PasswordResetRequestDTO();
+        resetRequest.email = registrationDTO.credentials.email;
+        PasswordResetResponseDTO passwordResetRequest = accountService.resetPassword(resetRequest);
+        return new Credentials(registrationDTO.credentials.email, sha256Hex("attenzione"), false);
     }
 
     public void clearAll() {

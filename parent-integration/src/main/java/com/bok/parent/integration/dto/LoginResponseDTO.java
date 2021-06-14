@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class LoginResponseDTO {
     public String token;
     public LastAccessInfoDTO lastAccessInfo;
+    public boolean passwordResetNeeded;
 }

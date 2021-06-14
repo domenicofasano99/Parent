@@ -32,9 +32,6 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private Boolean enabled;
-
     @Embedded
     private Credentials credentials;
 
@@ -58,7 +55,7 @@ public class Account {
     private List<Token> tokens;
 
     public Account(String email, String password) {
-        this.credentials = new Credentials(email, password);
+        this.credentials = new Credentials(email, password, true);
     }
 
     public Token getActiveToken() {

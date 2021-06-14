@@ -131,7 +131,7 @@ public class AccountHelper {
     }
 
     public Account findByEmail(String email) {
-        return accountRepository.findByCredentials_Email(email).orElseThrow(() -> new AccountException("Account not found"));
+        return accountRepository.findByCredentials_Email(email).orElseThrow(() -> new AccountException("Account not found or not verified"));
     }
 
     private void notifyServices(TemporaryAccount temporaryAccount, Long accountId) {
@@ -149,8 +149,7 @@ public class AccountHelper {
         Account account = new Account();
         String generatedPlainPassword = generatePassword(8);
         String hashedPassword = sha256Hex(generatedPlainPassword);
-        account.setCredentials(new Credentials(ta.getEmail(), passwordEncoder.encode(hashedPassword)));
-        account.setEnabled(true);
+        account.setCredentials(new Credentials(ta.getEmail(), passwordEncoder.encode(hashedPassword), true));
         account.setRole(Account.Role.USER);
         account = accountRepository.save(account);
 
@@ -188,7 +187,7 @@ public class AccountHelper {
 
         Account account = findByEmail(email);
         String generatedPassword = generatePassword(8);
-        Credentials credentials = new Credentials(email, passwordEncoder.encode(sha256Hex(generatedPassword)));
+        Credentials credentials = new Credentials(email, passwordEncoder.encode(sha256Hex(generatedPassword)), true);
         account.setCredentials(credentials);
         accountRepository.save(account);
         messageHelper.send(generatePasswordResetEmail(account.getCredentials().getEmail(), generatedPassword));
@@ -203,7 +202,7 @@ public class AccountHelper {
                 "your account password has been reset, you can now login using the following credentials:\n" +
                 "email: " + email + "\n" +
                 "password: " + password + "\n" +
-                "we suggest you change this password as soon as possible\n\n" +
+                "at the first login you will be asked to reset this password\n\n" +
                 "best regards\n" +
                 "the bok team";
         return mail;
@@ -217,9 +216,9 @@ public class AccountHelper {
                 "Thanks for verifying your account, you can now login using the following credentials:\n" +
                 "email: " + email + "\n" +
                 "password: " + generatedPlainPassword + "\n" +
-                "we suggest you change this password as soon as possible\n\n" +
-                "best regards\n" +
-                "the bok team";
+                "at the first login you will be asked to reset this password\n\n" +
+                "Best regards\n" +
+                "The bok team";
         messageHelper.send(mail);
     }
 
@@ -243,8 +242,8 @@ public class AccountHelper {
         return accountRepository.findById(accountId).orElseThrow(() -> new AccountException("Account not found"));
     }
 
-    public Boolean setNewPassword(Account account, String newHashedPassword) {
-        Credentials newCredentials = new Credentials(account.getCredentials().getEmail(), newHashedPassword);
+    public Boolean changePassword(Account account, String newHashedPassword) {
+        Credentials newCredentials = new Credentials(account.getCredentials().getEmail(), newHashedPassword, false);
         account.setCredentials(newCredentials);
         accountRepository.save(account);
         return true;

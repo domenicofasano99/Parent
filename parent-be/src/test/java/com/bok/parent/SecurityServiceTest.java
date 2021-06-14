@@ -1,18 +1,16 @@
 package com.bok.parent;
 
-import com.bok.parent.be.exception.AccountException;
 import com.bok.parent.be.exception.InvalidCredentialsException;
 import com.bok.parent.be.helper.TokenHelper;
 import com.bok.parent.be.service.AccountService;
 import com.bok.parent.be.service.SecurityService;
 import com.bok.parent.be.utils.ValidationUtils;
 import com.bok.parent.integration.dto.AccountLoginDTO;
-import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.LastAccessInfoDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
-import com.bok.parent.model.Account;
+import com.bok.parent.model.Credentials;
 import com.bok.parent.model.Token;
 import com.bok.parent.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -70,11 +68,12 @@ public class SecurityServiceTest {
 
     @Test
     public void successfulLoginTest() {
-        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
+        Credentials account = modelTestUtil.createAccountWithCredentials();
+
 
         AccountLoginDTO loginDTO = new AccountLoginDTO();
-        loginDTO.email = account.email;
-        loginDTO.password = account.password;
+        loginDTO.email = account.getEmail();
+        loginDTO.password = account.getPassword();
         LoginResponseDTO login = securityService.login(loginDTO);
         log.debug(login.token);
         Assertions.assertNotNull(login.token);
@@ -82,35 +81,23 @@ public class SecurityServiceTest {
 
     @Test
     public void failedLoginTest() {
-        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
+        Credentials account = modelTestUtil.createAccountWithCredentials();
+
 
         AccountLoginDTO loginDTO = new AccountLoginDTO();
-        loginDTO.email = account.email;
+        loginDTO.email = account.getEmail();
         loginDTO.password = "wrongpassword";
         assertThrows(InvalidCredentialsException.class, () -> securityService.login(loginDTO));
-    }
-
-    @Test
-    public void loginToUnverifiedAccountTest() {
-        AccountRegistrationDTO.CredentialsDTO credentials = modelTestUtil.createAccountWithCredentials();
-        Account account = accountRepository.findByCredentials_Email(credentials.email).orElseThrow(RuntimeException::new);
-        account.setEnabled(false);
-        accountRepository.save(account);
-
-        AccountLoginDTO loginDTO = new AccountLoginDTO();
-        loginDTO.email = credentials.email;
-        loginDTO.password = "wrongpassword";
-        assertThrows(AccountException.class, () -> securityService.login(loginDTO));
     }
 
 
     @Test
     public void checkTokenInfoTest() {
-        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
+        Credentials account = modelTestUtil.createAccountWithCredentials();
 
         AccountLoginDTO loginDTO = new AccountLoginDTO();
-        loginDTO.email = account.email;
-        loginDTO.password = account.password;
+        loginDTO.email = account.getEmail();
+        loginDTO.password = account.getPassword();
         LoginResponseDTO loginResponse = securityService.login(loginDTO);
         log.debug(loginResponse.token);
         Assertions.assertNotNull(loginResponse.token);
@@ -125,11 +112,12 @@ public class SecurityServiceTest {
 
     @Test
     public void testLogout() {
-        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
+        Credentials account = modelTestUtil.createAccountWithCredentials();
+
 
         AccountLoginDTO loginDTO = new AccountLoginDTO();
-        loginDTO.email = account.email;
-        loginDTO.password = account.password;
+        loginDTO.email = account.getEmail();
+        loginDTO.password = account.getPassword();
         LoginResponseDTO loginResponse = securityService.login(loginDTO);
         log.debug(loginResponse.token);
         Assertions.assertNotNull(loginResponse.token);
@@ -142,11 +130,11 @@ public class SecurityServiceTest {
 
     @Test
     public void testDifferentTokensForDifferentLogins() {
-        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
+        Credentials account = modelTestUtil.createAccountWithCredentials();
 
         AccountLoginDTO loginDTO = new AccountLoginDTO();
-        loginDTO.email = account.email;
-        loginDTO.password = account.password;
+        loginDTO.email = account.getEmail();
+        loginDTO.password = account.getPassword();
 
         LoginResponseDTO loginResponse = securityService.login(loginDTO);
         Assertions.assertNotNull(loginResponse.token);
@@ -164,8 +152,8 @@ public class SecurityServiceTest {
 
     @Test
     public void testMultipleTokensAreDifferent() throws InterruptedException {
-        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
-        AccountLoginDTO loginDTO = new AccountLoginDTO(account.email, account.password);
+        Credentials account = modelTestUtil.createAccountWithCredentials();
+        AccountLoginDTO loginDTO = new AccountLoginDTO(account.getEmail(), account.getPassword());
 
         //first login
         String firstToken = securityService.login(loginDTO).getToken();
@@ -184,8 +172,8 @@ public class SecurityServiceTest {
 
     @Test
     public void testLastAccessInfo() {
-        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
-        AccountLoginDTO loginDTO = new AccountLoginDTO(account.email, account.password);
+        Credentials account = modelTestUtil.createAccountWithCredentials();
+        AccountLoginDTO loginDTO = new AccountLoginDTO(account.getEmail(), account.getPassword());
 
         String token = securityService.login(loginDTO).getToken();
 
@@ -196,8 +184,8 @@ public class SecurityServiceTest {
 
     @Test
     public void testMultipleLogins() throws InterruptedException {
-        AccountRegistrationDTO.CredentialsDTO account = modelTestUtil.createAccountWithCredentials();
-        AccountLoginDTO loginDTO = new AccountLoginDTO(account.email, account.password);
+        Credentials account = modelTestUtil.createAccountWithCredentials();
+        AccountLoginDTO loginDTO = new AccountLoginDTO(account.getEmail(), account.getPassword());
 
         Random random = new Random();
         List<String> tokenList = new ArrayList<>();

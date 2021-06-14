@@ -18,5 +18,7 @@ public class Credentials {
 
     private String password;
 
+    private boolean resetNeeded;
+
 }
 

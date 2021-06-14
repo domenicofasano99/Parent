@@ -1,6 +1,5 @@
 package com.bok.parent.be.helper;
 
-import com.bok.parent.be.exception.AccountException;
 import com.bok.parent.be.utils.encryption.CustomEncryption;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
@@ -25,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.BooleanUtils.isFalse;
 
 @Component
 @Slf4j
@@ -51,14 +49,12 @@ public class SecurityHelper {
         Preconditions.checkArgument(nonNull(request.email));
 
         Account account = accountHelper.findByEmail(request.email);
-        if (isFalse(account.getEnabled())) {
-            throw new AccountException("Account has not been verified!");
-        }
 
         LoginResponseDTO response = new LoginResponseDTO();
         Token token = authenticationHelper.login(account, request.password);
         response.lastAccessInfo = getLastAccessInfoByAccountId(account.getId());
         response.token = token.getTokenString();
+        response.passwordResetNeeded = account.getCredentials().isResetNeeded();
         log.info("User {} logged in", request.email);
         return response;
     }
@@ -114,7 +110,7 @@ public class SecurityHelper {
         String newHashedPassword;
         newHashedPassword = CustomEncryption.getInstance().encrypt(passwordChangeRequestDTO.newPassword);
 
-        boolean changed = accountHelper.setNewPassword(account, newHashedPassword);
+        boolean changed = accountHelper.changePassword(account, newHashedPassword);
         return new PasswordChangeResponseDTO(changed);
     }
 
