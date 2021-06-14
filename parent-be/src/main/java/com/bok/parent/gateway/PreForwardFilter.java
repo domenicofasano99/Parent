@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -49,16 +50,20 @@ public class PreForwardFilter extends ZuulFilter {
         HttpServletRequest request = ctx.getRequest();
 
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).substring(7);
-        securityService.checkTokenValidity(token);
-        Long accountId = securityService.getAccountId(token);
-        securityService.checkIpAddress(accountId, request.getRemoteAddr());
+        boolean valid = securityService.checkTokenValidity(token);
 
-        auditHelper.auditGatewayRequest(request, accountId);
+        if (valid) {
+            Long accountId = securityService.getAccountId(token);
+            securityService.checkIpAddress(accountId, request.getRemoteAddr());
+            auditHelper.auditGatewayRequest(request, accountId);
+            Map<String, List<String>> queryParam = new HashMap<>();
+            queryParam.put("accountId", Collections.singletonList(accountId.toString()));
+            ctx.setRequestQueryParams(queryParam);
+        } else {
+            ctx.set("error.status_code", HttpServletResponse.SC_UNAUTHORIZED);
+            ctx.set("error.exception", "Error in token verification.");
+        }
 
-        // Add a custom header in the request
-        Map<String, List<String>> queryParam = new HashMap<>();
-        queryParam.put("accountId", Collections.singletonList(accountId.toString()));
-        ctx.setRequestQueryParams(queryParam);
         return null;
     }
 

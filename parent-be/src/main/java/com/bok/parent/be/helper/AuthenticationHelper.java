@@ -1,19 +1,25 @@
 package com.bok.parent.be.helper;
 
 import com.bok.parent.be.exception.InvalidCredentialsException;
-import com.bok.parent.be.exception.UserNotEnabledException;
 import com.bok.parent.be.security.JwtTokenUtil;
+import com.bok.parent.integration.dto.LastAccessInfoDTO;
+import com.bok.parent.integration.dto.LoginResponseDTO;
+import com.bok.parent.model.AccessInfo;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @Component
@@ -33,25 +39,29 @@ public class AuthenticationHelper {
     @Autowired
     TokenHelper tokenHelper;
 
-    public Token login(Account account, String password) {
+    @Autowired
+    AuditHelper auditHelper;
+
+    public LoginResponseDTO login(Account account, String password) {
         String email = account.getCredentials().getEmail();
+        if (!account.getTokens().isEmpty()) {
+            tokenHelper.revokeTokens(account);
+        }
 
         authenticate(email, password);
-        final Token token = jwtTokenUtil.generateToken(account);
-        return tokenHelper.saveToken(token);
+        Token token = tokenHelper.generate(account);
+
+        LoginResponseDTO response = new LoginResponseDTO();
+        response.lastAccessInfo = getLastAccessInfoByAccountId(account.getId());
+        response.token = token.getTokenString();
+        response.passwordResetNeeded = account.getCredentials().isResetNeeded();
+        log.info("User {} logged in", email);
+        return response;
     }
 
     public Token loginNoPassword(String email) {
         final Account account = accountHelper.findByEmail(email);
-        final Token token = jwtTokenUtil.generateToken(account);
-
-        return tokenHelper.saveToken(token);
-    }
-
-    public void checkTokenValidity(String token) {
-        String email = jwtTokenUtil.getUsernameFromToken(token);
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-        jwtTokenUtil.validateToken(token, userDetails);
+        return tokenHelper.generate(account);
     }
 
     public Long extractAccountIdFromToken(String token) {
@@ -62,10 +72,21 @@ public class AuthenticationHelper {
     private void authenticate(String username, String password) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (DisabledException e) {
-            throw new UserNotEnabledException("USER_DISABLED");
         } catch (BadCredentialsException e) {
             throw new InvalidCredentialsException("INVALID_CREDENTIALS");
         }
+    }
+
+    private LastAccessInfoDTO getLastAccessInfoByAccountId(Long accountId) {
+        AccessInfo accessInfo = auditHelper.findLastAccessInfo(accountId);
+        LastAccessInfoDTO lastAccessInfo = new LastAccessInfoDTO();
+        if (nonNull(accessInfo)) {
+            lastAccessInfo.lastAccessDateTime = LocalDateTime.ofInstant(accessInfo.getTimestamp(), ZoneOffset.UTC);
+            lastAccessInfo.lastAccessIP = accessInfo.getIpAddress();
+        } else {
+            lastAccessInfo.lastAccessDateTime = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+            lastAccessInfo.lastAccessIP = "";
+        }
+        return lastAccessInfo;
     }
 }

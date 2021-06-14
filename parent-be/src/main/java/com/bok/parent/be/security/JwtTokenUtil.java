@@ -67,9 +67,8 @@ public class JwtTokenUtil implements Serializable {
     //   compaction of the JWT to a URL-safe string
     private Token doGenerateToken(Map<String, Object> claims, Account account) {
         Token t = new Token();
-        t.setIssuedAt(Instant.now());
         t.setAccount(account);
-        t.setExpired(false);
+        t.setIssuedAt(Instant.now());
         t.setExpiration(Instant.now().plusMillis(JWT_TOKEN_VALIDITY * 1000));
         t.setTokenString(Jwts.builder()
                 .setClaims(claims)
@@ -82,7 +81,7 @@ public class JwtTokenUtil implements Serializable {
     }
 
     //validate token
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }

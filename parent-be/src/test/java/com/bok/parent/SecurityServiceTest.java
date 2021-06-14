@@ -1,6 +1,7 @@
 package com.bok.parent;
 
 import com.bok.parent.be.exception.InvalidCredentialsException;
+import com.bok.parent.be.exception.TokenNotFoundException;
 import com.bok.parent.be.helper.TokenHelper;
 import com.bok.parent.be.service.AccountService;
 import com.bok.parent.be.service.SecurityService;
@@ -11,7 +12,6 @@ import com.bok.parent.integration.dto.LoginResponseDTO;
 import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.Credentials;
-import com.bok.parent.model.Token;
 import com.bok.parent.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -121,11 +121,9 @@ public class SecurityServiceTest {
         LoginResponseDTO loginResponse = securityService.login(loginDTO);
         log.debug(loginResponse.token);
         Assertions.assertNotNull(loginResponse.token);
-
-
         securityService.logout(loginResponse.token);
-        Token token = tokenHelper.findByTokenString(loginResponse.token);
-        Assertions.assertTrue(token.getExpired());
+        assertThrows(TokenNotFoundException.class, () -> tokenHelper.findByTokenString(loginResponse.token));
+
     }
 
     @Test
@@ -135,18 +133,10 @@ public class SecurityServiceTest {
         AccountLoginDTO loginDTO = new AccountLoginDTO();
         loginDTO.email = account.getEmail();
         loginDTO.password = account.getPassword();
+        LoginResponseDTO firstLogin = securityService.login(loginDTO);
+        LoginResponseDTO secondLogin = securityService.login(loginDTO);
 
-        LoginResponseDTO loginResponse = securityService.login(loginDTO);
-        Assertions.assertNotNull(loginResponse.token);
-
-        Token firstToken = tokenHelper.getActiveToken(loginDTO.email).orElseThrow(RuntimeException::new);
-        firstToken.setExpired(true);
-        tokenHelper.saveToken(firstToken);
-
-        loginResponse = securityService.login(loginDTO);
-        Token secondToken = tokenHelper.getActiveToken(loginDTO.email).orElseThrow(RuntimeException::new);
-
-        Assertions.assertNotEquals(firstToken.getTokenString(), secondToken.getTokenString());
+        Assertions.assertNotEquals(firstLogin.token, secondLogin.token);
 
     }
 

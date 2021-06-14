@@ -2,11 +2,9 @@ package com.bok.parent;
 
 import com.bok.parent.be.helper.AccountHelper;
 import com.bok.parent.be.service.AccountService;
+import com.bok.parent.be.service.SecurityService;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
-import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
-import com.bok.parent.integration.dto.PasswordResetRequestDTO;
-import com.bok.parent.integration.dto.PasswordResetResponseDTO;
-import com.bok.parent.integration.dto.VerificationResponseDTO;
+import com.bok.parent.model.Account;
 import com.bok.parent.model.Credentials;
 import com.bok.parent.model.TemporaryAccount;
 import com.bok.parent.repository.AccountRepository;
@@ -38,7 +36,10 @@ public class ModelTestUtil {
     @Autowired
     TemporaryAccountRepository temporaryAccountRepository;
 
-    private AccountRegistrationDTO createRegistrationDTO() {
+    @Autowired
+    SecurityService securityService;
+
+    private AccountRegistrationDTO createRegistrationDTO(String email, String password) {
         AccountRegistrationDTO registrationDTO = new AccountRegistrationDTO();
         registrationDTO.name = faker.name().name().replace(".", "");
         registrationDTO.surname = faker.name().lastName().replace(".", "");
@@ -47,10 +48,7 @@ public class ModelTestUtil {
         registrationDTO.gender = faker.demographic().sex();
         registrationDTO.business = false;
 
-        AccountRegistrationDTO.CredentialsDTO credentials = new AccountRegistrationDTO.CredentialsDTO();
-        credentials.email = faker.internet().emailAddress();
-        credentials.password = sha256Hex(faker.internet().password());
-        registrationDTO.credentials = credentials;
+        registrationDTO.credentials = new AccountRegistrationDTO.CredentialsDTO(email, password);
 
         AccountRegistrationDTO.AddressDTO address = new AccountRegistrationDTO.AddressDTO();
         address.city = faker.address().city();
@@ -70,17 +68,15 @@ public class ModelTestUtil {
     }
 
     public Credentials createAccountWithCredentials() {
-
-        AccountRegistrationDTO registrationDTO = createRegistrationDTO();
-
-        AccountRegistrationResponseDTO response = accountService.register(registrationDTO);
-
+        String email = faker.internet().emailAddress();
+        String password = sha256Hex(faker.internet().password());
+        AccountRegistrationDTO registrationDTO = createRegistrationDTO(email, password);
+        accountService.register(registrationDTO);
         TemporaryAccount ta = temporaryAccountRepository.findByEmail(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
-        VerificationResponseDTO verificationResponse = accountService.verify(ta.getConfirmationToken());
-        PasswordResetRequestDTO resetRequest = new PasswordResetRequestDTO();
-        resetRequest.email = registrationDTO.credentials.email;
-        PasswordResetResponseDTO passwordResetRequest = accountService.resetPassword(resetRequest);
-        return new Credentials(registrationDTO.credentials.email, sha256Hex("attenzione"), false);
+        accountService.verify(ta.getConfirmationToken());
+        Account a = accountHelper.findByEmail(email);
+        accountHelper.changePassword(a, password);
+        return new Credentials(email, password, false);
     }
 
     public void clearAll() {

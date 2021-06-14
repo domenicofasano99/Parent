@@ -2,18 +2,18 @@ package com.bok.parent.repository;
 
 import com.bok.parent.model.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import java.time.Instant;
 import java.util.Optional;
 
 public interface TokenRepository extends JpaRepository<Token, Long> {
-
-    Optional<Token> findByTokenString(String token);
+    @Transactional
+    Integer deleteByExpirationBefore(Instant expiration);
 
     @Transactional
-    Integer deleteByExpiredIsTrue();
+    Integer deleteByTokenString(String tokenString);
 
-    Optional<Token> findByAccount_Id(Long accountId);
-
-    Optional<Token> findByAccount_Credentials_EmailAndExpiredIsFalse(String email);
+    Optional<Token> findByTokenString(@Param("ts") String token);
 }

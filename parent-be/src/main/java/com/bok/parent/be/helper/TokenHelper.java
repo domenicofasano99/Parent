@@ -1,14 +1,18 @@
 package com.bok.parent.be.helper;
 
 import com.bok.parent.be.exception.TokenNotFoundException;
+import com.bok.parent.be.security.JwtTokenUtil;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
+import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import com.bok.parent.repository.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import java.time.Instant;
 
 @Slf4j
 @Component
@@ -20,28 +24,22 @@ public class TokenHelper {
     @Autowired
     AuthenticationHelper authenticationHelper;
 
+    @Autowired
+    JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    UserDetailsService userDetailsService;
+
     public Token findByTokenString(String token) {
-        return tokenRepository.findByTokenString(token).orElseThrow(() -> new RuntimeException("Token not found"));
+        return tokenRepository.findByTokenString(token).orElseThrow(TokenNotFoundException::new);
     }
 
-    public Token saveToken(Token token) {
+    private Token saveToken(Token token) {
         return tokenRepository.save(token);
     }
 
-    public Boolean invalidateToken(String token) {
-        Token tokenInfo = findByTokenString(token);
-        tokenInfo.expired = true;
-        tokenRepository.save(tokenInfo);
-        return true;
-    }
-
-    public void invalidateToken(Token token) {
-        token.expired = true;
-        tokenRepository.save(token);
-    }
-
     public void deleteExpiredTokens() {
-        Integer deletedTokens = tokenRepository.deleteByExpiredIsTrue();
+        Integer deletedTokens = tokenRepository.deleteByExpirationBefore(Instant.now());
         log.info("Deleted {} expired tokens", deletedTokens);
     }
 
@@ -50,27 +48,31 @@ public class TokenHelper {
         return new TokenInfoResponseDTO(t.getExpiration());
     }
 
-    public Optional<Token> getActiveToken(String email) {
-        return tokenRepository.findByAccount_Credentials_EmailAndExpiredIsFalse(email);
-    }
-
-    public Long getAccountIdByTokenString(String token) {
-        return tokenRepository.findByTokenString(token).orElseThrow(TokenNotFoundException::new).getAccount().getId();
-    }
-
-    public Token getTokenByTokenString(String token) {
-        return tokenRepository.findByTokenString(token).orElseThrow(TokenNotFoundException::new);
-    }
-
     public Token replaceOldToken(Token oldToken) {
-        oldToken.getAccount().getCredentials().getEmail();
         Token newToken = authenticationHelper.loginNoPassword(oldToken.getAccount().getCredentials().getEmail());
-        invalidateToken(oldToken.getTokenString());
+        revoke(oldToken);
         return saveToken(newToken);
     }
 
-    public void revokeTokenByAccountId(Long accountId) {
-        Token t = tokenRepository.findByAccount_Id(accountId).orElseThrow(RuntimeException::new);
-        tokenRepository.delete(t);
+    public void revoke(Token token) {
+        tokenRepository.delete(token);
+    }
+
+    public void revokeTokens(Account account) {
+        tokenRepository.deleteAll(account.getTokens());
+    }
+
+    public Token generate(Account account) {
+        return saveToken(jwtTokenUtil.generateToken(account));
+    }
+
+    public boolean revoke(String token) {
+        return tokenRepository.deleteByTokenString(token).equals(1);
+    }
+
+    public boolean checkTokenValidity(String token) {
+        String email = jwtTokenUtil.getUsernameFromToken(token);
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        return jwtTokenUtil.validateToken(token, userDetails);
     }
 }

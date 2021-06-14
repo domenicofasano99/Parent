@@ -17,8 +17,6 @@ import java.time.Instant;
 @AllArgsConstructor
 @Entity
 public class Token {
-    @Column
-    public Boolean expired;
     @NaturalId
     @Column
     private String tokenString;
@@ -32,11 +30,18 @@ public class Token {
     @GeneratedValue
     private Long id;
 
-    public Token(String tokenString, Instant issuedAt, Instant expiration, Account account, Boolean expired) {
+    public Token(String tokenString, Instant issuedAt, Instant expiration, Account account) {
         this.tokenString = tokenString;
         this.issuedAt = issuedAt;
         this.expiration = expiration;
-        this.expired = expired;
         this.account = account;
+    }
+
+    public boolean isExpiringSoon() {
+        return expiration.isBefore(Instant.now().plusSeconds(120));
+    }
+
+    public boolean isExpired() {
+        return expiration.isBefore(Instant.now());
     }
 }

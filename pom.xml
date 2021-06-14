@@ -10,7 +10,7 @@
 
     <groupId>com.bok</groupId>
     <artifactId>parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0</version>
     <name>parent</name>
     <description>parent project for bok</description>
     <packaging>pom</packaging>

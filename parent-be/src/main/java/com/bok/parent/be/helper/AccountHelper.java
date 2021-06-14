@@ -5,6 +5,7 @@ import com.bok.parent.be.exception.AccountException;
 import com.bok.parent.be.exception.EmailAlreadyExistsException;
 import com.bok.parent.be.security.CustomPasswordEncoder;
 import com.bok.parent.be.utils.ValidationUtils;
+import com.bok.parent.be.utils.encryption.CustomEncryption;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -238,15 +240,9 @@ public class AccountHelper {
         return email + " deleted";
     }
 
+    @Cacheable("accounts")
     public Account findById(Long accountId) {
         return accountRepository.findById(accountId).orElseThrow(() -> new AccountException("Account not found"));
-    }
-
-    public Boolean changePassword(Account account, String newHashedPassword) {
-        Credentials newCredentials = new Credentials(account.getCredentials().getEmail(), newHashedPassword, false);
-        account.setCredentials(newCredentials);
-        accountRepository.save(account);
-        return true;
     }
 
     @Scheduled(cron = "0 */5 * * * *")
@@ -260,6 +256,15 @@ public class AccountHelper {
         }
         temporaryAccountRepository.deleteAll(toDelete);
         log.info("Deleted {} unconfirmed accounts", toDelete.size());
+    }
+
+    public boolean changePassword(Account account, String newPassword) {
+        String newHashedPassword;
+        newHashedPassword = CustomEncryption.getInstance().encrypt(newPassword);
+        Credentials newCredentials = new Credentials(account.getCredentials().getEmail(), newHashedPassword, false);
+        account.setCredentials(newCredentials);
+        accountRepository.save(account);
+        return true;
     }
 
 }

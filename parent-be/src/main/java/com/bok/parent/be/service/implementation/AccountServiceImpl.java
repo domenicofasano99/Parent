@@ -74,7 +74,7 @@ public class AccountServiceImpl implements AccountService {
         ValidationUtils.nonNull(registrationDTO.address.postalCode);
 
         if (!bankService.checkCreation(registrationDTO.fiscalCode, registrationDTO.vatNumber, registrationDTO.business)) {
-            throw new RuntimeException("Found duplicate account in bank system");
+            throw new RuntimeException("Found an account with same fiscalCode or vatNumber in bank system");
         }
 
         return accountHelper.register(registrationDTO);

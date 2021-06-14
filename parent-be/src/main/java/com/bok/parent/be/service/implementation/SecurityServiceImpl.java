@@ -1,6 +1,7 @@
 package com.bok.parent.be.service.implementation;
 
 import com.bok.parent.be.helper.SecurityHelper;
+import com.bok.parent.be.helper.TokenHelper;
 import com.bok.parent.be.service.SecurityService;
 import com.bok.parent.be.utils.ValidationUtils;
 import com.bok.parent.integration.dto.AccountLoginDTO;
@@ -19,6 +20,9 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Autowired
     SecurityHelper securityHelper;
+
+    @Autowired
+    TokenHelper tokenHelper;
 
     @Override
     public LoginResponseDTO login(AccountLoginDTO accountLoginDTO) {
@@ -59,8 +63,8 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    public void checkTokenValidity(String token) {
-        securityHelper.checkTokenValidity(token);
+    public boolean checkTokenValidity(String token) {
+        return tokenHelper.checkTokenValidity(token);
     }
 
     @Override

@@ -58,10 +58,6 @@ public class Account {
         this.credentials = new Credentials(email, password, true);
     }
 
-    public Token getActiveToken() {
-        return tokens.stream().filter(t -> !t.expired).findFirst().orElse(null);
-    }
-
     public enum Role {
         USER
     }
