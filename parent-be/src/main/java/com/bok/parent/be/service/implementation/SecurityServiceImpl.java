@@ -67,8 +67,4 @@ public class SecurityServiceImpl implements SecurityService {
         return tokenHelper.checkTokenValidity(token);
     }
 
-    @Override
-    public void checkIpAddress(Long accountId, String remoteAddr) {
-        securityHelper.checkIpAddress(accountId, remoteAddr);
-    }
 }

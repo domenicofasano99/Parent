@@ -92,14 +92,4 @@ public class SecurityHelper {
         boolean changed = accountHelper.changePassword(account, newHashedPassword);
         return new PasswordChangeResponseDTO(changed);
     }
-
-    public void checkIpAddress(Long accountId, String remoteAddr) {
-        AccessInfo accessInfo = accessInfoHelper.findLastAccessInfoByAccountId(accountId);
-        if (!accessInfo.getIpAddress().equalsIgnoreCase(remoteAddr)) {
-            Account account = accountHelper.findById(accountId);
-            tokenHelper.revokeTokens(account);
-            throw new RuntimeException("Hacking attempt or user IP address changed, revoking access token for security reasons.");
-        }
-        log.info("No accessInfo found for account {}", accountId);
-    }
 }

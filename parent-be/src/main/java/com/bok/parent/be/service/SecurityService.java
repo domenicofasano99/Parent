@@ -28,5 +28,4 @@ public interface SecurityService {
 
     boolean checkTokenValidity(String token);
 
-    void checkIpAddress(Long accountId, String remoteAddr);
 }

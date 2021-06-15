@@ -47,24 +47,20 @@ public class PreForwardFilter extends ZuulFilter {
     public Object run() {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
-
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).substring(7);
         boolean valid = securityService.checkTokenValidity(token);
-
         if (valid) {
             Long accountId = securityService.getAccountId(token);
-            securityService.checkIpAddress(accountId, request.getRemoteAddr());
             auditHelper.auditGatewayRequest(request, accountId);
-            //preserve passed queryparams
-            Map<String, List<String>> queryParam = ctx.getRequestQueryParams();
-            queryParam.put("accountId", Collections.singletonList(accountId.toString()));
-            ctx.setRequestQueryParams(queryParam);
+            //preserve passed query-params
+            Map<String, List<String>> queryParams = ctx.getRequestQueryParams();
+            queryParams.put("accountId", Collections.singletonList(accountId.toString()));
+            log.info("Query params: {}", queryParams.keySet());
+            ctx.setRequestQueryParams(queryParams);
         } else {
             ctx.set("error.status_code", HttpServletResponse.SC_UNAUTHORIZED);
             ctx.set("error.exception", "Error in token verification.");
         }
-
         return null;
     }
-
 }
