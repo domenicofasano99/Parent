@@ -12,9 +12,11 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Objects.isNull;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
 
@@ -54,6 +56,9 @@ public class PreForwardFilter extends ZuulFilter {
             auditHelper.auditGatewayRequest(request, accountId);
             //preserve passed query-params
             Map<String, List<String>> queryParams = ctx.getRequestQueryParams();
+            if (isNull(queryParams)) {
+                queryParams = new HashMap<>();
+            }
             queryParams.put("accountId", Collections.singletonList(accountId.toString()));
             log.info("Query params: {}", queryParams.keySet());
             ctx.setRequestQueryParams(queryParams);
