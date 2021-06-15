@@ -4,6 +4,7 @@ import com.bok.bank.integration.grpc.BankGrpc;
 import com.bok.parent.be.exception.AccountException;
 import com.bok.parent.be.exception.EmailAlreadyExistsException;
 import com.bok.parent.be.security.CustomPasswordEncoder;
+import com.bok.parent.be.service.bank.BankService;
 import com.bok.parent.be.utils.ValidationUtils;
 import com.bok.parent.be.utils.encryption.CustomEncryption;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
@@ -42,31 +43,25 @@ import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 @Slf4j
 public class AccountHelper {
 
+    final PasswordEncoder passwordEncoder = new CustomPasswordEncoder();
     @Autowired
     AccountRepository accountRepository;
-
     @Autowired
     TemporaryAccountRepository temporaryAccountRepository;
-
     @Autowired
     MessageHelper messageHelper;
-
     @Autowired
     ValidationUtils validationUtils;
-
     @Autowired
     AccessInfoRepository accessInfoRepository;
-
     @GrpcClient("bank")
     BankGrpc.BankBlockingStub bankBlockingStub;
-
     @GrpcClient("bank")
     BankGrpc.BankFutureStub bankFutureStub;
-
     @Value("${server.baseUrl}")
     String baseUrl;
-
-    PasswordEncoder passwordEncoder = new CustomPasswordEncoder();
+    @Autowired
+    BankService bankService;
 
     public static String generatePassword(int len) {
         String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -85,6 +80,10 @@ public class AccountHelper {
 
     @Transactional
     public AccountRegistrationResponseDTO register(AccountRegistrationDTO request) {
+
+        if (!bankService.checkCreation(request.fiscalCode, request.vatNumber, request.business)) {
+            throw new RuntimeException("Found an account with same fiscalCode or vatNumber in bank system");
+        }
 
         if (accountRepository.existsByCredentials_Email(request.credentials.email)) {
             throw new EmailAlreadyExistsException("Account already registered.");
@@ -151,16 +150,15 @@ public class AccountHelper {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         Account account = new Account();
-        String generatedPlainPassword = generatePassword(8);
-        String hashedPassword = sha256Hex(generatedPlainPassword);
-        account.setCredentials(new Credentials(ta.getEmail(), passwordEncoder.encode(hashedPassword), true));
+        String generatePassword = generatePassword(10);
+        account.setCredentials(new Credentials(ta.getEmail(), passwordEncoder.encode(sha256Hex(generatePassword)), true));
         account.setRole(Account.Role.USER);
         account = accountRepository.save(account);
 
         log.info("Account {} successfully verified!", account.getCredentials().getEmail());
         notifyServices(ta, account.getId());
-        sendWelcomeEmail(account.getCredentials().getEmail(), ta.getName(), generatedPlainPassword);
-        return new VerificationResponseDTO("Your account has been confirmed, you can now login to the user area.", true);
+        sendWelcomeEmail(account.getCredentials().getEmail(), ta.getName(), generatePassword);
+        return new VerificationResponseDTO("Your account has been confirmed, check your email for the temporary password we've created for you.", true);
     }
 
     private AccountCreationMessage generateAccountCreationMessage(TemporaryAccount userData, Long accountId) {

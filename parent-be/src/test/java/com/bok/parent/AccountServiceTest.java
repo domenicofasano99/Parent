@@ -26,7 +26,6 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
-import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
@@ -86,7 +85,7 @@ public class AccountServiceTest {
         request.gender = "M";
         request.mobile = new AccountRegistrationDTO.MobileDTO("+39", "3334445599");
         request.address = new AccountRegistrationDTO.AddressDTO("1", "Via delle vie", "Gioia Tauro", "Reggio Calabria", "Italia", "89029");
-        request.credentials = new AccountRegistrationDTO.CredentialsDTO("ciao@ciao.com", "password");
+        request.credentials = new AccountRegistrationDTO.CredentialsDTO("ciao@ciao.com");
         request.business = false;
 
         AccountRegistrationResponseDTO response = accountService.register(request);
@@ -109,7 +108,6 @@ public class AccountServiceTest {
 
         AccountRegistrationDTO.CredentialsDTO credentials = new AccountRegistrationDTO.CredentialsDTO();
         credentials.email = faker.internet().emailAddress();
-        credentials.password = sha256Hex(faker.internet().password());
         registrationDTO.credentials = credentials;
 
         AccountRegistrationDTO.AddressDTO address = new AccountRegistrationDTO.AddressDTO();
@@ -141,7 +139,6 @@ public class AccountServiceTest {
         registrationDTO.credentials = new AccountRegistrationDTO.CredentialsDTO();
         //fake email
         registrationDTO.credentials.email = "bad_email!ò@@aaaa";
-        registrationDTO.credentials.password = faker.internet().password();
 
         registrationDTO.address = new AccountRegistrationDTO.AddressDTO();
         registrationDTO.address.city = faker.address().city();

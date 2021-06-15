@@ -2,9 +2,7 @@ package com.bok.parent.be.service.implementation;
 
 import com.bok.parent.be.helper.AccountHelper;
 import com.bok.parent.be.helper.AuthenticationHelper;
-import com.bok.parent.be.helper.EmailHelper;
 import com.bok.parent.be.service.AccountService;
-import com.bok.parent.be.service.bank.BankService;
 import com.bok.parent.be.utils.ValidationUtils;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
@@ -28,18 +26,11 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     AccountHelper accountHelper;
 
-    @Autowired
-    EmailHelper emailHelper;
-
-    @Autowired
-    BankService bankService;
-
     @Override
     public AccountRegistrationResponseDTO register(AccountRegistrationDTO registrationDTO) {
         ValidationUtils.nonNull(registrationDTO);
         ValidationUtils.nonNull(registrationDTO.credentials);
         ValidationUtils.nonNull(registrationDTO.credentials.email);
-        ValidationUtils.nonNull(registrationDTO.credentials.password);
         ValidationUtils.checkEmail(registrationDTO.credentials.email, "The given email is not valid!");
         ValidationUtils.nonNull(registrationDTO.name);
         ValidationUtils.validateName(registrationDTO.name);
@@ -72,10 +63,6 @@ public class AccountServiceImpl implements AccountService {
         ValidationUtils.nonNull(registrationDTO.address.county);
         ValidationUtils.nonNull(registrationDTO.address.country);
         ValidationUtils.nonNull(registrationDTO.address.postalCode);
-
-        if (!bankService.checkCreation(registrationDTO.fiscalCode, registrationDTO.vatNumber, registrationDTO.business)) {
-            throw new RuntimeException("Found an account with same fiscalCode or vatNumber in bank system");
-        }
 
         return accountHelper.register(registrationDTO);
     }

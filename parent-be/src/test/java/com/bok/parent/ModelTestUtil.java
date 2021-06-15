@@ -48,7 +48,7 @@ public class ModelTestUtil {
         registrationDTO.gender = faker.demographic().sex();
         registrationDTO.business = false;
 
-        registrationDTO.credentials = new AccountRegistrationDTO.CredentialsDTO(email, password);
+        registrationDTO.credentials = new AccountRegistrationDTO.CredentialsDTO(email);
 
         AccountRegistrationDTO.AddressDTO address = new AccountRegistrationDTO.AddressDTO();
         address.city = faker.address().city();

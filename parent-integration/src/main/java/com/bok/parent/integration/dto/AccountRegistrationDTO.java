@@ -3,7 +3,6 @@ package com.bok.parent.integration.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.Date;
 
@@ -63,8 +62,6 @@ public class AccountRegistrationDTO {
     @NoArgsConstructor
     public static class CredentialsDTO {
         public String email;
-        @ToString.Exclude
-        public String password;
     }
 
 }
