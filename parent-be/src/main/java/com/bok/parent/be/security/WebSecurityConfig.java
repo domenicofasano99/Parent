@@ -53,10 +53,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        // We don't need CSRF for this example
         httpSecurity
                 .authorizeRequests()
-                .antMatchers("/login", "/register", "/verify")
+                .antMatchers("/login", "/register", "/verify", "/delete")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
