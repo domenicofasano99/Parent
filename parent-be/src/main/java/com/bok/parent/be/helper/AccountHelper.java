@@ -133,6 +133,7 @@ public class AccountHelper {
         return temporaryAccountRepository.save(temporaryAccount);
     }
 
+    @Cacheable("email_accounts")
     public Account findByEmail(String email) {
         return accountRepository.findByCredentials_Email(email).orElseThrow(() -> new AccountException("Account not found or not verified"));
     }
@@ -240,7 +241,7 @@ public class AccountHelper {
         return email + " deleted";
     }
 
-    @Cacheable("accounts")
+    @Cacheable("id_account")
     public Account findById(Long accountId) {
         return accountRepository.findById(accountId).orElseThrow(() -> new AccountException("Account not found"));
     }
