@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +55,8 @@ public class PreForwardFilter extends ZuulFilter {
             Long accountId = securityService.getAccountId(token);
             securityService.checkIpAddress(accountId, request.getRemoteAddr());
             auditHelper.auditGatewayRequest(request, accountId);
-            Map<String, List<String>> queryParam = new HashMap<>();
+            //preserve passed queryparams
+            Map<String, List<String>> queryParam = ctx.getRequestQueryParams();
             queryParam.put("accountId", Collections.singletonList(accountId.toString()));
             ctx.setRequestQueryParams(queryParam);
         } else {
