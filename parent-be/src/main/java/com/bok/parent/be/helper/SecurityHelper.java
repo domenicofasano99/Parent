@@ -86,6 +86,7 @@ public class SecurityHelper {
     public PasswordChangeResponseDTO changePassword(String tokenString, PasswordChangeRequestDTO passwordChangeRequestDTO) {
         Token token = tokenHelper.findByTokenString(tokenString);
         Account account = token.getAccount();
+        authenticationHelper.login(account, passwordChangeRequestDTO.oldPassword);
         String newHashedPassword;
         newHashedPassword = CustomEncryption.getInstance().encrypt(passwordChangeRequestDTO.newPassword);
 
