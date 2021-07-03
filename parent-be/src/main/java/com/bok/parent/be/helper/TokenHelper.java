@@ -39,7 +39,7 @@ public class TokenHelper {
     }
 
     private Token saveToken(Token token) {
-        return tokenRepository.save(token);
+        return tokenRepository.saveAndFlush(token);
     }
 
     @Scheduled(cron = "0 */5 * * * *")
