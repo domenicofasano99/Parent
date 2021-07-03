@@ -41,7 +41,7 @@ spring:
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mysql://dev.faraone.ovh:3307/parent
+    url: jdbc:mysql://bok.faraone.ovh:3307/parent
     username: developer
     password: password4testing
 
