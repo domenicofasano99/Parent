@@ -9,6 +9,7 @@ import com.bok.parent.be.utils.ValidationUtils;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.LastAccessInfoDTO;
 import com.bok.parent.integration.dto.LoginResponseDTO;
+import com.bok.parent.integration.dto.PasswordChangeRequestDTO;
 import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.Credentials;
@@ -68,12 +69,13 @@ public class SecurityServiceTest {
 
     @Test
     public void successfulLoginTest() {
-        Credentials account = modelTestUtil.createAccountWithCredentials();
+        Credentials credentials = modelTestUtil.createAccountWithCredentials();
 
 
         AccountLoginDTO loginDTO = new AccountLoginDTO();
-        loginDTO.email = account.getEmail();
-        loginDTO.password = account.getPassword();
+        loginDTO.email = credentials.getEmail();
+        loginDTO.password = credentials.getPassword();
+
         LoginResponseDTO login = securityService.login(loginDTO);
         log.debug(login.token);
         Assertions.assertNotNull(login.token);
@@ -193,6 +195,42 @@ public class SecurityServiceTest {
         String hashedPassword = "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8";
         String sha256hex = sha256Hex(password);
         Assertions.assertEquals(hashedPassword, sha256hex);
+    }
+
+
+    @Test
+    public void test2Logins() {
+        Credentials account = modelTestUtil.createAccountWithCredentials();
+
+
+        AccountLoginDTO loginDTO = new AccountLoginDTO();
+        loginDTO.email = account.getEmail();
+        loginDTO.password = account.getPassword();
+        LoginResponseDTO login = securityService.login(loginDTO);
+        log.debug(login.token);
+        Assertions.assertNotNull(login.token);
+
+        login = securityService.login(loginDTO);
+    }
+
+    @Test
+    public void changePassword() {
+        Credentials account = modelTestUtil.createAccountWithCredentials();
+        AccountLoginDTO loginDTO = new AccountLoginDTO();
+        loginDTO.email = account.getEmail();
+        loginDTO.password = account.getPassword();
+        LoginResponseDTO login = securityService.login(loginDTO);
+
+        PasswordChangeRequestDTO changeRequest = new PasswordChangeRequestDTO();
+        changeRequest.oldPassword = account.getPassword();
+        String newPassword = sha256Hex("newPassword");
+        changeRequest.newPassword = newPassword;
+        securityService.changePassword(login.token, changeRequest);
+
+        loginDTO = new AccountLoginDTO();
+        loginDTO.email = account.getEmail();
+        loginDTO.password = newPassword;
+        securityService.login(loginDTO);
     }
 
 }

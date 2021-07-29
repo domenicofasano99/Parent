@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -34,12 +33,16 @@ public class TokenHelper {
     @Autowired
     UserDetailsService userDetailsService;
 
+    @Autowired
+    AccountHelper accountHelper;
+
+
     public Token findByTokenString(String token) {
         return tokenRepository.findByTokenString(token).orElseThrow(TokenNotFoundException::new);
     }
 
     private Token saveToken(Token token) {
-        return tokenRepository.saveAndFlush(token);
+        return tokenRepository.save(token);
     }
 
     @Scheduled(cron = "0 */5 * * * *")
@@ -66,11 +69,13 @@ public class TokenHelper {
     @Async
     @Transactional
     public void revokeTokens(Account account) {
-        tokenRepository.deleteAll(account.getTokens().stream().filter(t -> t.getIssuedAt().isBefore(Instant.now())).collect(Collectors.toList()));
+        tokenRepository.deleteAll(account.getTokens());
+        account.clearTokens();
+        accountHelper.saveOrUpdate(account);
     }
 
     public Token generate(Account account) {
-        return saveToken(jwtTokenUtil.generateToken(account));
+        return jwtTokenUtil.generateToken(account);
     }
 
     public boolean revoke(String token) {
@@ -81,5 +86,9 @@ public class TokenHelper {
         String email = jwtTokenUtil.getUsernameFromToken(token);
         final UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         return jwtTokenUtil.validateToken(token, userDetails);
+    }
+
+    public Token save(Token token) {
+        return tokenRepository.save(token);
     }
 }

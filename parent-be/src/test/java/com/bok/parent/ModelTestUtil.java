@@ -6,12 +6,12 @@ import com.bok.parent.be.service.SecurityService;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Credentials;
-import com.bok.parent.model.TemporaryAccount;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.AuditLogRepository;
 import com.bok.parent.repository.TemporaryAccountRepository;
 import com.github.javafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
@@ -38,6 +38,9 @@ public class ModelTestUtil {
 
     @Autowired
     SecurityService securityService;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     private AccountRegistrationDTO createRegistrationDTO(String email, String password) {
         AccountRegistrationDTO registrationDTO = new AccountRegistrationDTO();
@@ -70,13 +73,16 @@ public class ModelTestUtil {
     public Credentials createAccountWithCredentials() {
         String email = faker.internet().emailAddress();
         String password = sha256Hex(faker.internet().password());
-        AccountRegistrationDTO registrationDTO = createRegistrationDTO(email, password);
-        accountService.register(registrationDTO);
-        TemporaryAccount ta = temporaryAccountRepository.findByEmail(registrationDTO.credentials.email).orElseThrow(RuntimeException::new);
-        accountService.verify(ta.getConfirmationToken());
-        Account a = accountHelper.findByEmail(email);
-        accountHelper.changePassword(a, password);
+        Account a = new Account();
+        a.setCredentials(new Credentials(email, passwordEncoder.encode(password), false));
+        accountRepository.save(a);
         return new Credentials(email, password, false);
+    }
+
+    public Account createAccount() {
+        Account a = new Account();
+        a.setCredentials(new Credentials(faker.internet().emailAddress(), passwordEncoder.encode(sha256Hex(faker.internet().password())), false));
+        return accountRepository.save(a);
     }
 
     public void clearAll() {

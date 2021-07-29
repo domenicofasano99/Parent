@@ -1,6 +1,6 @@
 package com.bok.parent.be.helper;
 
-import com.bok.parent.be.utils.encryption.CustomEncryption;
+import com.bok.parent.be.service.TokenService;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
 import com.bok.parent.integration.dto.LastAccessInfoDTO;
@@ -14,6 +14,7 @@ import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -27,10 +28,13 @@ import static java.util.Objects.nonNull;
 public class SecurityHelper {
 
     @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Autowired
     AuthenticationHelper authenticationHelper;
 
     @Autowired
-    TokenHelper tokenHelper;
+    TokenService tokenService;
 
     @Autowired
     AuditHelper auditHelper;
@@ -51,25 +55,25 @@ public class SecurityHelper {
     }
 
     public TokenInfoResponseDTO getTokenInfo(String token) {
-        return tokenHelper.getTokenInfo(token);
+        return tokenService.getTokenInfo(token);
     }
 
     public KeepAliveResponseDTO keepAlive(String tokenString) {
         KeepAliveResponseDTO keepAliveResponse = new KeepAliveResponseDTO();
-        Token token = tokenHelper.findByTokenString(tokenString);
+        Token token = tokenService.findByTokenString(tokenString);
         if (token.isExpiringSoon()) {
-            token = tokenHelper.replaceOldToken(token);
+            token = tokenService.replaceOldToken(token);
         }
         keepAliveResponse.token = token.getTokenString();
         return keepAliveResponse;
     }
 
     public LogoutResponseDTO logout(String token) {
-        return new LogoutResponseDTO(tokenHelper.revoke(token));
+        return new LogoutResponseDTO(tokenService.revoke(token));
     }
 
     public LastAccessInfoDTO lastAccessInfo(String tokenString) {
-        Token token = tokenHelper.findByTokenString(tokenString);
+        Token token = tokenService.findByTokenString(tokenString);
         AccessInfo accessInfo = auditHelper.findLastAccessInfo(token.getAccount().getId());
         LastAccessInfoDTO lastAccessInfo = new LastAccessInfoDTO();
         if (nonNull(accessInfo)) {
@@ -84,13 +88,12 @@ public class SecurityHelper {
 
 
     public PasswordChangeResponseDTO changePassword(String tokenString, PasswordChangeRequestDTO passwordChangeRequestDTO) {
-        Token token = tokenHelper.findByTokenString(tokenString);
-        Account account = token.getAccount();
-        authenticationHelper.login(account, passwordChangeRequestDTO.oldPassword);
-        String newHashedPassword;
-        newHashedPassword = CustomEncryption.getInstance().encrypt(passwordChangeRequestDTO.newPassword);
 
-        boolean changed = accountHelper.changePassword(account, newHashedPassword);
+        Token token = tokenService.findByTokenString(tokenString);
+        Account account = token.getAccount();
+
+        String newEncryptedPassword = passwordEncoder.encode(passwordChangeRequestDTO.newPassword);
+        boolean changed = accountHelper.setNewPassword(account, newEncryptedPassword);
         return new PasswordChangeResponseDTO(changed);
     }
 }

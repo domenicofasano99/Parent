@@ -1,8 +1,8 @@
 package com.bok.parent.be.service.implementation;
 
 import com.bok.parent.be.helper.SecurityHelper;
-import com.bok.parent.be.helper.TokenHelper;
 import com.bok.parent.be.service.SecurityService;
+import com.bok.parent.be.service.TokenService;
 import com.bok.parent.be.utils.ValidationUtils;
 import com.bok.parent.integration.dto.AccountLoginDTO;
 import com.bok.parent.integration.dto.KeepAliveResponseDTO;
@@ -12,6 +12,7 @@ import com.bok.parent.integration.dto.LogoutResponseDTO;
 import com.bok.parent.integration.dto.PasswordChangeRequestDTO;
 import com.bok.parent.integration.dto.PasswordChangeResponseDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
+import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class SecurityServiceImpl implements SecurityService {
     SecurityHelper securityHelper;
 
     @Autowired
-    TokenHelper tokenHelper;
+    TokenService tokenService;
 
     @Override
     public LoginResponseDTO login(AccountLoginDTO accountLoginDTO) {
@@ -59,12 +60,14 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public PasswordChangeResponseDTO changePassword(String token, PasswordChangeRequestDTO passwordChangeRequestDTO) {
+        Preconditions.checkNotNull(passwordChangeRequestDTO.oldPassword);
+        Preconditions.checkNotNull(passwordChangeRequestDTO.newPassword);
         return securityHelper.changePassword(token, passwordChangeRequestDTO);
     }
 
     @Override
     public boolean checkTokenValidity(String token) {
-        return tokenHelper.checkTokenValidity(token);
+        return tokenService.checkTokenValidity(token);
     }
 
 }

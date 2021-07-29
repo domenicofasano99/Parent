@@ -3,10 +3,8 @@ package com.bok.parent.be.helper;
 import com.bok.bank.integration.grpc.BankGrpc;
 import com.bok.parent.be.exception.AccountException;
 import com.bok.parent.be.exception.EmailAlreadyExistsException;
-import com.bok.parent.be.security.CustomPasswordEncoder;
 import com.bok.parent.be.service.bank.BankService;
 import com.bok.parent.be.utils.ValidationUtils;
-import com.bok.parent.be.utils.encryption.CustomEncryption;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
@@ -26,11 +24,12 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.security.auth.login.AccountNotFoundException;
 import javax.transaction.Transactional;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -43,9 +42,12 @@ import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 @Slf4j
 public class AccountHelper {
 
-    final PasswordEncoder passwordEncoder = new CustomPasswordEncoder();
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @Autowired
     AccountRepository accountRepository;
+
     @Autowired
     TemporaryAccountRepository temporaryAccountRepository;
     @Autowired
@@ -124,9 +126,14 @@ public class AccountHelper {
         emailMessage.body = "Click on the link to verify your BOK account: \n" +
                 baseUrl + "/verify?verificationToken=" + temporaryAccount.getConfirmationToken() +
                 "\nThis link will expire in 24 hours; after that you will have to create another account from scratch." +
+                "\nAfter confirming the account you will receive an email with a temporary password that we suggest you should change at your first log in" +
                 "\n\nThe BOK Team.";
 
         messageHelper.send(emailMessage);
+    }
+
+    public Account saveOrUpdate(Account account) {
+        return accountRepository.save(account);
     }
 
     public TemporaryAccount saveOrUpdate(TemporaryAccount temporaryAccount) {
@@ -259,18 +266,26 @@ public class AccountHelper {
         log.info("Deleted {} unconfirmed accounts", toDelete.size());
     }
 
-    public boolean changePassword(Account account, String newPassword) {
-        String newHashedPassword;
-        newHashedPassword = CustomEncryption.getInstance().encrypt(newPassword);
-        Credentials newCredentials = new Credentials(account.getCredentials().getEmail(), newHashedPassword, false);
-        account.setCredentials(newCredentials);
-        accountRepository.save(account);
-        return true;
+    public boolean setNewPassword(Account account, String newPassword) {
+        try {
+            Credentials newCredentials = new Credentials(account.getCredentials().getEmail(), newPassword, false);
+            account.setCredentials(newCredentials);
+            accountRepository.save(account);
+            return true;
+        } catch (Exception e) {
+            log.error("An exception occurred while setting new password for account {}", account.getId());
+        }
+        return false;
     }
 
-    @Async
+
     public void addTokenToAccount(Account account, Token token) {
         account.addToken(token);
         accountRepository.save(account);
+    }
+
+
+    public Credentials getCredentialsByEmail(String email) throws AccountNotFoundException {
+        return accountRepository.findByCredentials_Email(email).orElseThrow(AccountNotFoundException::new).getCredentials();
     }
 }

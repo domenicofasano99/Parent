@@ -65,4 +65,8 @@ public class Account {
     public enum Role {
         USER
     }
+
+    public void clearTokens(){
+        this.tokens.clear();
+    }
 }
