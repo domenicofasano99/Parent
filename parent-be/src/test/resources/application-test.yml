@@ -15,6 +15,9 @@ spring:
     loadbalancer:
       ribbon:
         enabled: false
+    circuitbreaker:
+      hystrix:
+        enabled: false
   activemq:
     packages:
       trusted:
@@ -43,6 +46,11 @@ spring:
     database: h2
     database-platform: org.hibernate.dialect.H2Dialect
 
+hystrix:
+  command:
+    default:
+      circuitBreaker:
+        enabled: false
 
 jwt:
   uri: /auth/**

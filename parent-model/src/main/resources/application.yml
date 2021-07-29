@@ -27,6 +27,11 @@ queues:
 spring:
   application:
     name: parent
+  cloud:
+    circuitbreaker:
+      hystrix:
+        enabled: false
+
   activemq:
     packages:
       trusted:
@@ -63,6 +68,7 @@ spring:
       ssl.enable: true
       auth: true
       starttls.enable: true
+
 
 zuul:
   routes:

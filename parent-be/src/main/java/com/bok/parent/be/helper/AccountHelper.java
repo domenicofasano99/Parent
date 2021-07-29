@@ -23,10 +23,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.security.auth.login.AccountNotFoundException;
@@ -268,14 +268,20 @@ public class AccountHelper {
 
     public boolean setNewPassword(Account account, String newPassword) {
         try {
-            Credentials newCredentials = new Credentials(account.getCredentials().getEmail(), newPassword, false);
+            String email = account.getCredentials().getEmail();
+            Credentials newCredentials = new Credentials(email, newPassword, false);
             account.setCredentials(newCredentials);
             accountRepository.save(account);
+            evictSingleCredentialCache(email);
             return true;
         } catch (Exception e) {
             log.error("An exception occurred while setting new password for account {}", account.getId());
         }
         return false;
+    }
+
+    //@CacheEvict(value = "email_credentials", key = "#email")
+    public void evictSingleCredentialCache(String email) {
     }
 
 
@@ -285,6 +291,7 @@ public class AccountHelper {
     }
 
 
+    //@Cacheable(value = "email_credentials", key = "#email")
     public Credentials getCredentialsByEmail(String email) throws AccountNotFoundException {
         return accountRepository.findByCredentials_Email(email).orElseThrow(AccountNotFoundException::new).getCredentials();
     }
