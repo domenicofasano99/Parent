@@ -60,7 +60,7 @@ public class PreForwardFilter extends ZuulFilter {
                 queryParams = new HashMap<>();
             }
             queryParams.put("accountId", Collections.singletonList(accountId.toString()));
-            log.info("Query params: {}", queryParams.keySet());
+            log.debug("Query params: {}", queryParams.keySet());
             ctx.setRequestQueryParams(queryParams);
         } else {
             ctx.set("error.status_code", HttpServletResponse.SC_UNAUTHORIZED);
