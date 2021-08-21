@@ -3,11 +3,16 @@ package com.bok.parent.be.controller;
 import com.bok.parent.be.audit.PasswordResetAudit;
 import com.bok.parent.be.audit.RegisterAudit;
 import com.bok.parent.be.service.AccountService;
-import com.bok.parent.integration.dto.*;
+import com.bok.parent.integration.dto.AccountRegistrationDTO;
+import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
+import com.bok.parent.integration.dto.PasswordResetRequestDTO;
+import com.bok.parent.integration.dto.PasswordResetResponseDTO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
 
 @RestController
 public class AccountController {
@@ -28,8 +33,9 @@ public class AccountController {
 
     @GetMapping("/verify")
     @ApiOperation(value = "Used to verify the account with the link sent via email")
-    public VerificationResponseDTO verify(@RequestParam("verificationToken") String confirmationToken) {
-        return accountService.verify(confirmationToken);
+    public ModelAndView verify(@RequestParam("verificationToken") String confirmationToken) {
+        accountService.verify(confirmationToken);
+        return new ModelAndView("redirect:" + "https://bok.faraone.ovh", Collections.singletonMap("verified", true));
     }
 
     @PasswordResetAudit
