@@ -47,9 +47,16 @@ public class SecurityController {
         return securityService.keepAlive(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
+    @ApiOperation(value = "Requests logout")
     public LogoutResponseDTO logout(HttpServletRequest request) {
         return securityService.logout(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
+    }
+
+    @GetMapping("/passwordResetNeeded")
+    @ApiOperation(value = "Returns true if a password reset is needed")
+    public Boolean passwordResetNeeded(HttpServletRequest request) {
+        return securityService.passwordResetNeeded(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
     }
 
     @GetMapping("/lastAccessInfo")

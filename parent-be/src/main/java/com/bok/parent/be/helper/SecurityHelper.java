@@ -1,14 +1,7 @@
 package com.bok.parent.be.helper;
 
 import com.bok.parent.be.service.TokenService;
-import com.bok.parent.integration.dto.AccountLoginDTO;
-import com.bok.parent.integration.dto.KeepAliveResponseDTO;
-import com.bok.parent.integration.dto.LastAccessInfoDTO;
-import com.bok.parent.integration.dto.LoginResponseDTO;
-import com.bok.parent.integration.dto.LogoutResponseDTO;
-import com.bok.parent.integration.dto.PasswordChangeRequestDTO;
-import com.bok.parent.integration.dto.PasswordChangeResponseDTO;
-import com.bok.parent.integration.dto.TokenInfoResponseDTO;
+import com.bok.parent.integration.dto.*;
 import com.bok.parent.model.AccessInfo;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Token;
@@ -95,5 +88,9 @@ public class SecurityHelper {
         String newEncryptedPassword = passwordEncoder.encode(passwordChangeRequestDTO.newPassword);
         boolean changed = accountHelper.setNewPassword(account, newEncryptedPassword);
         return new PasswordChangeResponseDTO(changed);
+    }
+
+    public Boolean checkForPasswordResetNeeded(Long accountId) {
+        return accountHelper.findById(accountId).getCredentials().isResetNeeded();
     }
 }

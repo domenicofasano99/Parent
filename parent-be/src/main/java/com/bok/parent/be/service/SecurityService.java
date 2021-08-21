@@ -26,6 +26,7 @@ public interface SecurityService {
 
     PasswordChangeResponseDTO changePassword(String token, PasswordChangeRequestDTO passwordChangeRequestDTO);
 
-    boolean checkTokenValidity(String token);
+    Boolean checkTokenValidity(String token);
 
+    Boolean passwordResetNeeded(String substring);
 }

@@ -13,6 +13,7 @@ import com.bok.parent.integration.dto.PasswordChangeRequestDTO;
 import com.bok.parent.integration.dto.PasswordChangeResponseDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.google.common.base.Preconditions;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,8 +67,12 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    public boolean checkTokenValidity(String token) {
+    public Boolean checkTokenValidity(String token) {
         return tokenService.checkTokenValidity(token);
     }
 
+    @Override
+    public Boolean passwordResetNeeded(String token) {
+        return securityHelper.checkForPasswordResetNeeded(getAccountId(token));
+    }
 }
