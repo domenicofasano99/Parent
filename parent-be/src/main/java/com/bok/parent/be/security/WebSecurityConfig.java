@@ -58,7 +58,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/swagger-ui/**")//
                 .antMatchers("/configuration/**")//
                 .antMatchers("/webjars/**")
-                .antMatchers("/resetPassword");
+                .antMatchers("/resetPassword")
+                .antMatchers("/cardConfirm");
     }
 
     @Override

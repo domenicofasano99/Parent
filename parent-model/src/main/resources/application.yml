@@ -1,6 +1,6 @@
 server:
   port: 8080
-  baseUrl: http://dev.faraone.ovh:81
+  baseUrl: https://bok.faraone.ovh
 
 grpc:
   server:

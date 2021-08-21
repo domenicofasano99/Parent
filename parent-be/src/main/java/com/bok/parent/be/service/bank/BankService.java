@@ -15,4 +15,8 @@ public class BankService {
     public boolean checkCreation(String fiscalCode, String vatNumber, boolean business) {
         return bankGrcpClient.checkCreation(fiscalCode, vatNumber, business);
     }
+
+    public Boolean confirmcard(Long accountId, String confirmationToken) {
+        return bankGrcpClient.confirmCard(accountId, confirmationToken);
+    }
 }

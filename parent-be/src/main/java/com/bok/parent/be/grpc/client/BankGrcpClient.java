@@ -2,6 +2,7 @@ package com.bok.parent.be.grpc.client;
 
 import com.bok.bank.integration.grpc.AccountCreationCheckRequest;
 import com.bok.bank.integration.grpc.BankGrpc;
+import com.bok.bank.integration.grpc.CardConfirmationRequest;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
@@ -37,4 +38,10 @@ public class BankGrcpClient {
         return Boolean.TRUE;
     }
 
+    public Boolean confirmCard(Long accountId, String confirmationToken) {
+        CardConfirmationRequest.Builder cardConfirmationBuilder = CardConfirmationRequest.newBuilder();
+        cardConfirmationBuilder.setAccountId(accountId);
+        cardConfirmationBuilder.setToken(confirmationToken);
+        return bankBlockingStub.confirmCard(cardConfirmationBuilder.build()).getConfirmed();
+    }
 }
