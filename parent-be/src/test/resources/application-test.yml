@@ -8,8 +8,6 @@ grpc:
   server:
     port: 3030
 
-geolocalization:
-  databasePath: classpath:*geolite2-city.mmdb
 spring:
   cloud:
     loadbalancer:
