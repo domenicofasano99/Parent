@@ -122,7 +122,7 @@ public class AccountHelper {
         emailMessage.to = temporaryAccount.getEmail();
         emailMessage.subject = "BOK Account Verification";
         emailMessage.body = "Click on the link to verify your BOK account: \n" +
-                baseUrl + "/verify?verificationToken=" + temporaryAccount.getConfirmationToken() +
+                baseUrl + "/verify/" + temporaryAccount.getConfirmationToken() +
                 "\nThis link will expire in 24 hours; after that you will have to create another account from scratch." +
                 "\nAfter confirming the account you will receive an email with a temporary password that we suggest you should change at your first log in" +
                 "\n\nThe BOK Team.";

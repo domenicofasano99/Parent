@@ -31,9 +31,9 @@ public class AccountController {
         return accountService.register(accountRegistrationDTO);
     }
 
-    @GetMapping("/verify")
+    @GetMapping("/verify/{verificationToken}")
     @ApiOperation(value = "Used to verify the account with the link sent via email")
-    public ModelAndView verify(@RequestParam("verificationToken") String confirmationToken) {
+    public ModelAndView verify(@PathVariable("verificationToken") String confirmationToken) {
         Boolean verified = accountService.verify(confirmationToken);
         return new ModelAndView("redirect:" + "https://bok.faraone.ovh", Collections.singletonMap("verified", verified));
     }
