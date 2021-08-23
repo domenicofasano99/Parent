@@ -1,7 +1,6 @@
 package com.bok.parent.be.controller;
 
 import com.bok.parent.be.audit.LoginAudit;
-import com.bok.parent.be.audit.PasswordResetAudit;
 import com.bok.parent.be.service.SecurityService;
 import com.bok.parent.integration.dto.*;
 import io.swagger.annotations.ApiOperation;
@@ -61,9 +60,9 @@ public class SecurityController {
         return securityService.changePassword(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7), passwordChangeRequestDTO);
     }
 
-    @GetMapping("/cardConfirm/")
-    public ModelAndView cardConfirm(@RequestParam("confirmationToken") String confirmationToken, @RequestParam("accountId") Long accountId) {
+    @GetMapping("/cardConfirm/{accountId}/{confirmationToken}")
+    public ModelAndView cardConfirm(@PathVariable("accountId") Long accountId, @PathVariable("confirmationToken") String confirmationToken) {
         securityService.confirmCard(accountId, confirmationToken);
-        return new ModelAndView("redirect:" + "http://bok.faraone.ovh:90");
+        return new ModelAndView("redirect:" + "https://bok.faraone.ovh");
     }
 }
