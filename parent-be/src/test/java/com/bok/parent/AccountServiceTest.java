@@ -94,8 +94,8 @@ public class AccountServiceTest {
         assertEquals("registered", response.status);
 
         TemporaryAccount ta = temporaryAccountRepository.findByEmail("ciao@ciao.com").orElseThrow(RuntimeException::new);
-        VerificationResponseDTO verificationResponse = accountService.verify(ta.getConfirmationToken());
-        assertTrue(verificationResponse.verified);
+        assertTrue(accountService.verify(ta.getConfirmationToken()));
+        //assertTrue(verificationResponse.verified);
     }
 
     @Test

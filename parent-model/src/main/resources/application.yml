@@ -1,6 +1,7 @@
 server:
   port: 8080
   baseUrl: https://bok.faraone.ovh
+  forward-headers-strategy: native
 
 grpc:
   server:

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public interface AccountService {
     AccountRegistrationResponseDTO register(AccountRegistrationDTO accountRegistrationDTO);
 
-    VerificationResponseDTO verify(String confirmationToken);
+    Boolean verify(String confirmationToken);
 
     PasswordResetResponseDTO resetPassword(PasswordResetRequestDTO passwordResetRequestDTO);
 

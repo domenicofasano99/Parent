@@ -8,7 +8,6 @@ import com.bok.parent.be.utils.ValidationUtils;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
-import com.bok.parent.integration.dto.VerificationResponseDTO;
 import com.bok.parent.integration.message.AccountCreationMessage;
 import com.bok.parent.integration.message.AccountDeletionMessage;
 import com.bok.parent.integration.message.EmailMessage;
@@ -151,7 +150,7 @@ public class AccountHelper {
     }
 
     @Transactional
-    public VerificationResponseDTO verify(String confirmationToken) throws RuntimeException {
+    public Boolean verify(String confirmationToken) throws RuntimeException {
         log.info("Verifying account with confirmation token: {}", confirmationToken);
         TemporaryAccount ta = temporaryAccountRepository.findByConfirmationToken(confirmationToken)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
@@ -165,7 +164,7 @@ public class AccountHelper {
         log.info("Account {} successfully verified!", account.getCredentials().getEmail());
         notifyServices(ta, account.getId());
         sendWelcomeEmail(account.getCredentials().getEmail(), ta.getName(), generatePassword);
-        return new VerificationResponseDTO("Your account has been confirmed, check your email for the temporary password we've created for you.", true);
+        return Boolean.TRUE;
     }
 
     private AccountCreationMessage generateAccountCreationMessage(TemporaryAccount userData, Long accountId) {
