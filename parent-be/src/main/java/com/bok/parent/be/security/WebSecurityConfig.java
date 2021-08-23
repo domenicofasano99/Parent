@@ -59,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/configuration/**")//
                 .antMatchers("/webjars/**")
                 .antMatchers("/resetPassword")
-                .antMatchers("/cardConfirm");
+                .antMatchers("/cardConfirm/**");
     }
 
     @Override
