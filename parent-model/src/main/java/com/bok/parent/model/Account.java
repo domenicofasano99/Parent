@@ -54,8 +54,11 @@ public class Account {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
     private List<Token> tokens;
 
+    @Column
+    private Boolean passwordResetNeeded;
+
     public Account(String email, String password) {
-        this.credentials = new Credentials(email, password, true);
+        this.credentials = new Credentials(email, password);
     }
 
     public void addToken(Token token) {

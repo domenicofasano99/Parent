@@ -1,13 +1,14 @@
 package com.bok.parent;
 
+import com.bok.parent.be.helper.AccountHelper;
 import com.bok.parent.be.helper.MessageHelper;
+import com.bok.parent.be.helper.SecurityHelper;
 import com.bok.parent.be.service.AccountService;
 import com.bok.parent.be.service.SecurityService;
 import com.bok.parent.be.service.bank.BankService;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
-import com.bok.parent.integration.dto.VerificationResponseDTO;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Credentials;
 import com.bok.parent.model.TemporaryAccount;
@@ -18,20 +19,16 @@ import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -67,6 +64,15 @@ public class AccountServiceTest {
     @Autowired
     BankService bankService;
 
+    @Autowired
+    SecurityHelper securityHelper;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Autowired
+    AccountHelper accountHelper;
+
     @BeforeEach
     public void setup() {
         modelTestUtil.clearAll();
@@ -87,7 +93,8 @@ public class AccountServiceTest {
         request.gender = "M";
         request.mobile = new AccountRegistrationDTO.MobileDTO("+39", "3334445599");
         request.address = new AccountRegistrationDTO.AddressDTO("1", "Via delle vie", "Gioia Tauro", "Reggio Calabria", "Italia", "89029");
-        request.credentials = new AccountRegistrationDTO.CredentialsDTO("ciao@ciao.com");
+        String email = "ciao@ciao.com";
+        request.credentials = new AccountRegistrationDTO.CredentialsDTO(email);
         request.business = false;
 
         AccountRegistrationResponseDTO response = accountService.register(request);
@@ -95,7 +102,16 @@ public class AccountServiceTest {
 
         TemporaryAccount ta = temporaryAccountRepository.findByEmail("ciao@ciao.com").orElseThrow(RuntimeException::new);
         assertTrue(accountService.verify(ta.getConfirmationToken()));
-        //assertTrue(verificationResponse.verified);
+
+        Account a = accountRepository.findByEmail(email).orElseThrow(RuntimeException::new);
+        assertTrue(a.getPasswordResetNeeded());
+        assertTrue(securityHelper.checkForPasswordResetNeeded(a.getId()));
+
+        String newEncryptedPassword = passwordEncoder.encode("newPassword");
+        accountHelper.setNewPassword(a, newEncryptedPassword);
+        assertFalse(a.getPasswordResetNeeded());
+        assertFalse(securityHelper.checkForPasswordResetNeeded(a.getId()));
+
     }
 
     @Test
@@ -163,11 +179,11 @@ public class AccountServiceTest {
         Credentials credentials = modelTestUtil.createAccountWithCredentials();
         String email = credentials.getEmail();
 
-        Account a = accountRepository.findByCredentials_Email(email).orElseThrow(RuntimeException::new);
+        Account a = accountRepository.findByEmail(email).orElseThrow(RuntimeException::new);
         PasswordResetRequestDTO requestDTO = new PasswordResetRequestDTO();
         requestDTO.email = email;
         accountService.resetPassword(requestDTO);
-        Account aa = accountRepository.findByCredentials_Email(email).orElseThrow(RuntimeException::new);
+        Account aa = accountRepository.findByEmail(email).orElseThrow(RuntimeException::new);
         assertNotEquals(a.getCredentials().getPassword(), aa.getCredentials().getPassword());
     }
 }

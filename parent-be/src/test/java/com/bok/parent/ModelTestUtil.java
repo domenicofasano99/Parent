@@ -74,14 +74,14 @@ public class ModelTestUtil {
         String email = faker.internet().emailAddress();
         String password = sha256Hex(faker.internet().password());
         Account a = new Account();
-        a.setCredentials(new Credentials(email, passwordEncoder.encode(password), false));
+        a.setCredentials(new Credentials(email, passwordEncoder.encode(password)));
         accountRepository.save(a);
-        return new Credentials(email, password, false);
+        return new Credentials(email, password);
     }
 
     public Account createAccount() {
         Account a = new Account();
-        a.setCredentials(new Credentials(faker.internet().emailAddress(), passwordEncoder.encode(sha256Hex(faker.internet().password())), false));
+        a.setCredentials(new Credentials(faker.internet().emailAddress(), passwordEncoder.encode(sha256Hex(faker.internet().password()))));
         return accountRepository.save(a);
     }
 

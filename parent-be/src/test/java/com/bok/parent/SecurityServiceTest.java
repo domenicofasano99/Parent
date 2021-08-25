@@ -6,17 +6,12 @@ import com.bok.parent.be.helper.TokenHelper;
 import com.bok.parent.be.service.AccountService;
 import com.bok.parent.be.service.SecurityService;
 import com.bok.parent.be.utils.ValidationUtils;
-import com.bok.parent.integration.dto.AccountLoginDTO;
-import com.bok.parent.integration.dto.LastAccessInfoDTO;
-import com.bok.parent.integration.dto.LoginResponseDTO;
-import com.bok.parent.integration.dto.PasswordChangeRequestDTO;
-import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
-import com.bok.parent.integration.dto.TokenInfoResponseDTO;
+import com.bok.parent.integration.dto.*;
 import com.bok.parent.model.Credentials;
 import com.bok.parent.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +27,8 @@ import java.util.Random;
 
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThrows;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest
@@ -61,7 +54,7 @@ public class SecurityServiceTest {
     @Autowired
     TokenHelper tokenHelper;
 
-    @Before
+    @BeforeEach
     public void setup() {
         modelTestUtil.clearAll();
         Mockito.when(ValidationUtils.validateEmail(anyString())).thenReturn(true);
@@ -108,7 +101,7 @@ public class SecurityServiceTest {
         TokenExpirationRequestDTO requestDTO = new TokenExpirationRequestDTO();
         requestDTO.token = loginResponse.token;
         TokenInfoResponseDTO response = securityService.tokenInfo(loginResponse.token);
-        Assertions.assertTrue(response.expirationDate.isAfter(Instant.now()));
+        assertTrue(response.expirationDate.isAfter(Instant.now()));
 
     }
 
@@ -171,7 +164,7 @@ public class SecurityServiceTest {
 
         LastAccessInfoDTO lastAccessInfo = securityService.lastAccessInfo(token);
         assertThat(lastAccessInfo.lastAccessIP, is(""));
-        Assertions.assertTrue(lastAccessInfo.lastAccessDateTime.isBefore(LocalDateTime.now()));
+        assertTrue(lastAccessInfo.lastAccessDateTime.isBefore(LocalDateTime.now()));
     }
 
     @Test
@@ -231,6 +224,20 @@ public class SecurityServiceTest {
         loginDTO.email = account.getEmail();
         loginDTO.password = newPassword;
         securityService.login(loginDTO);
+    }
+
+    @Test
+    public void passwordResetNeededTest() {
+        Credentials credentials = modelTestUtil.createAccountWithCredentials();
+
+        AccountLoginDTO loginDTO = new AccountLoginDTO();
+        loginDTO.email = credentials.getEmail();
+        loginDTO.password = credentials.getPassword();
+        LoginResponseDTO login = securityService.login(loginDTO);
+
+        securityService.changePassword(login.token, new PasswordChangeRequestDTO(credentials.getPassword(), "newPassword"));
+
+        assertFalse(securityService.passwordResetNeeded(login.token));
     }
 
 }

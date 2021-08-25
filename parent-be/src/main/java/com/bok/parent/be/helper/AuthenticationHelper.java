@@ -59,7 +59,7 @@ public class AuthenticationHelper {
         LoginResponseDTO response = new LoginResponseDTO();
         response.lastAccessInfo = getLastAccessInfoByAccountId(account.getId());
         response.token = token.getTokenString();
-        response.passwordResetNeeded = account.getCredentials().isResetNeeded();
+        response.passwordResetNeeded = account.getPasswordResetNeeded();
         log.info("User {} logged in", email);
         return response;
     }

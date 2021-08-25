@@ -140,7 +140,7 @@ public class AccountHelper {
 
     @Cacheable("email_accounts")
     public Account findByEmail(String email) {
-        return accountRepository.findByCredentials_Email(email).orElseThrow(() -> new AccountException("Account not found or not verified"));
+        return accountRepository.findByEmail(email).orElseThrow(() -> new AccountException("Account not found or not verified"));
     }
 
     private void notifyServices(TemporaryAccount temporaryAccount, Long accountId) {
@@ -157,7 +157,8 @@ public class AccountHelper {
 
         Account account = new Account();
         String generatePassword = generatePassword(10);
-        account.setCredentials(new Credentials(ta.getEmail(), passwordEncoder.encode(sha256Hex(generatePassword)), true));
+        account.setCredentials(new Credentials(ta.getEmail(), passwordEncoder.encode(sha256Hex(generatePassword))));
+        account.setPasswordResetNeeded(Boolean.TRUE);
         account.setRole(Account.Role.USER);
         account = accountRepository.save(account);
 
@@ -195,8 +196,9 @@ public class AccountHelper {
 
         Account account = findByEmail(email);
         String generatedPassword = generatePassword(8);
-        Credentials credentials = new Credentials(email, passwordEncoder.encode(sha256Hex(generatedPassword)), true);
+        Credentials credentials = new Credentials(email, passwordEncoder.encode(sha256Hex(generatedPassword)));
         account.setCredentials(credentials);
+        account.setPasswordResetNeeded(Boolean.TRUE);
         accountRepository.save(account);
         messageHelper.send(generatePasswordResetEmail(account.getCredentials().getEmail(), generatedPassword));
         return new PasswordResetResponseDTO("Password reset correctly");
@@ -231,7 +233,7 @@ public class AccountHelper {
     }
 
     public String delete(String email) {
-        Account a = accountRepository.findByCredentials_Email(email).orElseThrow(() -> new RuntimeException("Account not found"));
+        Account a = accountRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Account not found"));
         temporaryAccountRepository.deleteByEmail(email);
         accessInfoRepository.deleteByAccount(a);
         accountRepository.delete(a);
@@ -267,19 +269,15 @@ public class AccountHelper {
     public boolean setNewPassword(Account account, String newPassword) {
         try {
             String email = account.getCredentials().getEmail();
-            Credentials newCredentials = new Credentials(email, newPassword, false);
+            Credentials newCredentials = new Credentials(email, newPassword);
             account.setCredentials(newCredentials);
-            accountRepository.save(account);
-            evictSingleCredentialCache(email);
+            account.setPasswordResetNeeded(Boolean.FALSE);
+            accountRepository.saveAndFlush(account);
             return true;
         } catch (Exception e) {
             log.error("An exception occurred while setting new password for account {}", account.getId());
         }
         return false;
-    }
-
-    //@CacheEvict(value = "email_credentials", key = "#email")
-    public void evictSingleCredentialCache(String email) {
     }
 
 
@@ -291,6 +289,6 @@ public class AccountHelper {
 
     //@Cacheable(value = "email_credentials", key = "#email")
     public Credentials getCredentialsByEmail(String email) throws AccountNotFoundException {
-        return accountRepository.findByCredentials_Email(email).orElseThrow(AccountNotFoundException::new).getCredentials();
+        return accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new).getCredentials();
     }
 }

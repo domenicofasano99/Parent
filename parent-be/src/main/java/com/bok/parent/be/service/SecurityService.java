@@ -28,7 +28,7 @@ public interface SecurityService {
 
     Boolean checkTokenValidity(String token);
 
-    Boolean passwordResetNeeded(String substring);
+    Boolean passwordResetNeeded(String token);
 
     Boolean confirmCard(Long accountId, String confirmationToken);
 }
