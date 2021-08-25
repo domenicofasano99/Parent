@@ -7,17 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.List;
 
@@ -54,7 +44,7 @@ public class Account {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
     private List<Token> tokens;
 
-    @Column
+    @Column(columnDefinition = "boolean default true")
     private Boolean passwordResetNeeded;
 
     public Account(String email, String password) {
@@ -69,7 +59,7 @@ public class Account {
         USER
     }
 
-    public void clearTokens(){
+    public void clearTokens() {
         this.tokens.clear();
     }
 }
