@@ -91,6 +91,6 @@ public class SecurityHelper {
     }
 
     public Boolean checkForPasswordResetNeeded(Long accountId) {
-        return accountHelper.findById(accountId).getPasswordResetNeeded();
+        return accountHelper.findById(accountId).isPasswordResetNeeded();
     }
 }

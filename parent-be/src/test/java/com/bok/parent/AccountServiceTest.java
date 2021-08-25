@@ -104,12 +104,12 @@ public class AccountServiceTest {
         assertTrue(accountService.verify(ta.getConfirmationToken()));
 
         Account a = accountRepository.findByEmail(email).orElseThrow(RuntimeException::new);
-        assertTrue(a.getPasswordResetNeeded());
+        assertTrue(a.isPasswordResetNeeded());
         assertTrue(securityHelper.checkForPasswordResetNeeded(a.getId()));
 
         String newEncryptedPassword = passwordEncoder.encode("newPassword");
         accountHelper.setNewPassword(a, newEncryptedPassword);
-        assertFalse(a.getPasswordResetNeeded());
+        assertFalse(a.isPasswordResetNeeded());
         assertFalse(securityHelper.checkForPasswordResetNeeded(a.getId()));
 
     }
