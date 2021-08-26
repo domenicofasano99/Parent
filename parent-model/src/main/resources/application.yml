@@ -82,7 +82,7 @@ eureka:
     serviceUrl:
       defaultZone: http://services.faraone.ovh:8761/eureka
   instance:
-    lease-renewal-interval-in-seconds: 30
+    lease-renewal-interval-in-seconds: 5
 
 jwt:
   secret: j3H5Ld5nYmGWyULy6xwpOgfSH++NgKXnJMq20vpfd+8=t
