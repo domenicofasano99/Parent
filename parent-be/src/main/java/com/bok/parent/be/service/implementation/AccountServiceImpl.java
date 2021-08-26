@@ -69,7 +69,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Boolean verify(String confirmationToken) {
         ValidationUtils.nonNull(confirmationToken, "Verification token cannot be null");
-        return accountHelper.verify(confirmationToken);
+        return accountHelper.verifyAccount(confirmationToken);
     }
 
     @Override

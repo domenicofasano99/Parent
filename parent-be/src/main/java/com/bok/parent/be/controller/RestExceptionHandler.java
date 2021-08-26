@@ -1,11 +1,6 @@
 package com.bok.parent.be.controller;
 
-import com.bok.parent.be.exception.AccountException;
-import com.bok.parent.be.exception.ApiError;
-import com.bok.parent.be.exception.EmailAlreadyExistsException;
-import com.bok.parent.be.exception.InvalidCredentialsException;
-import com.bok.parent.be.exception.TokenAuthenticationException;
-import com.bok.parent.be.exception.TokenNotFoundException;
+import com.bok.parent.be.exception.*;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -21,9 +16,7 @@ import reactor.util.annotation.NonNull;
 
 import javax.persistence.EntityNotFoundException;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice

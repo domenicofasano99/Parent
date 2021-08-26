@@ -4,7 +4,6 @@ import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
-import com.bok.parent.integration.dto.VerificationResponseDTO;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -26,6 +26,7 @@ import static java.util.Objects.nonNull;
 @Slf4j
 @Component
 public class AuthenticationHelper {
+
     @Autowired
     AccountHelper accountHelper;
 

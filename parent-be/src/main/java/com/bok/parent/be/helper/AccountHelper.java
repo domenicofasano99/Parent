@@ -48,28 +48,29 @@ public class AccountHelper {
 
     @Autowired
     TemporaryAccountRepository temporaryAccountRepository;
+
     @Autowired
     MessageHelper messageHelper;
+
     @Autowired
     ValidationUtils validationUtils;
+
     @Autowired
     AccessInfoRepository accessInfoRepository;
-    @GrpcClient("bank")
-    BankGrpc.BankBlockingStub bankBlockingStub;
-    @GrpcClient("bank")
-    BankGrpc.BankFutureStub bankFutureStub;
+
     @Value("${server.baseUrl}")
     String baseUrl;
+
     @Autowired
     BankService bankService;
 
     public static String generatePassword(int len) {
-        String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         Random rnd = new Random();
 
         StringBuilder sb = new StringBuilder(len);
         for (int i = 0; i < len; i++) {
-            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+            sb.append(alphabet.charAt(rnd.nextInt(alphabet.length())));
         }
         return sb.toString();
     }
@@ -131,7 +132,8 @@ public class AccountHelper {
     }
 
     public Account saveOrUpdate(Account account) {
-        return accountRepository.save(account);
+        Account a = accountRepository.save(account);
+        return a;
     }
 
     public TemporaryAccount saveOrUpdate(TemporaryAccount temporaryAccount) {
@@ -150,7 +152,7 @@ public class AccountHelper {
     }
 
     @Transactional
-    public Boolean verify(String confirmationToken) throws RuntimeException {
+    public Boolean verifyAccount(String confirmationToken) throws RuntimeException {
         log.info("Verifying account with confirmation token: {}", confirmationToken);
         TemporaryAccount ta = temporaryAccountRepository.findByConfirmationToken(confirmationToken)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
@@ -248,7 +250,6 @@ public class AccountHelper {
         return email + " deleted";
     }
 
-    @Cacheable("id_account")
     public Account findById(Long accountId) {
         return accountRepository.findById(accountId).orElseThrow(() -> new AccountException("Account not found"));
     }
@@ -271,7 +272,7 @@ public class AccountHelper {
             String email = account.getCredentials().getEmail();
             Credentials newCredentials = new Credentials(email, newPassword);
             account.setCredentials(newCredentials);
-            account.setPasswordResetNeeded(Boolean.FALSE);
+            account.setPasswordResetNeeded(false);
             accountRepository.saveAndFlush(account);
             return true;
         } catch (Exception e) {

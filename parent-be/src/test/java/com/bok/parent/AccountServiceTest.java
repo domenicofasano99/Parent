@@ -6,9 +6,7 @@ import com.bok.parent.be.helper.SecurityHelper;
 import com.bok.parent.be.service.AccountService;
 import com.bok.parent.be.service.SecurityService;
 import com.bok.parent.be.service.bank.BankService;
-import com.bok.parent.integration.dto.AccountRegistrationDTO;
-import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
-import com.bok.parent.integration.dto.PasswordResetRequestDTO;
+import com.bok.parent.integration.dto.*;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Credentials;
 import com.bok.parent.model.TemporaryAccount;
@@ -19,7 +17,8 @@ import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,10 +27,11 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Slf4j
@@ -56,13 +56,7 @@ public class AccountServiceTest {
     AccessInfoRepository accessInfoRepository;
 
     @Autowired
-    SecurityService securityService;
-
-    @Autowired
     MessageHelper messageHelper;
-
-    @Autowired
-    BankService bankService;
 
     @Autowired
     SecurityHelper securityHelper;
@@ -70,16 +64,20 @@ public class AccountServiceTest {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Mock
+    BankService bankService;
+
     @Autowired
+    @InjectMocks
     AccountHelper accountHelper;
+
+    @Autowired
+    SecurityService securityService;
 
     @BeforeEach
     public void setup() {
         modelTestUtil.clearAll();
-        BankService bankService = mock(BankService.class);
-        Mockito.when(bankService.checkCreation(anyString(), anyString(), anyBoolean())).thenReturn(true);
-
-        this.bankService = bankService;
+        when(bankService.checkCreation(anyString(), anyString(), anyBoolean())).thenReturn(true);
     }
 
     @Test
@@ -107,12 +105,18 @@ public class AccountServiceTest {
         assertTrue(a.isPasswordResetNeeded());
         assertTrue(securityHelper.checkForPasswordResetNeeded(a.getId()));
 
-        String newEncryptedPassword = passwordEncoder.encode("newPassword");
+        String newEncryptedPassword = passwordEncoder.encode(sha256Hex("newPassword"));
         accountHelper.setNewPassword(a, newEncryptedPassword);
+
+        AccountLoginDTO loginRequest = new AccountLoginDTO(email, sha256Hex("newPassword"));
+        LoginResponseDTO loginResponse = securityService.login(loginRequest);
+        assertFalse(loginResponse.passwordResetNeeded);
 
         a = accountRepository.findByEmail(email).orElseThrow(RuntimeException::new);
         assertFalse(a.isPasswordResetNeeded());
-        assertFalse(securityHelper.checkForPasswordResetNeeded(a.getId()));
+
+        assertFalse(securityService.passwordResetNeeded(loginResponse.token));
+
 
     }
 

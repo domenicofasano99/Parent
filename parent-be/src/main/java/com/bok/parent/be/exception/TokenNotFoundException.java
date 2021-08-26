@@ -7,7 +7,7 @@ public class TokenNotFoundException extends RuntimeException {
         super(String.valueOf(TOKEN_NOT_FOUND));
     }
 
-    public static enum Codes {
+    public enum Codes {
         TOKEN_NOT_FOUND
     }
 }
