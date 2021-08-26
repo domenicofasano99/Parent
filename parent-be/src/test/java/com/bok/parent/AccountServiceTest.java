@@ -109,6 +109,8 @@ public class AccountServiceTest {
 
         String newEncryptedPassword = passwordEncoder.encode("newPassword");
         accountHelper.setNewPassword(a, newEncryptedPassword);
+
+        a = accountRepository.findByEmail(email).orElseThrow(RuntimeException::new);
         assertFalse(a.isPasswordResetNeeded());
         assertFalse(securityHelper.checkForPasswordResetNeeded(a.getId()));
 

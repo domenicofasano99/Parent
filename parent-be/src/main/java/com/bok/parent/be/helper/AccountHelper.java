@@ -158,9 +158,9 @@ public class AccountHelper {
         Account account = new Account();
         String generatePassword = generatePassword(10);
         account.setCredentials(new Credentials(ta.getEmail(), passwordEncoder.encode(sha256Hex(generatePassword))));
-        account.setPasswordResetNeeded(Boolean.TRUE);
+        account.setPasswordResetNeeded(true);
         account.setRole(Account.Role.USER);
-        account = accountRepository.save(account);
+        account = accountRepository.saveAndFlush(account);
 
         log.info("Account {} successfully verified!", account.getCredentials().getEmail());
         notifyServices(ta, account.getId());
