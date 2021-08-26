@@ -29,6 +29,10 @@ spring:
     circuitbreaker:
       hystrix:
         enabled: false
+    loadbalancer:
+      ribbon:
+        enabled: false
+
 
   activemq:
     packages:
