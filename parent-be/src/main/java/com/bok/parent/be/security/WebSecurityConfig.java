@@ -59,7 +59,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/configuration/**")//
                 .antMatchers("/webjars/**")
                 .antMatchers("/resetPassword")
-                .antMatchers("/cardConfirm/**");
+                .antMatchers("/bank/swagger-ui/**")
+                .antMatchers("/krypto/swagger-ui/**");
     }
 
     @Override

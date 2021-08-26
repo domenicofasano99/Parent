@@ -26,7 +26,7 @@ public class AccountController {
 
     @RegisterAudit
     @PostMapping("/register")
-    @ApiOperation(value = "Registration methods")
+    @ApiOperation(value = "Register an account")
     public AccountRegistrationResponseDTO register(@RequestBody AccountRegistrationDTO accountRegistrationDTO, HttpServletRequest request) {
         return accountService.register(accountRegistrationDTO);
     }
@@ -45,10 +45,9 @@ public class AccountController {
         return accountService.resetPassword(passwordResetRequestDTO);
     }
 
-    @Deprecated
     @ApiOperation(value = "Completely deletes an account from the platform, ONLY FOR INTERNAL USE")
-    @DeleteMapping("/delete")
+    @DeleteMapping("/closeAccount")
     public String deleteByEmail(@RequestParam("email") String email) {
-        return accountService.delete(email);
+        return accountService.closeAccount(email);
     }
 }

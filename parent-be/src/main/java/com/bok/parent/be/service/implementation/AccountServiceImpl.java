@@ -8,7 +8,6 @@ import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
-import com.bok.parent.integration.dto.VerificationResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,7 +80,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String delete(String email) {
-        return accountHelper.delete(email);
+    public String closeAccount(String email) {
+        return accountHelper.closeAccount(email);
     }
 }

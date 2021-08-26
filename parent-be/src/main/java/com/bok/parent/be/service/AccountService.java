@@ -15,5 +15,5 @@ public interface AccountService {
 
     PasswordResetResponseDTO resetPassword(PasswordResetRequestDTO passwordResetRequestDTO);
 
-    String delete(String email);
+    String closeAccount(String email);
 }

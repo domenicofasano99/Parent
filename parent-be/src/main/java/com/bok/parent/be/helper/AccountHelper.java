@@ -232,7 +232,7 @@ public class AccountHelper {
         messageHelper.send(mail);
     }
 
-    public String delete(String email) {
+    public String closeAccount(String email) {
         Account a = accountRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Account not found"));
         temporaryAccountRepository.deleteByEmail(email);
         accessInfoRepository.deleteByAccount(a);
@@ -241,8 +241,8 @@ public class AccountHelper {
 
         EmailMessage deletionEmail = new EmailMessage();
         deletionEmail.to = email;
-        deletionEmail.body = "You account has been successfully deleted.";
-        deletionEmail.subject = "Account deletion request";
+        deletionEmail.body = "You account has been successfully closed.";
+        deletionEmail.subject = "Account closure request.";
         messageHelper.send(deletionEmail);
 
         return email + " deleted";
