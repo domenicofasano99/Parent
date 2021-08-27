@@ -200,4 +200,13 @@ public class AccountServiceTest {
         Account aa = accountRepository.findByEmail(email).orElseThrow(RuntimeException::new);
         assertNotEquals(a.getCredentials().getPassword(), aa.getCredentials().getPassword());
     }
+
+    @Test
+    public void resetPasswordTest_failNoAccount() {
+
+        String email = "email@domain.com";
+        PasswordResetRequestDTO requestDTO = new PasswordResetRequestDTO();
+        requestDTO.email = email;
+        assertThrows(RuntimeException.class, () -> accountService.resetPassword(requestDTO));
+    }
 }
