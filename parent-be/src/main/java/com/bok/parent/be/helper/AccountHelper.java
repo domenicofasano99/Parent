@@ -195,11 +195,12 @@ public class AccountHelper {
     /**
      * This method is used to recover a forgot password. A new password is generated and sent via email to the user.
      * The password sent is temporary and needs to be changed asap
+     *
      * @param email of the user
      * @return the DTO in response containing a message for the user
      */
     public PasswordResetResponseDTO recover(String email) {
-
+        log.info("user {} is recovering his password", email);
         Account account = findByEmail(email);
         String generatedPassword = generatePassword(8);
         Credentials credentials = new Credentials(email, passwordEncoder.encode(sha256Hex(generatedPassword)));
@@ -212,7 +213,8 @@ public class AccountHelper {
 
     /**
      * Generates the email for the password reset
-     * @param email of the user
+     *
+     * @param email    of the user
      * @param password (temporary)
      * @return the prepared EmailMessae, ready to be sent to the broker
      */
@@ -232,8 +234,9 @@ public class AccountHelper {
 
     /**
      * This method send the welcome email to the user, it is triggered after the email verification, containing the username and the temporary password
-     * @param email of the user
-     * @param firstName of the user (entered in the subject and the body to avoid spam filters)
+     *
+     * @param email                  of the user
+     * @param firstName              of the user (entered in the subject and the body to avoid spam filters)
      * @param generatedPlainPassword for the first login
      */
     private void sendWelcomeEmail(String email, String firstName, String generatedPlainPassword) {
@@ -252,6 +255,7 @@ public class AccountHelper {
 
     /**
      * Method used to perform the account closure, it sends 2 messages to both krypto and bank to trigger the account deletion on those systems too
+     *
      * @param email of the user to be deleted
      * @return a message to be shown to the user in the business console
      */
@@ -273,6 +277,7 @@ public class AccountHelper {
 
     /**
      * Find the given account by using the email to qury the db or, if not found, throws an AccountException
+     *
      * @param accountId of the account to be retrieved
      * @return the retrieved account
      */
@@ -299,7 +304,8 @@ public class AccountHelper {
 
     /**
      * This methods sets a new password for a given Account
-     * @param account where to set the new password
+     *
+     * @param account     where to set the new password
      * @param newPassword already encoded password
      * @return true if everything went good or false if there was an error
      */
@@ -320,8 +326,8 @@ public class AccountHelper {
 
     /**
      * Adds a token to a given account
-     * @param account ok
      *
+     * @param account ok
      * @param token
      */
     public void addTokenToAccount(Account account, Token token) {
@@ -332,6 +338,7 @@ public class AccountHelper {
 
     /**
      * Returns, given the email, the corresponding Credentials
+     *
      * @param email of the account whose credentials are needed
      * @return Credentials object
      * @throws AccountNotFoundException if no Account is found
