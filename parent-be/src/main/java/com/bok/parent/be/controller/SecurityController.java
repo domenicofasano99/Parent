@@ -49,8 +49,8 @@ public class SecurityController {
         return securityService.keepAlive(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
     }
 
-    @PostMapping("/logout")
-    @ApiOperation(value = "Requests logout")
+    @GetMapping("/accountLogout")
+    @ApiOperation(value = "Requests logout from the account")
     public LogoutResponseDTO logout(HttpServletRequest request) {
         return securityService.logout(request.getHeader(HttpHeaders.AUTHORIZATION).substring(7));
     }
