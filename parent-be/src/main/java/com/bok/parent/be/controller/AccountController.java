@@ -51,7 +51,7 @@ public class AccountController {
         return accountService.resetPassword(passwordResetRequestDTO);
     }
 
-    @ApiOperation(value = "Completely deletes an account from the platform, ONLY FOR INTERNAL USE")
+    @ApiOperation(value = "Completely closes an account from the platform. Some data may remain stored for security purposes.")
     @DeleteMapping("/closeAccount")
     public String deleteByEmail(@RequestParam("email") String email) {
         return accountService.closeAccount(email);

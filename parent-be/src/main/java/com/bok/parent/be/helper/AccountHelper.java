@@ -192,18 +192,30 @@ public class AccountHelper {
         return message;
     }
 
+    /**
+     * This method is used to recover a forgot password. A new password is generated and sent via email to the user.
+     * The password sent is temporary and needs to be changed asap
+     * @param email of the user
+     * @return the DTO in response containing a message for the user
+     */
     public PasswordResetResponseDTO recover(String email) {
 
         Account account = findByEmail(email);
         String generatedPassword = generatePassword(8);
         Credentials credentials = new Credentials(email, passwordEncoder.encode(sha256Hex(generatedPassword)));
         account.setCredentials(credentials);
-        account.setPasswordResetNeeded(Boolean.TRUE);
+        account.setPasswordResetNeeded(true);
         accountRepository.save(account);
         messageHelper.send(generatePasswordResetEmail(account.getCredentials().getEmail(), generatedPassword));
         return new PasswordResetResponseDTO("Password reset correctly");
     }
 
+    /**
+     * Generates the email for the password reset
+     * @param email of the user
+     * @param password (temporary)
+     * @return the prepared EmailMessae, ready to be sent to the broker
+     */
     public EmailMessage generatePasswordResetEmail(String email, String password) {
         EmailMessage mail = new EmailMessage();
         mail.to = email;
@@ -218,6 +230,12 @@ public class AccountHelper {
         return mail;
     }
 
+    /**
+     * This method send the welcome email to the user, it is triggered after the email verification, containing the username and the temporary password
+     * @param email of the user
+     * @param firstName of the user (entered in the subject and the body to avoid spam filters)
+     * @param generatedPlainPassword for the first login
+     */
     private void sendWelcomeEmail(String email, String firstName, String generatedPlainPassword) {
         EmailMessage mail = new EmailMessage();
         mail.to = email;
@@ -232,6 +250,11 @@ public class AccountHelper {
         messageHelper.send(mail);
     }
 
+    /**
+     * Method used to perform the account closure, it sends 2 messages to both krypto and bank to trigger the account deletion on those systems too
+     * @param email of the user to be deleted
+     * @return a message to be shown to the user in the business console
+     */
     public String closeAccount(String email) {
         Account a = accountRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Account not found"));
         temporaryAccountRepository.deleteByEmail(email);
@@ -248,10 +271,19 @@ public class AccountHelper {
         return email + " deleted";
     }
 
+    /**
+     * Find the given account by using the email to qury the db or, if not found, throws an AccountException
+     * @param accountId of the account to be retrieved
+     * @return the retrieved account
+     */
     public Account findById(Long accountId) {
         return accountRepository.findById(accountId).orElseThrow(() -> new AccountException("Account not found"));
     }
 
+    /**
+     * This method is triggered every 5 minutes, it checks if there is any unconfirmed account older than 24 hours and if so
+     * it deletes that
+     */
     @Scheduled(cron = "0 */5 * * * *")
     public void deleteUnconfirmedAccounts() {
         List<TemporaryAccount> temporaryAccounts = temporaryAccountRepository.findAll();
@@ -265,6 +297,12 @@ public class AccountHelper {
         log.info("Deleted {} unconfirmed accounts", toDelete.size());
     }
 
+    /**
+     * This methods sets a new password for a given Account
+     * @param account where to set the new password
+     * @param newPassword already encoded password
+     * @return true if everything went good or false if there was an error
+     */
     public boolean setNewPassword(Account account, String newPassword) {
         try {
             String email = account.getCredentials().getEmail();
@@ -280,13 +318,24 @@ public class AccountHelper {
     }
 
 
+    /**
+     * Adds a token to a given account
+     * @param account ok
+     *
+     * @param token
+     */
     public void addTokenToAccount(Account account, Token token) {
         account.addToken(token);
         accountRepository.save(account);
     }
 
 
-    //@Cacheable(value = "email_credentials", key = "#email")
+    /**
+     * Returns, given the email, the corresponding Credentials
+     * @param email of the account whose credentials are needed
+     * @return Credentials object
+     * @throws AccountNotFoundException if no Account is found
+     */
     public Credentials getCredentialsByEmail(String email) throws AccountNotFoundException {
         return accountRepository.findByEmail(email).orElseThrow(AccountNotFoundException::new).getCredentials();
     }
