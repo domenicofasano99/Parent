@@ -6,7 +6,12 @@ import com.bok.parent.be.helper.TokenHelper;
 import com.bok.parent.be.service.AccountService;
 import com.bok.parent.be.service.SecurityService;
 import com.bok.parent.be.utils.ValidationUtils;
-import com.bok.parent.integration.dto.*;
+import com.bok.parent.integration.dto.AccountLoginDTO;
+import com.bok.parent.integration.dto.LastAccessInfoDTO;
+import com.bok.parent.integration.dto.LoginResponseDTO;
+import com.bok.parent.integration.dto.PasswordChangeRequestDTO;
+import com.bok.parent.integration.dto.TokenExpirationRequestDTO;
+import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import com.bok.parent.model.Credentials;
 import com.bok.parent.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +32,12 @@ import java.util.Random;
 
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest

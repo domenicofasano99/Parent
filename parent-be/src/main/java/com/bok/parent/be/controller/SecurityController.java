@@ -2,10 +2,21 @@ package com.bok.parent.be.controller;
 
 import com.bok.parent.be.audit.LoginAudit;
 import com.bok.parent.be.service.SecurityService;
-import com.bok.parent.integration.dto.*;
+import com.bok.parent.integration.dto.AccountLoginDTO;
+import com.bok.parent.integration.dto.KeepAliveResponseDTO;
+import com.bok.parent.integration.dto.LastAccessInfoDTO;
+import com.bok.parent.integration.dto.LoginResponseDTO;
+import com.bok.parent.integration.dto.LogoutResponseDTO;
+import com.bok.parent.integration.dto.PasswordChangeRequestDTO;
+import com.bok.parent.integration.dto.PasswordChangeResponseDTO;
+import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import io.swagger.annotations.ApiOperation;
 import org.apache.http.HttpHeaders;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
