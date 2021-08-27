@@ -88,10 +88,9 @@ public class SecurityHelper {
 
 
     public PasswordChangeResponseDTO changePassword(String tokenString, PasswordChangeRequestDTO passwordChangeRequestDTO) {
-
         Token token = tokenService.findByTokenString(tokenString);
         Account account = token.getAccount();
-
+        log.info("user {} is changing his password", account.getCredentials().getEmail());
         String newEncryptedPassword = passwordEncoder.encode(passwordChangeRequestDTO.newPassword);
         boolean changed = accountHelper.setNewPassword(account, newEncryptedPassword);
         return new PasswordChangeResponseDTO(changed);

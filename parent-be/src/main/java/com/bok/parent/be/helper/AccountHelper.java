@@ -62,7 +62,8 @@ public class AccountHelper {
     @Autowired
     BankService bankService;
 
-    public static String generatePassword(int len) {
+    public static String generatePassword() {
+        int len = 10;
         String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         Random rnd = new Random();
 
@@ -138,7 +139,6 @@ public class AccountHelper {
         return temporaryAccountRepository.save(temporaryAccount);
     }
 
-    @Cacheable("email_accounts")
     public Account findByEmail(String email) {
         return accountRepository.findByEmail(email).orElseThrow(() -> new AccountException("Account not found or not verified"));
     }
@@ -149,6 +149,13 @@ public class AccountHelper {
         temporaryAccountRepository.delete(temporaryAccount);
     }
 
+    /**
+     * Method caled when the user clicks on the verification link
+     *
+     * @param confirmationToken from the email
+     * @return
+     * @throws RuntimeException
+     */
     @Transactional
     public Boolean verifyAccount(String confirmationToken) throws RuntimeException {
         log.info("Verifying account with confirmation token: {}", confirmationToken);
@@ -156,7 +163,7 @@ public class AccountHelper {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         Account account = new Account();
-        String generatePassword = generatePassword(10);
+        String generatePassword = generatePassword();
         account.setCredentials(new Credentials(ta.getEmail(), passwordEncoder.encode(sha256Hex(generatePassword))));
         account.setPasswordResetNeeded(true);
         account.setRole(Account.Role.USER);
@@ -202,11 +209,11 @@ public class AccountHelper {
     public PasswordResetResponseDTO recover(String email) {
         log.info("user {} is recovering his password", email);
         Account account = findByEmail(email);
-        String generatedPassword = generatePassword(8);
+        String generatedPassword = generatePassword();
         Credentials credentials = new Credentials(email, passwordEncoder.encode(sha256Hex(generatedPassword)));
         account.setCredentials(credentials);
         account.setPasswordResetNeeded(true);
-        accountRepository.save(account);
+        accountRepository.saveAndFlush(account);
         messageHelper.send(generatePasswordResetEmail(account.getCredentials().getEmail(), generatedPassword));
         return new PasswordResetResponseDTO("Password reset correctly");
     }
