@@ -3,8 +3,8 @@ package com.bok.parent.be.helper;
 import com.bok.parent.be.messaging.BankUserMessageProducer;
 import com.bok.parent.be.messaging.EmailMessageProducer;
 import com.bok.parent.be.messaging.KryptoUserMessageProducer;
+import com.bok.parent.integration.message.AccountClosureMessage;
 import com.bok.parent.integration.message.AccountCreationMessage;
-import com.bok.parent.integration.message.AccountDeletionMessage;
 import com.bok.parent.integration.message.EmailMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,8 +30,8 @@ public class MessageHelper {
         emailMessageProducer.send(emailMessage);
     }
 
-    public void send(AccountDeletionMessage accountDeletionMessage) {
-        kryptoUserMessageProducer.send(accountDeletionMessage);
-        bankUserMessageProducer.send(accountDeletionMessage);
+    public void send(AccountClosureMessage accountClosureMessage) {
+        kryptoUserMessageProducer.send(accountClosureMessage);
+        bankUserMessageProducer.send(accountClosureMessage);
     }
 }

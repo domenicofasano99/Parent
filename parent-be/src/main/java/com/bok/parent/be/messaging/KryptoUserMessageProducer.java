@@ -1,7 +1,7 @@
 package com.bok.parent.be.messaging;
 
+import com.bok.parent.integration.message.AccountClosureMessage;
 import com.bok.parent.integration.message.AccountCreationMessage;
-import com.bok.parent.integration.message.AccountDeletionMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,10 +32,10 @@ public class KryptoUserMessageProducer {
     }
 
 
-    public void send(AccountDeletionMessage accountDeletionMessage) {
+    public void send(AccountClosureMessage accountClosureMessage) {
         try {
             log.info("Attempting send account deletion to queue: " + accountDeletionQueue);
-            jmsTemplate.convertAndSend(accountDeletionQueue, accountDeletionMessage);
+            jmsTemplate.convertAndSend(accountDeletionQueue, accountClosureMessage);
         } catch (Exception e) {
             log.error("Received Exception during send Message: ", e);
         }

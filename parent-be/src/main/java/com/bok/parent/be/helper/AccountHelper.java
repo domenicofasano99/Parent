@@ -4,11 +4,12 @@ import com.bok.parent.be.exception.AccountException;
 import com.bok.parent.be.exception.EmailAlreadyExistsException;
 import com.bok.parent.be.service.bank.BankService;
 import com.bok.parent.be.utils.ValidationUtils;
+import com.bok.parent.integration.dto.AccountClosureDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetResponseDTO;
+import com.bok.parent.integration.message.AccountClosureMessage;
 import com.bok.parent.integration.message.AccountCreationMessage;
-import com.bok.parent.integration.message.AccountDeletionMessage;
 import com.bok.parent.integration.message.EmailMessage;
 import com.bok.parent.model.Account;
 import com.bok.parent.model.Credentials;
@@ -20,7 +21,6 @@ import com.bok.parent.repository.TemporaryAccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -172,6 +172,7 @@ public class AccountHelper {
         log.info("Account {} successfully verified!", account.getCredentials().getEmail());
         notifyServices(ta, account.getId());
         sendWelcomeEmail(account.getCredentials().getEmail(), ta.getName(), generatePassword);
+        temporaryAccountRepository.deleteByEmail(ta.getEmail());
         return Boolean.TRUE;
     }
 
@@ -263,15 +264,18 @@ public class AccountHelper {
     /**
      * Method used to perform the account closure, it sends 2 messages to both krypto and bank to trigger the account deletion on those systems too
      *
-     * @param email of the user to be deleted
+     * @param accountClosureDTO containing email and IBAN for the funds to be sent before account deletion
      * @return a message to be shown to the user in the business console
      */
-    public String closeAccount(String email) {
+    public String closeAccount(AccountClosureDTO accountClosureDTO) {
+        String email = accountClosureDTO.email;
+        String iban = accountClosureDTO.IBAN;
         Account a = accountRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Account not found"));
-        temporaryAccountRepository.deleteByEmail(email);
+
         accessInfoRepository.deleteByAccount(a);
         accountRepository.delete(a);
-        messageHelper.send(new AccountDeletionMessage(a.getId()));
+
+        messageHelper.send(new AccountClosureMessage(a.getId(), iban));
 
         EmailMessage deletionEmail = new EmailMessage();
         deletionEmail.to = email;

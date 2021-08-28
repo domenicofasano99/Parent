@@ -13,6 +13,7 @@ import java.io.Serializable;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountDeletionMessage implements Serializable {
+public class AccountClosureMessage implements Serializable {
     public Long accountId;
+    public String IBAN;
 }

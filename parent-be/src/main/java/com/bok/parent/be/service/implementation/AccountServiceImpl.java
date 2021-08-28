@@ -4,6 +4,7 @@ import com.bok.parent.be.helper.AccountHelper;
 import com.bok.parent.be.helper.AuthenticationHelper;
 import com.bok.parent.be.service.AccountService;
 import com.bok.parent.be.utils.ValidationUtils;
+import com.bok.parent.integration.dto.AccountClosureDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
@@ -80,7 +81,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String closeAccount(String email) {
-        return accountHelper.closeAccount(email);
+    public String closeAccount(AccountClosureDTO accountClosureDTO) {
+        return accountHelper.closeAccount(accountClosureDTO);
     }
 }

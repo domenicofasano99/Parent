@@ -1,5 +1,6 @@
 package com.bok.parent.be.service;
 
+import com.bok.parent.integration.dto.AccountClosureDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
@@ -14,5 +15,5 @@ public interface AccountService {
 
     PasswordResetResponseDTO resetPassword(PasswordResetRequestDTO passwordResetRequestDTO);
 
-    String closeAccount(String email);
+    String closeAccount(AccountClosureDTO accountClosureDTO);
 }

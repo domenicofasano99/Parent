@@ -3,6 +3,7 @@ package com.bok.parent.be.controller;
 import com.bok.parent.be.audit.PasswordResetAudit;
 import com.bok.parent.be.audit.RegisterAudit;
 import com.bok.parent.be.service.AccountService;
+import com.bok.parent.integration.dto.AccountClosureDTO;
 import com.bok.parent.integration.dto.AccountRegistrationDTO;
 import com.bok.parent.integration.dto.AccountRegistrationResponseDTO;
 import com.bok.parent.integration.dto.PasswordResetRequestDTO;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -53,7 +53,7 @@ public class AccountController {
 
     @ApiOperation(value = "Completely closes an account from the platform. Some data may remain stored for security purposes.")
     @DeleteMapping("/closeAccount")
-    public String deleteByEmail(@RequestParam("email") String email) {
-        return accountService.closeAccount(email);
+    public String closeAccount(@RequestBody AccountClosureDTO accountClosureDTO) {
+        return accountService.closeAccount(accountClosureDTO);
     }
 }
