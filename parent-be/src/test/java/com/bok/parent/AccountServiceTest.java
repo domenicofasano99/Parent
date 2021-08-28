@@ -117,7 +117,7 @@ public class AccountServiceTest {
         accountHelper.setNewPassword(a, newEncryptedPassword);
 
         AccountLoginDTO loginRequest = new AccountLoginDTO(email, sha256Hex("newPassword"));
-        LoginResponseDTO loginResponse = securityService.login(loginRequesFt);
+        LoginResponseDTO loginResponse = securityService.login(loginRequest);
         assertFalse(loginResponse.passwordResetNeeded);
 
         a = accountRepository.findByEmail(email).orElseThrow(RuntimeException::new);
