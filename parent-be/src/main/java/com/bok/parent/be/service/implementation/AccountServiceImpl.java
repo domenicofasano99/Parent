@@ -34,22 +34,28 @@ public class AccountServiceImpl implements AccountService {
         ValidationUtils.checkEmail(registrationDTO.credentials.email, "The given email is not valid!");
         ValidationUtils.nonNull(registrationDTO.name);
         ValidationUtils.validateName(registrationDTO.name);
-        ValidationUtils.nonNull(registrationDTO.surname);
-        ValidationUtils.validateSurname(registrationDTO.surname);
-        ValidationUtils.nonNull(registrationDTO.birthdate);
-
-        if (registrationDTO.birthdate.after(java.sql.Date.valueOf(LocalDate.now().minus(18L, ChronoUnit.YEARS)))) {
-            throw new IllegalArgumentException("User must be 18 or over to register");
-        }
         ValidationUtils.nonNull(registrationDTO.business);
         if (registrationDTO.business) {
-            if (registrationDTO.vatNumber == null && registrationDTO.fiscalCode == null) {
+            if (registrationDTO.vatNumber == null) {
                 log.info("Rejected register request due to vatNumber and fiscalCode not given, {}", registrationDTO);
                 throw new IllegalArgumentException("Account is business but no vatNumber or fiscalCode were given.");
+            }
+            if(!ValidationUtils.checkVatNumber(registrationDTO.vatNumber)){
+                log.info("VAT NUMBER not valid, {}", registrationDTO);
+                throw new IllegalArgumentException("VAT NUMBER not valid.");
             }
         } else {
             ValidationUtils.nonNull(registrationDTO.gender);
             ValidationUtils.nonNull(registrationDTO.fiscalCode);
+            if(!ValidationUtils.checkTaxCode(registrationDTO.fiscalCode)) {
+                throw new IllegalArgumentException("TAX CODE not valid.");
+            }
+            ValidationUtils.nonNull(registrationDTO.surname);
+            ValidationUtils.validateSurname(registrationDTO.surname);
+            ValidationUtils.nonNull(registrationDTO.birthdate);
+            if (registrationDTO.birthdate.after(java.sql.Date.valueOf(LocalDate.now().minus(18L, ChronoUnit.YEARS)))) {
+                throw new IllegalArgumentException("User must be 18 or over to register");
+            }
         }
 
         ValidationUtils.nonNull(registrationDTO.mobile);
