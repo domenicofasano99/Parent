@@ -69,7 +69,8 @@ public class SecurityHelper {
     }
 
     public LogoutResponseDTO logout(String token) {
-        return new LogoutResponseDTO(tokenService.revoke(token));
+        tokenService.revoke(token);
+        return new LogoutResponseDTO(true);
     }
 
     public LastAccessInfoDTO lastAccessInfo(String tokenString) {

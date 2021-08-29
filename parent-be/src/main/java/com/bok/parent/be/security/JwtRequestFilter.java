@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static java.util.Objects.isNull;
+
 @Slf4j
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -49,12 +51,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         } else {
             log.warn("JWT Token does not begin with Bearer String");
         }
-        if (jwtToken == null) {
+        if (isNull(jwtToken)) {
             log.warn("No token provided for this request {}", request.getRequestURL());
         }
 
         // Once we get the token validate it.
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && isNull(SecurityContextHolder.getContext().getAuthentication())) {
 
             UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
 
