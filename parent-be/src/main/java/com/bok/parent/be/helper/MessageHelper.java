@@ -32,6 +32,5 @@ public class MessageHelper {
 
     public void send(AccountClosureMessage accountClosureMessage) {
         kryptoUserMessageProducer.send(accountClosureMessage);
-        bankUserMessageProducer.send(accountClosureMessage);
     }
 }

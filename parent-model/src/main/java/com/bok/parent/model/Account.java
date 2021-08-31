@@ -57,6 +57,9 @@ public class Account {
     @Column
     private boolean passwordResetNeeded;
 
+    @Column
+    private boolean deleted;
+
     public Account(String email, String password) {
         this.credentials = new Credentials(email, password);
     }

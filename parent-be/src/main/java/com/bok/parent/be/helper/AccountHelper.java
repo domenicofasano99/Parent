@@ -1,6 +1,5 @@
 package com.bok.parent.be.helper;
 
-import com.bok.bank.integration.dto.WireTransferResponseDTO;
 import com.bok.parent.be.exception.AccountException;
 import com.bok.parent.be.exception.EmailAlreadyExistsException;
 import com.bok.parent.be.service.bank.BankService;
@@ -276,6 +275,7 @@ public class AccountHelper {
      * @param accountClosureDTO containing email and IBAN for the funds to be sent before account deletion
      * @return a message to be shown to the user in the business console
      */
+    @Transactional
     public String closeAccount(AccountClosureDTO accountClosureDTO) {
         String email = accountClosureDTO.email;
         String iban = accountClosureDTO.iban;
@@ -285,10 +285,8 @@ public class AccountHelper {
         } catch (IbanFormatException | InvalidCheckDigitException | UnsupportedCountryException e) {
             throw new IllegalArgumentException(e.getLocalizedMessage());
         }
-        tokenRepository.deleteAllByAccountId(a.getId());
-        accessInfoRepository.deleteByAccount(a);
-        accountRepository.delete(a);
-
+        a.setDeleted(true);
+        saveOrUpdate(a);
         messageHelper.send(new AccountClosureMessage(a.getId(), iban));
 
         EmailMessage deletionEmail = new EmailMessage();

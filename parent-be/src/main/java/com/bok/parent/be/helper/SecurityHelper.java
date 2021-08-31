@@ -47,6 +47,9 @@ public class SecurityHelper {
 
     public LoginResponseDTO login(AccountLoginDTO request) {
         Account account = accountHelper.findByEmail(request.email);
+        if (account.isDeleted()) {
+            throw new RuntimeException("This account has been deleted");
+        }
         return authenticationHelper.login(account, request.password);
     }
 
