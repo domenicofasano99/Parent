@@ -12,6 +12,7 @@ import com.bok.parent.integration.dto.PasswordChangeResponseDTO;
 import com.bok.parent.integration.dto.TokenInfoResponseDTO;
 import io.swagger.annotations.ApiOperation;
 import org.apache.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,11 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class SecurityController {
 
-    final SecurityService securityService;
-
-    public SecurityController(SecurityService securityService) {
-        this.securityService = securityService;
-    }
+    @Autowired
+    SecurityService securityService;
 
     @LoginAudit
     @PostMapping("/login")
