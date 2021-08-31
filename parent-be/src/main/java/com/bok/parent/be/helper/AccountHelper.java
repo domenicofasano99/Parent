@@ -285,10 +285,8 @@ public class AccountHelper {
         } catch (IbanFormatException | InvalidCheckDigitException | UnsupportedCountryException e) {
             throw new IllegalArgumentException(e.getLocalizedMessage());
         }
-        tokenRepository.deleteAllByAccountId(a.getId());
-        accessInfoRepository.deleteByAccount(a);
-        accountRepository.delete(a);
-
+        a.setDeleted(true);
+        saveOrUpdate(a);
         messageHelper.send(new AccountClosureMessage(a.getId(), iban));
 
         EmailMessage deletionEmail = new EmailMessage();

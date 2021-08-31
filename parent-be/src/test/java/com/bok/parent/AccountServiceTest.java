@@ -217,7 +217,7 @@ public class AccountServiceTest {
         Credentials credentials = modelTestUtil.createAccountWithCredentials();
         AccountClosureDTO request = new AccountClosureDTO();
         request.email = credentials.getEmail();
-        request.IBAN = "IT05X0300203280979326912953";
+        request.iban = "IT05X0300203280979326912953";
 
         accountService.closeAccount(request);
         assertFalse(accountRepository.existsByCredentials_Email(credentials.getEmail()));
