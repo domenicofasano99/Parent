@@ -47,7 +47,7 @@ public class AccountController {
     @PasswordResetAudit
     @PostMapping("/resetPassword")
     @ApiOperation(value = "Resets the account password and sends a new secure password via email")
-    public PasswordResetResponseDTO resetPassword(@RequestBody PasswordResetRequestDTO passwordResetRequestDTO) {
+    public PasswordResetResponseDTO resetPassword(@RequestBody PasswordResetRequestDTO passwordResetRequestDTO, HttpServletRequest request) {
         return accountService.resetPassword(passwordResetRequestDTO);
     }
 
