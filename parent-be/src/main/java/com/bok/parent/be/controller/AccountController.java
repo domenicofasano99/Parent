@@ -44,7 +44,6 @@ public class AccountController {
         return new ModelAndView("redirect:" + "https://bok.faraone.ovh", Collections.singletonMap("verified", verified));
     }
 
-    @PasswordResetAudit
     @PostMapping("/resetPassword")
     @ApiOperation(value = "Resets the account password and sends a new secure password via email")
     public PasswordResetResponseDTO resetPassword(@RequestBody PasswordResetRequestDTO passwordResetRequestDTO) {
