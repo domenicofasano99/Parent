@@ -15,5 +15,5 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class AccountClosureMessage implements Serializable {
     public Long accountId;
-    public String IBAN;
+    public String iban;
 }

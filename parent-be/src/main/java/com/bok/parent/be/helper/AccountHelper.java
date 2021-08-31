@@ -1,5 +1,6 @@
 package com.bok.parent.be.helper;
 
+import com.bok.bank.integration.dto.WireTransferResponseDTO;
 import com.bok.parent.be.exception.AccountException;
 import com.bok.parent.be.exception.EmailAlreadyExistsException;
 import com.bok.parent.be.service.bank.BankService;
@@ -20,6 +21,10 @@ import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.TemporaryAccountRepository;
 import com.bok.parent.repository.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.iban4j.Iban;
+import org.iban4j.IbanFormatException;
+import org.iban4j.InvalidCheckDigitException;
+import org.iban4j.UnsupportedCountryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -273,8 +278,13 @@ public class AccountHelper {
      */
     public String closeAccount(AccountClosureDTO accountClosureDTO) {
         String email = accountClosureDTO.email;
-        String iban = accountClosureDTO.IBAN;
+        String iban = accountClosureDTO.iban;
         Account a = accountRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Account not found"));
+        try {
+            Iban.valueOf(iban);
+        } catch (IbanFormatException | InvalidCheckDigitException | UnsupportedCountryException e) {
+            throw new IllegalArgumentException(e.getLocalizedMessage());
+        }
         tokenRepository.deleteAllByAccountId(a.getId());
         accessInfoRepository.deleteByAccount(a);
         accountRepository.delete(a);
