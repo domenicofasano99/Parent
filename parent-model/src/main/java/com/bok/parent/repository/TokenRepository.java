@@ -16,4 +16,6 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
     Integer deleteByTokenString(String tokenString);
 
     Optional<Token> findByTokenString(@Param("ts") String token);
+
+    void deleteAllByAccountId(Long account_id);
 }

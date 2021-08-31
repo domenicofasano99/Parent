@@ -18,6 +18,7 @@ import com.bok.parent.model.Token;
 import com.bok.parent.repository.AccessInfoRepository;
 import com.bok.parent.repository.AccountRepository;
 import com.bok.parent.repository.TemporaryAccountRepository;
+import com.bok.parent.repository.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,6 +56,9 @@ public class AccountHelper {
 
     @Autowired
     AccessInfoRepository accessInfoRepository;
+
+    @Autowired
+    TokenRepository tokenRepository;
 
     @Value("${server.baseUrl}")
     String baseUrl;
@@ -271,7 +275,7 @@ public class AccountHelper {
         String email = accountClosureDTO.email;
         String iban = accountClosureDTO.IBAN;
         Account a = accountRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Account not found"));
-
+        tokenRepository.deleteAllByAccountId(a.getId());
         accessInfoRepository.deleteByAccount(a);
         accountRepository.delete(a);
 
